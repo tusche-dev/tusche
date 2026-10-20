@@ -15,5 +15,11 @@
     "type": "git",
     "url": "git+https://github.com/tusche-dev/tusche.git",
     "directory": "packages/engine"
+  },
+  "dependencies": {
+    "@open-pencil/core": "0.16.0",
+    "@open-pencil/scene-graph": "0.16.0",
+    "@tusche/pen-bridge": "workspace:*",
+    "@tusche/pen-format": "workspace:*"
   }
 }

@@ -10,3 +10,7 @@ Thumbs.db
 coverage/
 .turbo/
 .vite/
+
+# Local experiments and renders
+packages/*/scratch/
+.tusche/

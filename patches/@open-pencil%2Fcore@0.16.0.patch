@@ -1,0 +1,33 @@
+diff --git a/dist/canvaskit.js b/dist/canvaskit.js
+index e361cd132ff4213456194a125256ce2ac1b11bc4..d1688d3664ae07535372b49e60b3e4223816a9f0 100644
+--- a/dist/canvaskit.js
++++ b/dist/canvaskit.js
+@@ -7,7 +7,8 @@ async function getCanvasKit(options) {
+ 	const defaultLocate = (file) => {
+ 		if (!IS_BROWSER) {
+ 			const ckPath = import.meta.resolve("canvaskit-wasm");
+-			return decodeURIComponent(new URL(file, ckPath).pathname);
++			const path = decodeURIComponent(new URL(file, ckPath).pathname);
++			return /^\/[A-Za-z]:\//.test(path) ? path.slice(1) : path;
+ 		}
+ 		const base = "env" in import.meta ? import.meta.env.BASE_URL : "/";
+ 		return `${base === "/" ? "" : base.replace(/\/$/, "")}/${file}`;
+diff --git a/dist/io/formats/raster/headless.js b/dist/io/formats/raster/headless.js
+index 45374fd18849e21b4ca5d694fb1b16467df66832..dd54bf1acc3158e27ab8fbf9d830734a1a19d77b 100644
+--- a/dist/io/formats/raster/headless.js
++++ b/dist/io/formats/raster/headless.js
+@@ -1,3 +1,4 @@
++import { fileURLToPath } from "node:url";
+ import { renderNodesToImage, renderThumbnail } from "./render.js";
+ import { SkiaRenderer } from "../../../canvas/renderer.js";
+ //#region src/io/formats/raster/headless.ts
+@@ -7,8 +8,7 @@ async function initCanvasKit() {
+ 	if (cachedCk) return cachedCk;
+ 	const CanvasKitInit = (await import("canvaskit-wasm/full")).default;
+ 	const ckPath = import.meta.resolve("canvaskit-wasm/full");
+-	const binDir = new URL(".", ckPath).pathname;
+-	cachedCk = await CanvasKitInit({ locateFile: (file) => binDir + file });
++	cachedCk = await CanvasKitInit({ locateFile: (file) => fileURLToPath(new URL(file, ckPath)) });
+ 	return cachedCk;
+ }
+ async function getRenderer() {

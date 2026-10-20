@@ -15,5 +15,13 @@
     "type": "git",
     "url": "git+https://github.com/tusche-dev/tusche.git",
     "directory": "packages/pen-bridge"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "1.2.146",
+    "@iconify-json/ph": "1.2.2",
+    "@iconify/types": "2.0.0",
+    "@iconify/utils": "3.1.7",
+    "@open-pencil/scene-graph": "0.16.0",
+    "@tusche/pen-format": "workspace:*"
   }
 }
