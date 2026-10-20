@@ -218,3 +218,20 @@ test('fill_container siblings share the space equally, padded or not', async () 
   expect((await scene.bounds('plain'))?.width).toBe(726);
   expect((await scene.bounds('padded'))?.width).toBe(726);
 });
+
+test('auto-growing text never wraps, even when it overflows', async () => {
+  const scene = await engine.open(
+    doc([
+      {
+        type: 'frame',
+        id: 'card',
+        width: 120,
+        layout: 'vertical',
+        children: [{ type: 'text', id: 't', content: 'A rather long single line', fill: '#000' }],
+      },
+    ]),
+  );
+  const t = await scene.bounds('t');
+  expect(t?.width).toBeGreaterThan(120);
+  expect(t?.height).toBeLessThan(25);
+});
