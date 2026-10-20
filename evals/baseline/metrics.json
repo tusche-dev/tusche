@@ -1,6 +1,6 @@
 {
   "label": "baseline-0.1.0",
-  "date": "2026-10-20T13:26:18.946Z",
+  "date": "2026-10-20T14:40:22.050Z",
   "skillVersion": "0.1.0",
   "model": "claude-opus-5-5",
   "totals": {
@@ -8,7 +8,7 @@
     "missing": 0,
     "sessionErrors": 0,
     "error": 0,
-    "warning": 39,
+    "warning": 35,
     "layout": 2,
     "fonts": 0,
     "placeholders": 0,
@@ -22,7 +22,7 @@
     "turns": 234,
     "durationMs": 1557194,
     "editChangedLines": 85,
-    "editOutOfScope": 1
+    "editOutOfScope": 0
   },
   "runs": [
     {
@@ -193,7 +193,7 @@
       },
       "edit": {
         "changedLines": 4,
-        "outOfScope": ["variables"]
+        "outOfScope": []
       },
       "renders": ["renders/01-eRmJH.png"]
     },
@@ -371,11 +371,11 @@
         "nodes": 296,
         "placeholders": 0,
         "error": 0,
-        "warning": 7,
+        "warning": 5,
         "layout": 0,
         "fonts": 0,
         "codes": {
-          "op/touch-target-size": 7
+          "op/touch-target-size": 5
         }
       },
       "calls": {
@@ -558,11 +558,11 @@
         "nodes": 197,
         "placeholders": 0,
         "error": 0,
-        "warning": 9,
+        "warning": 7,
         "layout": 0,
         "fonts": 0,
         "codes": {
-          "op/touch-target-size": 9
+          "op/touch-target-size": 7
         }
       },
       "calls": {

@@ -18,6 +18,7 @@ import {
   mkdirSync,
   mkdtempSync,
   openSync,
+  readFileSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -137,6 +138,11 @@ console.log(`label ${label}: ${tasks.length} task(s) → ${labelDir}`);
 const scores: Score[] = [];
 for (const task of tasks) scores.push(await runTask(task));
 const metrics = await metricsOf(label, scores);
+// Rescoring does not run the skill again: the runs keep the version they were made with.
+const previous = join(labelDir, 'metrics.json');
+if (values.rescore && existsSync(previous)) {
+  metrics.skillVersion = JSON.parse(readFileSync(previous, 'utf8')).skillVersion;
+}
 writeFileSync(join(labelDir, 'metrics.json'), `${JSON.stringify(metrics, null, 2)}\n`);
 writeFileSync(join(labelDir, 'summary.md'), summaryMarkdown(metrics));
 console.log(summaryMarkdown(metrics));
