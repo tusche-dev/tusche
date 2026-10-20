@@ -207,8 +207,15 @@ export function createServer(options: ServerOptions): McpServer {
 
   tool(
     'read_skill',
-    'The Tusche design skill. Without a path: SKILL.md — read it before the first edit. With a path: a file SKILL.md links to (execute.md, pen-format.md).',
-    { path: v.optional(v.pipe(v.string(), v.description('File of the skill, e.g. "execute.md"'))) },
+    'The Tusche design skill. Without a path: SKILL.md — read it before the first edit. With a path: a file SKILL.md links to (execute.md, pen-format.md, guide/web-app.md, guide/mobile-app.md, guide/landing-page.md, guide/design-system.md, guide/slides.md, guide/code.md, guide/tailwind.md).',
+    {
+      path: v.optional(
+        v.pipe(
+          v.string(),
+          v.description('File of the skill, e.g. "execute.md" or "guide/web-app.md"'),
+        ),
+      ),
+    },
     async ({ path }) => text(await readSkill(path)),
   );
 

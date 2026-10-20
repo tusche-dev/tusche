@@ -93,6 +93,9 @@
     "packages/skill": {
       "name": "@tusche/skill",
       "version": "0.0.0",
+      "devDependencies": {
+        "@tusche/exec": "workspace:*",
+      },
     },
     "packages/styles": {
       "name": "@tusche/styles",

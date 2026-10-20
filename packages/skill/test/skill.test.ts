@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { posix } from 'node:path';
 import { listSkillFiles, readSkill, SkillNotFoundError } from '../src/index.ts';
 
 describe('skill', () => {
@@ -8,11 +9,40 @@ describe('skill', () => {
     expect(await readSkill('./SKILL.md')).toBe(text);
   });
 
-  test('every file SKILL.md links to exists', async () => {
+  test('version 0.1.0, at most 250 lines', async () => {
+    const text = await readSkill();
+    expect(text).toContain('\nversion: 0.1.0\n');
+    expect(text.split('\n').length).toBeLessThanOrEqual(250);
+  });
+
+  test('every file is linked from SKILL.md and every link resolves', async () => {
     const files = await listSkillFiles();
-    expect(files).toEqual(['SKILL.md', 'execute.md', 'pen-format.md']);
-    const links = [...(await readSkill()).matchAll(/\]\(([^)]+\.md)\)/g)].map((m) => m[1]);
-    for (const link of links) expect(files).toContain(link as string);
+    expect(files).toEqual([
+      'SKILL.md',
+      'execute.md',
+      'guide/code.md',
+      'guide/design-system.md',
+      'guide/landing-page.md',
+      'guide/mobile-app.md',
+      'guide/slides.md',
+      'guide/tailwind.md',
+      'guide/web-app.md',
+      'pen-format.md',
+    ]);
+    const linked = new Set<string>();
+    for (const file of files) {
+      const base = posix.dirname(file);
+      for (const [, link] of (await readSkill(file)).matchAll(/\]\(([^)#]+\.md)\)/g)) {
+        const target = posix.normalize(posix.join(base, link as string));
+        expect({ file, target, exists: files.includes(target) }).toEqual({
+          file,
+          target,
+          exists: true,
+        });
+        if (file === 'SKILL.md') linked.add(target);
+      }
+    }
+    expect(files.filter((f) => f !== 'SKILL.md' && !linked.has(f))).toEqual([]);
   });
 
   test('unknown files and paths outside the folder are not found', async () => {

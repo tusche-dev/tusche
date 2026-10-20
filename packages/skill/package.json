@@ -16,5 +16,8 @@
     "type": "git",
     "url": "git+https://github.com/tusche-dev/tusche.git",
     "directory": "packages/skill"
+  },
+  "devDependencies": {
+    "@tusche/exec": "workspace:*"
   }
 }
