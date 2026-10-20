@@ -49,6 +49,8 @@ const errorOf = (fn: () => unknown): ExecError => {
   throw new Error('expected an ExecError');
 };
 
+type PenNodeLike = { id: string; children?: { id: string }[] };
+
 const node = (tx: Transaction, path: string) => resolveNodePath(tx.doc, path)?.node;
 const valid = (doc: PenDocument) => validatePen(doc).filter((d) => d.level === 'error');
 
@@ -100,6 +102,21 @@ describe('Insert', () => {
     expect(padding).toMatchObject({ name: 'TypeError', hint: expect.stringContaining('frame') });
     expect(errorOf(() => insert(tx, 'box', { name: 'no type' })).name).toBe('TypeError');
     expect(tx.changed).toBe(false);
+  });
+
+  test('null leaves a property out, at any depth', () => {
+    const tx = new Transaction(base());
+    const id = insert(tx, 'box', {
+      type: 'frame',
+      fill: null,
+      stroke: null,
+      children: [{ type: 'rectangle', fill: null }],
+    });
+    const frame = node(tx, id) as { children: object[] };
+    expect(frame).not.toHaveProperty('fill');
+    expect(frame).not.toHaveProperty('stroke');
+    expect(frame.children[0]).not.toHaveProperty('fill');
+    expect(valid(tx.doc)).toEqual([]);
   });
 
   test('a text without fill is a warning, not an error', () => {
@@ -155,6 +172,27 @@ describe('Copy', () => {
       ref: 'btn',
       descendants: { label: { content: 'Cancel' } },
     });
+  });
+
+  test('a replacement in descendants gets ids, in an instance and inside a nested one', () => {
+    const tx = new Transaction(base());
+    const replacement = {
+      type: 'frame',
+      layout: 'vertical',
+      children: [{ type: 'text', content: 'Go', fill: '#000000' }],
+    };
+    const id = copy(tx, 'btn', 'box', { descendants: { label: replacement } });
+    const swapped = (node(tx, id) as unknown as { descendants: { label: PenNodeLike } }).descendants
+      .label;
+    expect(swapped.id).toMatch(/^[A-Za-z0-9]{5}$/);
+    expect(swapped.children?.[0]?.id).toMatch(/^[A-Za-z0-9]{5}$/);
+    expect(valid(tx.doc)).toEqual([]);
+    const nested = copy(tx, 'page', 'document', { descendants: { 'b1/label': replacement } });
+    const inner = (node(tx, nested) as { children: PenNodeLike[] }).children[0] as unknown as {
+      descendants: { label: PenNodeLike };
+    };
+    expect(inner.descendants.label.id).toMatch(/^[A-Za-z0-9]{5}$/);
+    expect(valid(tx.doc)).toEqual([]);
   });
 
   test('nested components lose reusable in a plain copy', () => {

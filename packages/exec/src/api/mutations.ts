@@ -129,17 +129,21 @@ function assignIds(
       ids.set(raw.id, id);
       if (raw.id !== id) ignored++;
     }
-    const props: Record<string, unknown> = { ...raw, id };
+    // A new node has nothing to delete: `null` means the property is left out, as in Update.
+    const props: Record<string, unknown> = {
+      ...Object.fromEntries(Object.entries(raw).filter(([, value]) => value !== null)),
+      id,
+    };
     if (Array.isArray(raw.children) && raw.type !== 'ref') {
       props.children = raw.children.map((child) => visit(requireNode(child, options.fn), false));
     }
     if (raw.type === 'ref' && isObject(raw.descendants)) {
       const descendants: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(raw.descendants)) {
-        // A replacement needs an id of its own; the path (the key) stays how it is addressed.
+        // A replacement needs ids of its own; the path (the key) stays how it is addressed.
         descendants[key] =
           isObject(value) && typeof value.type === 'string' && typeof value.id !== 'string'
-            ? { ...value, id: tx.newId() }
+            ? visit(value, false)
             : value;
       }
       props.descendants = descendants;
@@ -323,7 +327,11 @@ function applyCopyDescendants(
       const inner = { ...((found.node.descendants as Record<string, unknown>) ?? {}) };
       const restKey = joinIdPath(rest);
       inner[restKey] =
-        typeof value.type === 'string' ? value : { ...(inner[restKey] as object), ...value };
+        typeof value.type !== 'string'
+          ? { ...(inner[restKey] as object), ...value }
+          : typeof value.id === 'string'
+            ? value
+            : assignIds(tx, value, { fn: 'Copy', warn: false }).node;
       replacement = withChanges(found.node, { descendants: inner });
     } else if (typeof value.type === 'string') {
       replacement = assignIds(tx, value, {
@@ -397,14 +405,11 @@ export function copy(
     let node: PenNode;
     if (source.node.reusable === true && source.kind === 'node' && !source.inInstance) {
       // A copy of a component is an instance of it.
-      const instance: Record<string, unknown> = {
-        type: 'ref',
-        id: tx.newId(),
-        ref: source.node.id,
-      };
+      const instance: Record<string, unknown> = { type: 'ref', ref: source.node.id };
       Object.assign(instance, nullsToUndefined(props));
       if (descendants !== undefined) instance.descendants = descendants;
-      node = createNode(instance as unknown as PenNode);
+      // Replacements in descendants get their ids here.
+      node = assignIds(tx, instance, { fn: 'Copy', warn: false }).node;
     } else {
       const clone = stripReusable(structuredClone(source.node) as PenExtra);
       const prepared = assignIds(tx, clone, { fn: 'Copy', warn: false });
@@ -415,7 +420,10 @@ export function copy(
     // The copied content was already in the document: only what the call set is checked,
     // and only the copy itself is named and watched for warnings.
     const keys = new Set(Object.keys(props));
-    if (descendants !== undefined) keys.add('children');
+    if (descendants !== undefined) {
+      keys.add('children');
+      keys.add('descendants');
+    }
     check(tx, validateNode(tx.doc, node, { index: tx.index, path: '$' }), 'Copy', node.id, keys);
     named(tx, node, source.node);
     const path = place(tx, parent, node, 'Copy');
