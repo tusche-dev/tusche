@@ -4,7 +4,7 @@
  * never enter the VM (ADR-003). `Get` with a visitor walks a tree that is pulled from the
  * host lazily, one batch of children at a time (ADR-008).
  */
-export const PRELUDE = String.raw`
+export const PRELUDE = `
 (() => {
   'use strict';
   const host = globalThis.__host;

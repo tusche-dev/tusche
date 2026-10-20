@@ -56,6 +56,14 @@ export const quickjs = (): Promise<QuickJSAsyncWASMModule> => {
   return modulePromise;
 };
 
+/**
+ * Drops the module after the VM ran out of memory or broke: an allocation failure deep in
+ * QuickJS can leave the WASM heap inconsistent, and a fresh module costs ~10 ms.
+ */
+const resetModule = (): void => {
+  modulePromise = undefined;
+};
+
 let queue: Promise<unknown> = Promise.resolve();
 
 /** Asyncify allows one suspended call per module: snippets run one at a time. */
@@ -99,8 +107,10 @@ export function runSnippet(options: RunOptions): Promise<RunResult> {
 
       const result = await ctx.evalCodeAsync(wrapSnippet(options.code), SNIPPET_FILE);
       if (result.error) {
-        const error = describeError(ctx, result.error, timedOut(), limits);
+        const lines = options.code.split('\n').length;
+        const error = describeError(ctx, result.error, timedOut(), limits, lines);
         result.error.dispose();
+        if (error.name === 'MemoryError') resetModule();
         return { ok: false, error, ms: ms() };
       }
       result.value.dispose();
@@ -112,12 +122,16 @@ export function runSnippet(options: RunOptions): Promise<RunResult> {
     } catch (error) {
       // The VM itself failed (out of memory during setup, a broken context).
       const message = error instanceof Error ? error.message : String(error);
+      // Asyncify rethrows a stack overflow on the host side instead of returning it.
+      if (STACK_RE.test(message)) return { ok: false, error: stackOverflow(), ms: ms() };
+      resetModule();
       return { ok: false, error: { name: 'InternalError', message }, ms: ms() };
     } finally {
       try {
         ctx.dispose();
       } catch {
-        // A context that ran out of memory may fail to free; the module stays usable.
+        // A context that ran out of memory may fail to free; the next call gets a new module.
+        resetModule();
       }
     }
   });
@@ -159,11 +173,19 @@ const timeLimit = (timeMs: number) =>
     hint: 'split the work into several calls, or make loops and visitors do less',
   });
 
+const STACK_RE = /stack overflow|maximum call stack/i;
+
+const stackOverflow = (): SnippetError => ({
+  name: 'RangeError',
+  message: 'Maximum call stack size exceeded',
+});
+
 function describeError(
   ctx: QuickJSAsyncContext,
   handle: QuickJSHandle,
   timedOut: boolean,
   limits: SandboxLimits,
+  lines: number,
 ): SnippetError {
   const timeMs = limits.timeMs;
   const text = (name: string) => {
@@ -185,13 +207,13 @@ function describeError(
   } else if (name === 'InternalError' && /out of memory/i.test(message)) {
     name = 'MemoryError';
     message = `The snippet ran out of memory (limit ${Math.round(limits.memoryBytes / 2 ** 20)} MB)`;
-  } else if (name === 'InternalError' && /stack overflow/i.test(message)) {
-    name = 'RangeError';
-    message = 'Maximum call stack size exceeded';
+  } else if (name === 'InternalError' && STACK_RE.test(message)) {
+    ({ name, message } = stackOverflow());
   }
   const error: SnippetError = { name, message: String(message) };
   const line = LINE_RE.exec(stack)?.[1];
-  if (line !== undefined) error.line = Number(line);
+  // Past the last line means the parser reached the closing of the wrapper: an unfinished snippet.
+  if (line !== undefined) error.line = Math.min(Number(line), lines);
   const fixed = timedOut ? timeLimit(timeMs).hint : hint;
   if (fixed) error.hint = fixed;
   return error;

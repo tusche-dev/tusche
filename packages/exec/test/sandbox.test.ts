@@ -87,6 +87,7 @@ describe('errors of the snippet itself', () => {
   test('deep recursion is a RangeError, not a crash', async () => {
     const result = await run('const f = (n) => f(n + 1) + 1; f(0)');
     expect(result).toMatchObject({ ok: false, error: { name: 'RangeError' } });
+    expect((await run('Print("still alive")')).ok).toBe(true);
   });
 });
 
@@ -145,11 +146,17 @@ describe('isolation and limits', () => {
     expect(result).toMatchObject({ ok: false, error: { name: 'TimeoutError' } });
   });
 
+  // Large strings near the limit make QuickJS collect garbage on every allocation; such
+  // snippets end on the time limit instead (ADR-008). These two hit the limit quickly.
   test('running out of memory is reported, and the next call works', async () => {
-    const result = await run('const a = []; while (true) a.push("x".repeat(1e5) + a.length)', {
-      limits: { memoryBytes: 16 * 1024 * 1024 },
-    });
-    expect(result).toMatchObject({ ok: false, error: { name: 'MemoryError' } });
-    expect((await run('Print("still alive")')).ok).toBe(true);
+    const limits = { memoryBytes: 16 * 1024 * 1024, timeMs: 3000 };
+    for (const code of [
+      'new ArrayBuffer(32 * 1024 * 1024)',
+      'const a = []; for (;;) a.push(a.length)',
+    ]) {
+      const result = await run(code, { limits });
+      expect(result).toMatchObject({ ok: false, error: { name: 'MemoryError', line: 1 } });
+      expect((await run('Print("still alive")')).ok).toBe(true);
+    }
   });
 });
