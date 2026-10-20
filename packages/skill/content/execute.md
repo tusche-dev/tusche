@@ -56,7 +56,7 @@ interface Ctx {
 
 ## Semantics worth knowing
 
-- **Paths.** A path is a node id, or `instanceId/childId[/…]` inside an instance. Never pass node objects.
+- **Paths.** A path is a node id, or `instanceId/childId` for any node inside an instance, however deep (one more `/childId` only to go into a nested instance). Never pass node objects.
 - **Reads see the call's own changes.** `Get` lays out what you inserted a line earlier.
 - **Visitors.** Return `undefined` to collect nothing. There is no whole-document read without a visitor. `Get(document)` returns the top-level nodes. Without a visitor, `depth` defaults to 2; deeper children come back as `"..."`.
 - **Instances.** `Copy` of a component returns an instance; customise its parts through `descendants` in the same `Copy`. Nodes of a component inside an instance change only through `Update` and `Replace`; fill a slot with `Update("inst/slot", {children: [...]})`.

@@ -64,6 +64,8 @@ Read the one guide that matches the task, before you build. Skip the others.
 | `layoutPosition: "absolute"` + `width: "fill_container"` (collapses to 0) | an absolute node gets pixel sizes |
 | long text with default `textGrowth` (one endless line) | `textGrowth: "fixed-width"` + `width: 560` or `"fill_container"` |
 | a row of children that should stretch, parent `fit_content` | parent with a real width, children `fill_container` |
+| `descendants: {Title: {content: "Hi"}}` (a name; ignored with `unknown-ref`) | `descendants: {[titleId]: {content: "Hi"}}` — find `titleId` with a visitor on the component |
+| `Update(instId + "/" + rowId + "/" + titleId, …)` | `Update(instId + "/" + titleId, …)` — one level, however deep the node is |
 | deleting a broken section and inserting it again | `Update` / `Replace` the broken nodes |
 | resending a failed snippet with one change | `editId` + `edits: [{find, replace}]` |
 | Latin-only display font with Russian text (`missing-glyphs`) | a font that covers the script; all archetype fonts cover Latin and Cyrillic |

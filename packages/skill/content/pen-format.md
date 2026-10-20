@@ -81,10 +81,10 @@ Effects (`effect`, one or a list): `{type: "shadow", shadowType: "outer" | "inne
 
 - Any node with `reusable: true` is a component. Keep components outside the screens, on the canvas.
 - `{type: "ref", ref: "<componentId>"}` is an instance. Top-level keys override the component's root.
-- `descendants` maps a path of ids inside the component (`"label"`, `"row/icon"`) to:
+- `descendants` maps the **id** of a node inside the component to an override. One id reaches a node at any depth (`"Kp2xQ"`, never `"row/Kp2xQ"`); a two-part key is only for reaching into a nested instance (`"nestedInstanceId/childId"`). Names are not keys: find ids with a visitor (`Get(componentId, n => n.name === "Title" ? n.id : undefined)`). Each value is:
   - an object **without** `type` — property overrides for that node;
   - an object **with** `type` — a replacement subtree.
-- A node inside an instance is addressed `instanceId/childId`. Hide it with `enabled: false`.
+- A node inside an instance is addressed `instanceId/childId` however deep it sits (not `instanceId/rowId/childId`). Hide it with `enabled: false`.
 - Copying a component creates an instance, not a deep copy.
 
 ## Variables and themes
