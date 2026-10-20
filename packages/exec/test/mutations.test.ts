@@ -224,16 +224,16 @@ describe('Replace', () => {
     expect(top).not.toBe('r1');
     expect(node(tx, top)).toMatchObject({ type: 'ellipse' });
     expect(node(tx, 'r1')).toBeUndefined();
-    const inner = replace(tx, 'b1/label', { type: 'icon', icon: 'check' });
-    expect(inner).toMatch(/^b1\/[A-Za-z0-9]{5}$/);
-    const id = inner.split('/')[1] as string;
+    const id = replace(tx, 'b1/label', { type: 'icon', icon: 'check' });
+    expect(id).toMatch(/^[A-Za-z0-9]{5}$/);
+    const inner = `b1/${id}`;
     // The key stays the id of the component node; the old path is gone.
     expect(node(tx, 'b1')).toMatchObject({ descendants: { label: { type: 'icon', id } } });
     expect(node(tx, inner)).toMatchObject({ type: 'icon' });
     expect(node(tx, 'b1/label')).toBeUndefined();
     // Replacing the replacement edits it in place.
     const again = replace(tx, inner, { type: 'text', content: 'Back', fill: '#000000' });
-    expect(node(tx, again)).toMatchObject({ type: 'text', content: 'Back' });
+    expect(node(tx, `b1/${again}`)).toMatchObject({ type: 'text', content: 'Back' });
     expect(Object.keys((node(tx, 'b1') as unknown as { descendants: object }).descendants)).toEqual(
       ['label'],
     );

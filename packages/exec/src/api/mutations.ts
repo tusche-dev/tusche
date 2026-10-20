@@ -535,7 +535,8 @@ export function replace(tx: Transaction, path: unknown, input: unknown): string 
     const newPath = pathBeside(target.path, node.id);
     touchSubtree(tx, node, newPath);
     tx.counts.replaced++;
-    return newPath;
+    // Like pen.dev, the new id itself; inside an instance the node is at instanceId/newId.
+    return node.id;
   });
 }
 
