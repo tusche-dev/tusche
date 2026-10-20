@@ -1,7 +1,5 @@
 # ADR-003 · `execute` выполняет JavaScript агента в песочнице QuickJS (WASM)
 
-[English](../en/003-quickjs-execute-sandbox.md) · **Русский**
-
 - **Статус:** Принято
 - **Дата:** 2026-10-20
 

@@ -1,28 +1,34 @@
 # CLAUDE.md — Tusche
 
-Guidance for AI agents working on this repository.
+Инструкции для ИИ-агентов, работающих с этим репозиторием.
 
-## What this is
+## Что это
 
-Tusche is an open-source, agent-first design canvas: the `.pen` format natively, OpenPencil's engine underneath, a pen.dev-style `execute` API on top. Start with `README.md`, then `docs/en/04-architecture.md` and `docs/en/06-agent-api.md`.
+Tusche — открытый дизайн-холст для ИИ-агентов. Формат `.pen` — родной, движок — OpenPencil, сверху — API `execute` в духе pen.dev. Начни с [docs/dev/README.md](docs/dev/README.md), затем прочитай [04-architecture](docs/dev/04-architecture.md) и [06-agent-api](docs/dev/06-agent-api.md).
 
-**Current phase: 0 (specification).** No product code yet. Do not scaffold packages unless the task says so.
+**Текущая фаза — 0 (спецификация).** Продуктового кода пока нет. Не создавай пакеты, если задача прямо этого не требует.
 
-## Rules
+## Языки документации
 
-- **Docs are bilingual.** Every file in `docs/en/` has a mirror with the same name in `docs/ru/`, and every ADR in `docs/adr/en/` has one in `docs/adr/ru/`. When you change one, change the other in the same commit. The first line under the title links to the other language.
-- **Clean room.** Never copy text, code or assets from pen.dev, including the files of its installed app. Implement `.pen` from the public schema (https://docs.pencil.dev/for-developers/the-pen-format) and `docs/en/05-pen-format.md`.
-- **Architecture changes need an ADR** (`docs/adr/en/NNN-title.md` + `docs/adr/ru/NNN-title.md`; sections: Status, Context, Decision, Consequences).
-- **Only `@tusche/engine` imports `@open-pencil/core`.** Everything else goes through it, so OpenPencil API churn is isolated.
-- **The `.pen` tree is the source of truth**; the OpenPencil scene graph is a derived projection (ADR-002).
-- Stack: Bun workspaces, TypeScript (strict, ESM), Valibot for schemas, QuickJS (WASM) for the sandbox, Tauri v2 for desktop (phase 2). See ADR-005.
-- Commit style: Conventional Commits.
+- `docs/dev/` — документация для разработки: **только русский**. ADR лежат в `docs/dev/adr/`.
+- `docs/guide/en/` и `docs/guide/ru/` — пользовательская документация, **на двух языках**, имена файлов совпадают. Меняешь одну версию — в том же коммите меняй вторую. Первая строка под заголовком — ссылка на версию на другом языке.
+- `README.md` (EN) и `README.ru.md` (RU) держи синхронными. С `CONTRIBUTING.md` и `CONTRIBUTING.ru.md` так же.
+- Скилл агента (`docs/dev/drafts/SKILL.md`) — **на английском**.
 
-## Map
+## Правила
+
+- **«Чистая комната».** Не копируй тексты, код и ассеты pen.dev, в том числе файлы установленного приложения. `.pen` реализуется по публичной схеме (https://docs.pencil.dev/for-developers/the-pen-format) и [docs/dev/05-pen-format.md](docs/dev/05-pen-format.md).
+- **Изменения архитектуры — через ADR:** `docs/dev/adr/NNN-название.md`, разделы «Статус», «Контекст», «Решение», «Последствия».
+- **`@open-pencil/core` импортирует только `@tusche/engine`.** Остальные пакеты работают через него, чтобы изменения API OpenPencil не расползались по коду.
+- **Источник истины — дерево `.pen`.** Scene graph OpenPencil — производная проекция (ADR-002).
+- **Стек:** Bun workspaces, TypeScript (strict, ESM), Valibot, QuickJS (WASM), Tauri v2 в фазе 2. См. ADR-005.
+- **Коммиты:** Conventional Commits.
+
+## Карта
 
 ```
-docs/en, docs/ru     01-vision … 08-roadmap (mirrored)
-docs/adr/en, /ru     000-name … 005-stack (mirrored)
-packages/            (phase 1) pen-format, pen-bridge, engine, exec, mcp, skill, styles, cli
-apps/                (phase 1) preview, (phase 2) desktop
+docs/dev/            01-vision … 08-roadmap, adr/, drafts/SKILL.md   (RU)
+docs/guide/en|ru/    getting-started, cli, faq                       (EN + RU)
+packages/            (фаза 1) pen-format, pen-bridge, engine, exec, mcp, skill, styles, cli
+apps/                (фаза 1) preview, (фаза 2) desktop
 ```
