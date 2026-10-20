@@ -15,5 +15,14 @@
     "type": "git",
     "url": "git+https://github.com/tusche-dev/tusche.git",
     "directory": "packages/exec"
+  },
+  "dependencies": {
+    "@jitl/quickjs-wasmfile-release-asyncify": "0.32.0",
+    "quickjs-emscripten-core": "0.32.0"
+  },
+  "devDependencies": {
+    "@jitl/quickjs-ng-wasmfile-release-asyncify": "0.32.0",
+    "@jitl/quickjs-ng-wasmfile-release-sync": "0.32.0",
+    "@jitl/quickjs-wasmfile-release-sync": "0.32.0"
   }
 }
