@@ -6,18 +6,24 @@ import { Client } from '@modelcontextprotocol/client';
 import { InMemoryTransport } from '@modelcontextprotocol/server';
 import { createEngine } from '@tusche/engine';
 import { createExecutor, type Executor } from '@tusche/exec';
-import { createServer } from '../src/index.ts';
+import { type CallLogEntry, createServer } from '../src/index.ts';
 
 const dir = mkdtempSync(join(tmpdir(), 'tusche-mcp-'));
 let executor: Executor;
 let client: Client;
+const journal: CallLogEntry[] = [];
 
 beforeAll(async () => {
   executor = createExecutor({
     engine: await createEngine({ allowNetwork: false, cacheDir: join(dir, 'cache') }),
     save: { delayMs: 20 },
   });
-  const server = createServer({ executor, cwd: dir, version: '0.0.0-test' });
+  const server = createServer({
+    executor,
+    cwd: dir,
+    version: '0.0.0-test',
+    onCall: (entry) => journal.push(entry),
+  });
   client = new Client({ name: 'test', version: '1.0' });
   const [clientSide, serverSide] = InMemoryTransport.createLinkedPair();
   await Promise.all([client.connect(clientSide), server.connect(serverSide)]);
@@ -170,5 +176,45 @@ TakeScreenshot([screen])`,
     expect(readFileSync(file, 'utf8')).not.toContain('Soon');
     await sleep(80);
     expect(existsSync(file) && readFileSync(file, 'utf8')).toContain('Soon');
+  });
+
+  test('every call goes to the journal with execute details', async () => {
+    await call('open_document', { filePath: 'journal.pen', create: true });
+    const from = journal.length;
+    const failed = await call('execute', {
+      input: 'Insert(document, {type: "frame", name: "A"})\nnope()',
+    });
+    const editId = /editId=(e\d+)/.exec(textOf(failed))?.[1] as string;
+    await call('execute', {
+      editId,
+      edits: [{ find: 'nope()', replace: 'Print(1)' }],
+    });
+    await call('undo', { steps: 1 });
+    await call('get_style', { name: 'missing' });
+    const entries = journal.slice(from).map(({ t, ms, ...rest }) => {
+      expect(Date.parse(t)).toBeGreaterThan(0);
+      expect(ms).toBeGreaterThanOrEqual(0);
+      return rest;
+    });
+    expect(entries).toEqual([
+      {
+        tool: 'execute',
+        ok: false,
+        editId,
+        counts: expect.any(Object),
+        warnings: [],
+        images: 0,
+      },
+      {
+        tool: 'execute',
+        ok: true,
+        retryOf: editId,
+        counts: expect.objectContaining({ inserted: 1 }),
+        warnings: expect.any(Array),
+        images: 0,
+      },
+      { tool: 'undo', ok: true, steps: 1 },
+      { tool: 'get_style', ok: false },
+    ]);
   });
 });

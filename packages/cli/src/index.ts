@@ -30,7 +30,8 @@ usage: tusche <command> [options]
   validate <file.pen>                     check against the .pen schema; --info; exit 1 on errors
   migrate <file.pen>                      upgrade to the current format version; --dry-run
 
-environment: TUSCHE_FONTS_OFFLINE=1, TUSCHE_ALLOW_REMOTE_ASSETS=1, TUSCHE_ROOT=<dir>`;
+environment: TUSCHE_FONTS_OFFLINE=1, TUSCHE_ALLOW_REMOTE_ASSETS=1, TUSCHE_ROOT=<dir>,
+             TUSCHE_CALL_LOG=<file> (mcp: one JSON line per tool call)`;
 
 const OPTIONS = {
   node: { type: 'string', multiple: true },

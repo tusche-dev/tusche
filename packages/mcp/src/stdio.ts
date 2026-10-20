@@ -1,3 +1,4 @@
+import { appendFileSync } from 'node:fs';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import { createExecutor, type Executor } from '@tusche/exec';
 import { createServer } from './server.ts';
@@ -25,8 +26,19 @@ export async function serveStdio(options: StdioOptions = {}): Promise<void> {
       save: { delayMs: SAVE_DELAY_MS },
       engineOptions: { allowNetwork: process.env.TUSCHE_FONTS_OFFLINE !== '1' },
     });
+  const callLog = process.env.TUSCHE_CALL_LOG;
   const server = createServer({
     executor,
+    ...(callLog
+      ? {
+          onCall: (entry) =>
+            appendFileSync(
+              callLog,
+              `${JSON.stringify(entry)}
+`,
+            ),
+        }
+      : {}),
     ...(options.cwd === undefined ? {} : { cwd: options.cwd }),
     ...(options.version === undefined ? {} : { version: options.version }),
   });

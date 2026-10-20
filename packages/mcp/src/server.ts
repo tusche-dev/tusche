@@ -24,7 +24,32 @@ export interface ServerOptions {
   cwd?: string;
   /** Version reported to clients and in `get_app_state`. */
   version?: string;
+  /** Called after every tool call (the journal of `TUSCHE_CALL_LOG`, used by evals). */
+  onCall?: (entry: CallLogEntry) => void;
 }
+
+/** One tool call: what was called, whether it failed, how long it took, tool details. */
+export interface CallLogEntry {
+  /** ISO time of the end of the call. */
+  t: string;
+  tool: string;
+  ok: boolean;
+  ms: number;
+  /** `execute`: `editId` of the failed call this one fixes. */
+  retryOf?: string;
+  /** `execute`: `editId` given to this call when it failed. */
+  editId?: string;
+  /** `execute`: changes made. */
+  counts?: Record<string, number>;
+  /** `execute`: warning codes, one per warning. */
+  warnings?: string[];
+  /** `execute` and `render`: images returned. */
+  images?: number;
+  /** `undo` / `redo`: steps asked for. */
+  steps?: number;
+}
+
+type CallDetails = Omit<CallLogEntry, 't' | 'tool' | 'ok' | 'ms'>;
 
 /** Images per `render` call, as for `TakeScreenshot`. */
 const MAX_RENDERS = 6;
@@ -91,7 +116,8 @@ export function createServer(options: ServerOptions): McpServer {
 
   /**
    * Registers a tool. Arguments are checked by the Valibot schema; errors thrown by the
-   * body become `isError` answers, and `notes` (a reload, …) go before the answer.
+   * body become `isError` answers, and `notes` (a reload, …) go before the answer. The body
+   * can fill `details` for the call journal.
    */
   const tool = <T extends v.ObjectEntries>(
     name: string,
@@ -100,6 +126,7 @@ export function createServer(options: ServerOptions): McpServer {
     body: (
       args: v.InferOutput<v.ObjectSchema<T, undefined>>,
       notes: string[],
+      details: CallDetails,
     ) => Promise<CallToolResult>,
   ) => {
     server.registerTool(
@@ -107,12 +134,21 @@ export function createServer(options: ServerOptions): McpServer {
       { description, inputSchema: toStandardJsonSchema(v.object(entries)) },
       async (args) => {
         const notes: string[] = [];
+        const details: CallDetails = {};
+        const started = performance.now();
         let result: CallToolResult;
         try {
-          result = await body(args, notes);
+          result = await body(args, notes, details);
         } catch (error) {
           result = failure(error);
         }
+        options.onCall?.({
+          t: new Date().toISOString(),
+          tool: name,
+          ok: result.isError !== true,
+          ms: Math.round(performance.now() - started),
+          ...details,
+        });
         if (notes.length === 0) return result;
         const [first, ...rest] = result.content;
         const head = notes.join('\n');
@@ -318,7 +354,7 @@ export function createServer(options: ServerOptions): McpServer {
         ),
       ),
     },
-    async (args, notes) => {
+    async (args, notes, details) => {
       const hasEdit = args.editId !== undefined || args.edits !== undefined;
       if ((args.input !== undefined) === hasEdit) {
         throw new ToolError(
@@ -334,7 +370,12 @@ export function createServer(options: ServerOptions): McpServer {
 
       const session = await sessionFor(args.filePath, notes);
       if (session.conflict) throw conflictError(session);
+      if (args.editId !== undefined) details.retryOf = args.editId;
       const result = await session.execute(request);
+      if (result.editId !== undefined) details.editId = result.editId;
+      details.counts = { ...result.counts };
+      details.warnings = result.warnings.map((w) => w.code);
+      details.images = result.screenshots.length;
       const formatted = formatResult(result);
       const body = session.saveError
         ? `${formatted.text}\nwarnings:\n  [save-failed] ${session.saveError}`
@@ -358,7 +399,7 @@ export function createServer(options: ServerOptions): McpServer {
       ),
       scale: v.optional(v.pipe(v.number(), v.minValue(0.1), v.maxValue(4))),
     },
-    async ({ filePath: path, nodeIds, scale }, notes) => {
+    async ({ filePath: path, nodeIds, scale }, notes, details) => {
       const session = await sessionFor(path, notes);
       const images: Uint8Array[] = [];
       const lines: string[] = [];
@@ -374,6 +415,7 @@ export function createServer(options: ServerOptions): McpServer {
           lines.push(`  ${id}: nothing to show (unknown path or empty)`);
         }
       }
+      details.images = images.length;
       return {
         content: [
           {
@@ -409,7 +451,8 @@ export function createServer(options: ServerOptions): McpServer {
     'undo',
     'Undoes the last committed execute calls that changed the document (globals included). Default 1 step.',
     { filePath, steps },
-    async ({ filePath: path, steps: n }, notes) => {
+    async ({ filePath: path, steps: n }, notes, details) => {
+      details.steps = n ?? 1;
       const session = await sessionFor(path, notes);
       if (session.conflict) throw conflictError(session);
       return history('undo', session, await session.undo(n ?? 1));
@@ -420,7 +463,8 @@ export function createServer(options: ServerOptions): McpServer {
     'redo',
     'Redoes undone changes. Default 1 step. A new execute clears what can be redone.',
     { filePath, steps },
-    async ({ filePath: path, steps: n }, notes) => {
+    async ({ filePath: path, steps: n }, notes, details) => {
+      details.steps = n ?? 1;
       const session = await sessionFor(path, notes);
       if (session.conflict) throw conflictError(session);
       return history('redo', session, await session.redo(n ?? 1));
