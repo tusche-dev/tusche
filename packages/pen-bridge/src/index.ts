@@ -11,7 +11,7 @@ export {
   iconSetProvider,
   parseIconBody,
 } from './icons.ts';
-export { type Expansion, expandInstance } from './instances.ts';
+export { type Expansion, expandInstance, pathId } from './instances.ts';
 export {
   PenProjection,
   PLUGIN_ID,

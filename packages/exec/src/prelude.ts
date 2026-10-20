@@ -123,7 +123,8 @@ export const PRELUDE = `
       if (skip || depth >= limit || !item.entry.children) return;
       item.value.children.forEach((child, i) => walk(child, ctx, depth + 1, i));
     };
-    const roots = path === null ? call('GetRoots', [options]) : call('GetNodes', [[path], options]);
+    const all = path === null || path === 'document';
+    const roots = all ? call('GetRoots', [options]) : call('GetNodes', [[path], options]);
     roots.forEach((entry, i) => walk(node(entry, options), undefined, 0, i));
     return results;
   }

@@ -49,6 +49,10 @@ export class Transaction {
   private readonly changedRoots = new Set<string>();
   private readonly changedComponents = new Set<string>();
   private allRoots = false;
+  /** Changes not yet passed to the scene (see {@link takeSceneChanges}). */
+  private readonly pendingRoots = new Set<string>();
+  private readonly pendingComponents = new Set<string>();
+  private pendingAll = false;
 
   constructor(
     doc: PenDocument,
@@ -129,8 +133,15 @@ export class Transaction {
     for (const chain of chains) {
       const nodes = chainNodes(chain);
       const root = nodes[0];
-      if (root) this.changedRoots.add(root.id);
-      for (const node of nodes) if (node.reusable === true) this.changedComponents.add(node.id);
+      if (root) {
+        this.changedRoots.add(root.id);
+        this.pendingRoots.add(root.id);
+      }
+      for (const node of nodes) {
+        if (node.reusable !== true) continue;
+        this.changedComponents.add(node.id);
+        this.pendingComponents.add(node.id);
+      }
     }
   }
 
@@ -139,12 +150,41 @@ export class Transaction {
     this.current = doc;
     this.cachedIndex = undefined;
     this.allRoots = true;
+    this.pendingAll = true;
   }
 
   /** Top-level nodes to lay out again before reading or rendering the current document. */
   dirtyRoots(): Set<string> | 'all' {
     if (this.allRoots) return 'all';
     return affectedRoots(this.current, this.changedRoots, this.changedComponents);
+  }
+
+  /**
+   * Top-level nodes changed since the last call, for a scene that already shows the
+   * document as it was then. `undefined` when nothing changed.
+   */
+  takeSceneChanges(): Set<string> | 'all' | undefined {
+    if (this.pendingAll) {
+      this.pendingAll = false;
+      this.pendingRoots.clear();
+      this.pendingComponents.clear();
+      return 'all';
+    }
+    if (this.pendingRoots.size === 0 && this.pendingComponents.size === 0) return undefined;
+    // Roots that were removed count too: the scene has to drop them.
+    const roots = affectedRoots(this.current, this.pendingRoots, this.pendingComponents);
+    for (const id of this.pendingRoots) roots.add(id);
+    this.pendingRoots.clear();
+    this.pendingComponents.clear();
+    return roots;
+  }
+
+  /** Top-level nodes a scene that followed this call must lay out again to show `base`. */
+  rollbackRoots(): Set<string> | 'all' {
+    if (this.allRoots) return 'all';
+    const roots = affectedRoots(this.base, this.changedRoots, this.changedComponents);
+    for (const id of this.changedRoots) roots.add(id);
+    return roots;
   }
 
   warn(warning: ExecWarning): void {
