@@ -476,6 +476,14 @@ export class PenProjection {
         scope.warn('approximated', 'justifyContent "space_around" is drawn as "space_between"');
       }
       fields.primaryAxisAlign = JUSTIFY[justify] ?? 'MIN';
+      if (fields.primaryAxisAlign === 'SPACE_BETWEEN' && (fields.itemSpacing ?? 0) > 0) {
+        // In `.pen` (as in CSS) the gap stays the minimum spacing with space_between;
+        // OpenPencil drops it like Figma does. Our patch of its layout keeps it for this mark.
+        fields.pluginData = [
+          ...(fields.pluginData ?? []),
+          { pluginId: PLUGIN_ID, key: 'cssGap', value: '1' },
+        ];
+      }
       fields.counterAxisAlign = ALIGN[scope.str(node.alignItems) ?? 'start'] ?? 'MIN';
       fields.strokesIncludedInLayout = scope.bool(node.layoutIncludeStroke, false);
     }

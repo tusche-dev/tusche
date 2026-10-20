@@ -75,7 +75,8 @@ export function textFields(node: Record<string, unknown>, scope: Scope): TextFie
     fontSize,
     fontWeight: fontWeight(scope.value(node.fontWeight)),
     italic: scope.str(node.fontStyle)?.toLowerCase().includes('italic') ?? false,
-    lineHeight: lineHeight === undefined ? null : lineHeight * fontSize,
+    // pen.dev rounds every line to whole pixels: 15 × 1.3 = 19.5 → 20, two lines of 25.5 → 52.
+    lineHeight: lineHeight === undefined ? null : Math.round(lineHeight * fontSize),
     letterSpacing: scope.num(node.letterSpacing, 0),
     textAlignHorizontal: H_ALIGN[scope.str(node.textAlign) ?? ''] ?? 'LEFT',
     textAlignVertical: V_ALIGN[scope.str(node.textAlignVertical) ?? ''] ?? 'TOP',

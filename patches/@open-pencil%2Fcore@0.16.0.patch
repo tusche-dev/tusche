@@ -31,3 +31,17 @@ index 45374fd18849e21b4ca5d694fb1b16467df66832..dd54bf1acc3158e27ab8fbf9d830734a
  	return cachedCk;
  }
  async function getRenderer() {
+diff --git a/dist/layout.js b/dist/layout.js
+index 30e2da793b7f5f6885e593de18e7a93e46bdec2e..8470daa2dc2bc2f49632908b248722782e1c4917 100644
+--- a/dist/layout.js
++++ b/dist/layout.js
+@@ -109,7 +109,8 @@ function configureFlexContainer(yogaNode, node, direction) {
+ 	yogaNode.setPadding(Edge.Right, node.paddingRight);
+ 	yogaNode.setPadding(Edge.Bottom, node.paddingBottom);
+ 	yogaNode.setPadding(Edge.Left, node.paddingLeft);
+-	const primaryGap = node.primaryAxisAlign === "SPACE_BETWEEN" ? 0 : node.itemSpacing;
++	const keepsGap = node.pluginData?.some((entry) => entry.pluginId === "tusche" && entry.key === "cssGap");
++	const primaryGap = node.primaryAxisAlign === "SPACE_BETWEEN" && !keepsGap ? 0 : node.itemSpacing;
+ 	yogaNode.setGap(Gutter.Column, node.layoutMode === "HORIZONTAL" ? primaryGap : node.counterAxisSpacing);
+ 	yogaNode.setGap(Gutter.Row, node.layoutMode === "HORIZONTAL" ? node.counterAxisSpacing : primaryGap);
+ 	applyMinMaxConstraints(yogaNode, node);

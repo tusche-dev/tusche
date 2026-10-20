@@ -173,3 +173,23 @@ describe('rendering', () => {
     expect((await scene.bounds('card'))?.width).toBe(200);
   });
 });
+
+test('gap is kept with space_between, as in CSS', async () => {
+  const scene = await engine.open(
+    doc([
+      {
+        type: 'frame',
+        id: 'row',
+        width: 200,
+        gap: 12,
+        justifyContent: 'space_between',
+        children: [
+          { type: 'rectangle', id: 'grow', width: 'fill_container', height: 10 },
+          { type: 'rectangle', id: 'icon', width: 18, height: 18 },
+        ],
+      },
+    ]),
+  );
+  expect(await scene.bounds('grow')).toMatchObject({ width: 170 });
+  expect(await scene.bounds('icon')).toMatchObject({ x: 182 });
+});

@@ -9,6 +9,7 @@
 //   --update           write the renders as the new baseline
 //   --roots a,b        only these top-level nodes
 //   --scale <n>        pixel ratio (default 1)
+//   --max-side <px>    limit of the longer side (default 1600)
 //   --max-ratio <r>    allowed share of changed pixels (default 0.001)
 //   --offline          do not download fonts or icons
 //
@@ -41,6 +42,7 @@ if (files.length === 0) {
 const repo = resolve(import.meta.dir, '../../..');
 const scale = Number(options.scale ?? 1);
 const maxRatio = Number(options['max-ratio'] ?? 0.001);
+const maxSide = Number(options['max-side'] ?? 1600);
 const onlyRoots = typeof options.roots === 'string' ? new Set(options.roots.split(',')) : undefined;
 const ms = (value: number) => `${Math.round(value)}`;
 
@@ -89,11 +91,11 @@ for (const file of files.map((f) => resolve(f))) {
     layoutTotal += layout.ms;
     for (const font of layout.missingFonts) missingFonts.add(font);
     const r0 = performance.now();
-    const png = await scene.render([id], { scale });
+    const png = await scene.render([id], { scale, maxSide });
     const coldMs = performance.now() - r0;
     first ??= performance.now() - processStart;
     const r1 = performance.now();
-    await scene.render([id], { scale });
+    await scene.render([id], { scale, maxSide });
     const warmMs = performance.now() - r1;
     warmTotal += warmMs;
     if (!png) {
