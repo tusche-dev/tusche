@@ -9,9 +9,9 @@ describe('skill', () => {
     expect(await readSkill('./SKILL.md')).toBe(text);
   });
 
-  test('version 0.1.0, at most 250 lines', async () => {
+  test('version 0.1.1, at most 250 lines', async () => {
     const text = await readSkill();
-    expect(text).toContain('\nversion: 0.1.0\n');
+    expect(text).toContain('\nversion: 0.1.1\n');
     expect(text.split('\n').length).toBeLessThanOrEqual(250);
   });
 

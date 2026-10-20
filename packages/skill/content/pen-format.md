@@ -73,7 +73,10 @@ A fill is one value or a list, painted bottom to top:
 - `{type: "gradient", gradientType: "linear" | "radial" | "angular", colors: [{color, position}], rotation}`;
 - `{type: "image", url: "./images/hero.jpg", mode: "cover" | "contain" | "stretch"}` — the path is relative to the `.pen` file.
 
-Stroke: `stroke` (fills) + `strokeWidth` (no width, no stroke) + `strokeAlignment` (`inner | center | outer`, default `center`).
+Stroke: `stroke` + `strokeWidth` (no width, no stroke) + `strokeAlignment` (`inner | center | outer`, default `center`).
+
+- `stroke` takes the same values as `fill`: `stroke: "$color-line"`. Not an object with a `fill` key.
+- `strokeWidth` is one number or one per side: `{top, right, bottom, left}`, missing sides are 0. A row divider is `stroke: "$color-line", strokeWidth: {bottom: 1}`.
 
 Effects (`effect`, one or a list): `{type: "shadow", shadowType: "outer" | "inner", offset: {x, y}, blur, color}`, `{type: "blur", radius}`, `{type: "background_blur", radius}`.
 

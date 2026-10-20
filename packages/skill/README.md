@@ -13,7 +13,7 @@ await readSkill('guide/web-app.md');
 await listSkillFiles(); // ['SKILL.md', 'execute.md', 'guide/code.md', …, 'pen-format.md']
 ```
 
-The files live in `content/` and are written in English. Version 0.1.0 (stage 1.6):
+The files live in `content/` and are written in English. Version 0.1.1 (after the 0.1.0 eval baseline):
 
 - `SKILL.md` — workflow, golden rules, common mistakes, verification, taste, styles;
 - `pen-format.md`, `execute.md` — the format and the `execute` API;

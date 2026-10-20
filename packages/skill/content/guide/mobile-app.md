@@ -27,7 +27,7 @@ tabRowId = Insert(tabsId, {type: "frame", name: "Tabs", width: "fill_container",
 for (const [name, icon] of [["Home", "house"], ["Search", "search"], ["Orders", "receipt"], ["Profile", "user"]]) {
   const tab = Insert(tabRowId, {type: "frame", name: `Tab ${name}`, width: 64, height: 44, layout: "vertical", gap: 2, alignItems: "center", justifyContent: "center"})
   Insert(tab, {type: "icon", name: `${name} icon`, library: "lucide", icon, width: 22, height: 22, fill: name === "Home" ? "$color-accent" : "$color-muted"})
-  Insert(tab, {type: "text", name: `${name} label`, content: name, fontSize: 11, fontWeight: "500", fill: name === "Home" ? "$color-accent" : "$color-muted"})
+  Insert(tab, {type: "text", name: `${name} label`, content: name, fontSize: 12, fontWeight: "500", fill: name === "Home" ? "$color-accent" : "$color-muted"})
 }
 Insert(tabsId, {type: "frame", name: "Home indicator", width: "fill_container", height: 34})
 TakeScreenshot([phoneId])
@@ -39,7 +39,8 @@ TakeScreenshot([phoneId])
 ## Touch and type
 
 - Touch targets at least 44 × 44 px, even when the icon is 20 px: give the button frame the size, not the icon.
-- Body 15–17 px, secondary 13 px, nothing below 11 px. Titles 28–34 px.
+- Body 15–17 px, secondary 13 px, nothing below 12 px (tab labels included; `lint` flags smaller text). Titles 28–34 px.
+- Checkboxes, radios and switches: the visible box may be 20–24 px, but the frame that holds it and its label is the target, at least 44 px high.
 - Primary action: a full-width button (`width: "fill_container"`, `height: 52`) in the thumb zone near the bottom of `Content`.
 - Lists: rows 56–72 px high, `alignItems: "center"`, leading icon or avatar, text block `fill_container`, trailing chevron or value. Separate with 1 px lines inset to the text start.
 

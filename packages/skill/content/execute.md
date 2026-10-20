@@ -24,7 +24,7 @@ Each `find` must match exactly once unless it has `all: true`. The patched snipp
 declare const document: string
 
 // mutations
-Insert(parent: string, node: PenNode): string            // appends; returns the new id
+Insert(parent: string, node: PenNode): string            // appends; returns the new id; a null property is left out
 Copy(path: string, parent: string, overrides?: Partial<PenNode> & { descendants?: Descendants }): string
 Update(path: string, props: Partial<PenNode>): void      // null deletes a property; children replaces all children
 Replace(path: string, node: PenNode): string             // a whole new node; returns its new id
@@ -59,6 +59,7 @@ interface Ctx {
 - **Paths.** A path is a node id, or `instanceId/childId` for any node inside an instance, however deep (one more `/childId` only to go into a nested instance). Never pass node objects.
 - **Reads see the call's own changes.** `Get` lays out what you inserted a line earlier.
 - **Visitors.** Return `undefined` to collect nothing. There is no whole-document read without a visitor. `Get(document)` returns the top-level nodes. Without a visitor, `depth` defaults to 2; deeper children come back as `"..."`.
+- **Visitors and instances.** A visitor stops at an instance (`type: "ref"`): it does not see the component's nodes inside it. Pass `{resolveInstances: true}` to walk into instances. Then `n.id` of a node inside one is already its full path (`"instId/childId"`): pass it to `Update` as it is, never prefix it with the instance id again.
 - **Instances.** `Copy` of a component returns an instance; customise its parts through `descendants` in the same `Copy`. Nodes of a component inside an instance change only through `Update` and `Replace`; fill a slot with `Update("inst/slot", {children: [...]})`.
 - **`Update`** cannot change `id`, `type` or `ref`: use `Replace`.
 - **`Move`.** `index` counts after the node left its old place. Nothing moves into or out of an instance.
@@ -85,7 +86,7 @@ Warnings are checked only for the nodes the call created or changed:
 
 | Code | Means |
 |---|---|
-| `clipped` | A child is partly or fully outside a clipping ancestor |
+| `clipped` | A child is partly or fully outside a clipping ancestor. Siblings overlapping each other are not reported: check the screenshot |
 | `invisible-text` | Text without `fill` |
 | `zero-size` | A frame collapsed to 0 on an axis |
 | `circular-size` | `fit_content` parent, only `fill_container` children |

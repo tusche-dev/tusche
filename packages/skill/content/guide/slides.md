@@ -25,6 +25,7 @@ TakeScreenshot([slideId])
 ## Type scale
 
 - Title slide 96–160 px; slide titles 56–72 px; body 32–40 px; captions and footnotes 24 px. Nothing under 24 px.
+- An archetype's `text-*` scale is made for screens and starts at 12 px. On slides use only its steps of 24 px and up, or set sizes from the list above; never bind a small step (`text-1`, `text-2`) to slide text.
 - At most 3 sizes per slide. One font family is enough; the style's display font for titles.
 - At most ~25 words of body text per slide. Split, don't shrink.
 

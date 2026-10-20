@@ -1,7 +1,7 @@
 ---
 name: tusche
 description: Design UI on the Tusche canvas — app screens, dashboards, landing pages, slides, design systems — by editing .pen files through the Tusche MCP `execute` tool. Use when the user asks to design, mock up, restyle, or visually explore an interface, or to turn a .pen design into code and back.
-version: 0.1.0
+version: 0.1.1
 ---
 
 # Tusche
@@ -31,12 +31,12 @@ Read the one guide that matches the task, before you build. Skip the others.
 
 ## Workflow
 
-1. `get_app_state` → which file is open and what is in it. No file yet: `open_document` with `create: true` (the user's path, or `design/<name>.pen`).
+1. `get_app_state` → which file is open and what is in it. No file yet: `open_document({path, create: true})` (the user's path, or `design/<name>.pen`). Without `create: true` a new path fails.
 2. Look before you build: list top-level frames, components and variables (`Get` with a visitor, `GetVariables`). Reuse what exists.
 3. Pick a direction, in this order: the project's existing tokens, the user's brand or words, else an archetype. `get_style` without a name lists archetypes; pick the one whose summary fits the product, then `get_style` with its name (and `params` if a variant fits better).
 4. Tokens first: pass the style's `variables` to `SetVariables` in one call, then bind them: `fill: "$color-bg"`, `fontFamily: "$font-display"`, `gap: "$space-4"`. Follow the style's `rules`.
 5. Components next: anything that appears twice becomes a `reusable` frame placed beside the screens.
-6. Build one section per `execute` call. End each call with a visitor check and a `TakeScreenshot` of that section.
+6. Build one section per `execute` call. End each call with a visitor check. Screenshots are the most expensive part of a call: take one when a section is finished (`TakeScreenshot` of that section), not after every small fix, and one of the whole screen at the end.
 7. Look at the screenshot. Fix in place with `Update` and `Replace`. Never delete and rebuild a section to fix it.
 8. Finish: `lint` the screen and fix errors, set `placeholder: false`, then summarise in two or three lines what you built.
 
@@ -70,6 +70,8 @@ Read the one guide that matches the task, before you build. Skip the others.
 | resending a failed snippet with one change | `editId` + `edits: [{find, replace}]` |
 | Latin-only display font with Russian text (`missing-glyphs`) | a font that covers the script; all archetype fonts cover Latin and Cyrillic |
 | a frame per word to space things out | one frame with `gap` |
+| a `fill_container` spacer inside a `fit_content` parent (`zero-size`) | `justifyContent: "space_between"` on the parent, or a spacer only in a parent with a fixed or `fill_container` size |
+| a decorative label named `Tag`, `Chip` or `Button` | name it after what it is (`Badge`, `Label`): the lint reads control names as tap targets |
 
 ## Verify, don't hope
 
@@ -81,7 +83,8 @@ TakeScreenshot([screenId])
 Read every warning in the answer; each one names the node and what is wrong. Before you finish, run `lint` on the screen and fix every error (contrast, tiny text, clipped content).
 
 Check the screenshot for:
-- nothing clipped, nothing collapsed to 0, no text running out of its box;
+- nothing clipped, nothing collapsed to 0, no text running out of its box (a scroll area cut off on purpose, like a phone's `Content` "below the fold", is fine);
+- nothing overlapping its neighbours: `clipped` only reports content cut off by a clipping parent, so overlaps show only in the screenshot;
 - contrast is sufficient: muted text on tinted surfaces fails first;
 - spacing follows the scale (`space-*`), edges line up;
 - one clear focal point per section;

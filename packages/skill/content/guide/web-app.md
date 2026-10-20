@@ -33,7 +33,7 @@ TakeScreenshot([appId])
 
 - Nav items: horizontal frames, `height: 36`, `padding: [0, 12]`, `gap: 10`, `alignItems: "center"`, an `icon` (18–20 px) and a label.
 - The active item gets a tinted fill and the text colour; the others no fill and muted text. No accent-coloured backgrounds on every item.
-- Group items under small muted labels; push account and settings to the bottom with a `fill_container` spacer frame.
+- Group items under small muted labels; push account and settings to the bottom with a `fill_container` spacer frame. A spacer works only in a parent with a real size (the sidebar is `height: "fill_container"`); in a `fit_content` row or card it collapses to 0 (`zero-size`) — use `justifyContent: "space_between"` there.
 
 ## Tables
 

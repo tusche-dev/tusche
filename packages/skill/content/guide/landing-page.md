@@ -30,6 +30,7 @@ TakeScreenshot([heroId])
 - Pick one pattern and commit: text left + product visual right; huge headline full width with the visual below; or a split with a strong colour field. Not a centred headline over a gradient.
 - Headline 56–88 px, 6–10 words, what the product does for whom. Lead 18–22 px, at most 640 px wide (`textGrowth: "fixed-width"`).
 - One primary action, one quiet secondary link. Social proof (logos, a number, a quote) right under or beside the CTA.
+- Ratings: draw stars with `icon` nodes (`lucide` `star`), not the `★` character — many text fonts have no glyph for it (`missing-glyphs`).
 
 ## Sections and rhythm
 
