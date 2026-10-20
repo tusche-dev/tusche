@@ -5,8 +5,8 @@ export type PenObject = Record<string, unknown>;
 
 /**
  * Hidden key on a materialized node: the id it has in its instance path.
- * A replacement keeps the id of the node it replaced, so that `instance/child`
- * addresses it the same way `resolveNodePath` does.
+ * A replacement is addressed by its own id (as in pen.dev), or by the key of the node
+ * it replaced when it has none — the same way `resolveNodePath` does it.
  */
 export const PATH_ID = Symbol('pathId');
 type Materialized = PenObject & { [PATH_ID]?: string };
@@ -78,7 +78,7 @@ function applyDescendant(root: Materialized, key: string, value: PenObject): boo
   }
   if (typeof value.type === 'string') {
     const replacement = copyTree(value);
-    replacement[PATH_ID] = first;
+    replacement[PATH_ID] = typeof value.id === 'string' ? value.id : first;
     children[found.index] = replacement;
   } else {
     const merged: Materialized = { ...target, ...value };

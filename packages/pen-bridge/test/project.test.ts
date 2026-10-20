@@ -349,8 +349,9 @@ describe('instances', () => {
     const yes = p.node('quit/yes/caption');
     expect(yes?.text).toBe('Yes');
     expect(yes?.fills[0]?.color).toMatchObject({ r: 1, g: 0, b: 0 });
-    // The replacement keeps the address of the node it replaced.
-    expect(p.node('quit/no/caption')?.text).toBe('Stay');
+    // A replacement is addressed by its own id, as in pen.dev.
+    expect(p.node('quit/no/stay')?.text).toBe('Stay');
+    expect(p.node('quit/no/caption')).toBeUndefined();
     expect(p.stats.instances).toBe(3 + 2);
   });
 

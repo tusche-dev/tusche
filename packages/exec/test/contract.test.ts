@@ -121,7 +121,8 @@ const ERRORS: ErrorCase[] = [
   ['Update', 'Update("page", {id: "x"})', 'TypeError', '"id" cannot be changed'],
   ['Update', 'Update("page", {type: "group"})', 'TypeError', '"type" cannot be changed'],
   ['Update', 'Update("b1", {ref: "page"})', 'TypeError', '"ref" cannot be changed'],
-  ['Update', 'Update("page", {children: []})', 'TypeError', '"children" cannot be changed'],
+  ['Update', 'Update("page", {children: 5})', 'TypeError', 'children must be a list'],
+  ['Insert', 'Insert("b1/label", {type: "frame"})', 'TypeError', 'only frames and groups'],
   ['Update', 'Update("page", "wide")', 'TypeError', 'props must be an object'],
   ['Update', 'Update("page", {width: "huge"})', 'TypeError', 'at width'],
   ['Update', 'Update("b1/label", {fontSize: "big"})', 'TypeError', 'Update()'],
@@ -146,7 +147,9 @@ const ERRORS: ErrorCase[] = [
   ['Delete', 'Delete("nope")', 'Error', 'no node "nope"'],
   ['Delete', 'Delete(document)', 'TypeError', 'cannot be deleted'],
   ['Delete', 'Delete("b1/label")', 'Error', 'cannot be deleted from an instance'],
-  ['Delete', 'Delete("b1/slot")', 'Error', 'cannot be deleted from an instance'],
+  ['Delete', 'Delete("b1/swap")', 'Error', 'cannot be deleted from an instance'],
+  ['Delete', 'Delete("b1/slot")', 'Error', 'no node "b1/slot"'],
+  ['Replace', 'Replace("btn", {type: "frame"})', 'Error', 'component with 1 instance'],
   ['Delete', 'Delete("btn")', 'Error', 'component with 1 instance'],
   // SetVariables
   ['SetVariables', 'SetVariables([1])', 'TypeError', 'expected an object'],
@@ -236,7 +239,7 @@ describe('mutations succeed', () => {
       Print(card.length, Insert(document, {type: "frame", name: "Top"}).length)
     `);
     expect(result).toMatchObject({ ok: true, counts: { inserted: 3 }, prints: ['5 5'] });
-    expect(result.names.map(([name]) => name)).toEqual(['T', 'Card', 'Top']);
+    expect(result.names.map(([name]) => name)).toEqual(['Card', 'Top']);
   });
 
   test('Insert into a frame of a component inside an instance', async () => {
@@ -244,8 +247,11 @@ describe('mutations succeed', () => {
     delete doc.children[1].children[0].descendants.slot;
     const { session } = await open(JSON.stringify(doc));
     const result = await session.execute({
-      input: 'Print(Insert("b1/slot", {type: "rectangle", width: 2, height: 2}))',
+      input:
+        'Update("b1/slot", {children: [{type: "rectangle", width: 2, height: 2}]}); Print(Get("b1/slot", {depth: 1}).children[0].id)',
     });
+    const refused = await session.execute({ input: 'Insert("b1/slot", {type: "rectangle"})' });
+    expect(refused.error?.message).toContain('belongs to a component');
     expect(result.ok).toBe(true);
     expect(result.prints[0]).toMatch(/^b1\/\w{5}$/);
   });
@@ -258,9 +264,9 @@ describe('mutations succeed', () => {
         const i = Copy("btn", "page", {descendants: {label: {content: "Go"}}})
         Update(c, {gap: 8})
         Update("b1/label", {content: "Saved"})
-        Replace("r1", {type: "ellipse", width: 10, height: 10})
+        const e = Replace("r1", {type: "ellipse", width: 10, height: 10})
         Move(c, "page", 0)
-        Delete("r1")
+        Delete(e)
         SetVariables({gap: {type: "number", value: 4}})
         Print(Get(i).type, Get(i).ref, Get(c).children[0].width, Get("b1/label").content, GetVariables().variables.gap.value)
       `,
@@ -461,7 +467,9 @@ describe('the real file (fixtures/pen/eval/design.pen)', () => {
       input:
         'const c = Copy("eRmJH", document, {x: 0, y: 8000, name: "Board copy"}); Print(Get(c, {depth: 1}).children.filter((n) => n.reusable).length)',
     });
-    expect(result).toMatchObject({ ok: true, prints: ['0'], warnings: [] });
+    expect(result).toMatchObject({ ok: true, prints: ['0'] });
+    // Only fonts can be missing here (the test engine is offline).
+    expect(result.warnings.filter((w) => w.code !== 'unknown-font')).toEqual([]);
     expect(result.names.map(([name]) => name)).toEqual(['Board copy']);
   });
 

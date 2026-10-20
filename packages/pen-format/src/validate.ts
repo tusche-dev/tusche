@@ -486,7 +486,12 @@ class Validator {
     for (const [key, value] of Object.entries(node.descendants)) {
       const valuePath = joinKey(descendantsPath, key);
       if (!isObject(value)) continue; // reported by the schema
-      const resolved = resolveInInstance(this.index, node, splitIdPath(key));
+      // A replacement hides the node it replaced: look the key up without it.
+      const owner =
+        typeof value.type === 'string'
+          ? ({ ...node, descendants: { ...node.descendants, [key]: undefined } } as RefNode)
+          : node;
+      const resolved = resolveInInstance(this.index, owner, splitIdPath(key));
       if (!resolved) {
         this.report(
           'warning',

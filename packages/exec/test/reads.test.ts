@@ -89,16 +89,20 @@ const printed = async (code: string, doc?: PenDocument) => {
 };
 
 describe('Get', () => {
-  test('depth 2 by default, stubs below, path geometry hidden', async () => {
+  test('depth 2 by default, "..." below, path geometry hidden', async () => {
     const [json] = await printed('Print(Get("page"))');
     const page = JSON.parse(json as string);
     expect(page.children.map((c: { id: string }) => c.id)).toEqual(['b1', 'list', 'tall', 'p']);
-    expect(page.children[1].children[0]).toMatchObject({
-      id: 'row',
-      children: [{ type: 'rectangle', id: 'deep' }],
+    expect(page.children[1].children[0]).toMatchObject({ id: 'row', children: '...' });
+    const [cut] = await printed('Print(Get("page", {depth: 1}).children[1])');
+    expect(JSON.parse(cut as string)).toEqual({
+      type: 'frame',
+      id: 'list',
+      layout: 'vertical',
+      children: '...',
     });
-    const [stubbed] = await printed('Print(Get("page", {depth: 1}).children[1].children[0])');
-    expect(JSON.parse(stubbed as string)).toEqual({ type: 'frame', id: 'row', children: 1 });
+    const [zero] = await printed('Print(Get("page", {depth: 0}).children)');
+    expect(zero).toBe('...');
     expect(page.children[3].geometry).toBeUndefined();
     const [geometry] = await printed('Print(Get("p", {includePathGeometry: true}).geometry)');
     expect(geometry).toBe('M0 0L10 10');
@@ -110,17 +114,14 @@ describe('Get', () => {
     );
     expect(JSON.parse(plain as string)).toMatchObject({ type: 'ref', ref: 'btn' });
     expect(JSON.parse(plain as string).children).toBeUndefined();
+    // Inside instances the id is the whole path, as in pen.dev.
     expect(JSON.parse(expanded as string)).toMatchObject({
       type: 'frame',
-      ref: 'btn',
       id: 'b1',
-      children: [{ id: 'label', path: 'b1/label', content: 'Save' }],
+      children: [{ id: 'b1/label', content: 'Save' }],
     });
-    expect(JSON.parse(child as string)).toMatchObject({
-      id: 'label',
-      path: 'b1/label',
-      content: 'Save',
-    });
+    expect(JSON.parse(expanded as string).ref).toBeUndefined();
+    expect(JSON.parse(child as string)).toMatchObject({ id: 'b1/label', content: 'Save' });
   });
 
   test('resolveVariables uses the theme', async () => {
@@ -129,10 +130,8 @@ describe('Get', () => {
   });
 
   test('the document gives top-level nodes; unknown paths fail', async () => {
-    const [top] = await printed(
-      'Print(Get(document).children.map(c => c.id + ":" + c.children.length))',
-    );
-    expect(top).toBe('["btn:1","page:4"]');
+    const [top] = await printed('Print(Get(document).children.map(c => c.id + ":" + c.children))');
+    expect(top).toBe('["btn:...","page:..."]');
     const { result } = await run('Get("nope")');
     expect(result).toMatchObject({ ok: false, error: { message: 'Get(): no node "nope"' } });
   });
@@ -179,7 +178,7 @@ describe('Get with a visitor', () => {
 
   test('resolved instances are walked by instance paths', async () => {
     const [paths] = await printed(
-      'Print(Get("b1", (n) => n.path || n.id, {resolveInstances: true}).join(","))',
+      'Print(Get("b1", (n) => n.id, {resolveInstances: true}).join(","))',
     );
     expect(paths).toBe('b1,b1/label');
   });

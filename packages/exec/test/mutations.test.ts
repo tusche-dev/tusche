@@ -63,7 +63,8 @@ describe('Insert', () => {
     });
     const card = node(tx, id) as { children: { id: string }[] };
     expect(card.children[0]?.id).toMatch(/^[A-Za-z0-9]{5}$/);
-    expect(tx.names.map(([name]) => name)).toEqual(['Title', 'Card']);
+    // Only the root of each operation is named, as in pen.dev.
+    expect(tx.names.map(([name]) => name)).toEqual(['Card']);
     expect(tx.counts.inserted).toBe(1);
     expect((doc.children[1] as { children: unknown[] }).children[1]).toMatchObject({
       children: [{ id: 'r1' }],
@@ -107,14 +108,17 @@ describe('Insert', () => {
     expect(tx.warnings.map((w) => w.code)).toEqual(['invisible-text']);
   });
 
-  test('into a frame of an instance: a children override, addressed by instance path', () => {
+  test('into a frame of an instance: refused, as in pen.dev; Update sets its children', () => {
     const tx = new Transaction(base());
-    const path = insert(tx, 'b1/slot', { type: 'text', content: 'Badge', fill: '#000000' });
-    expect(path).toMatch(/^b1\/[A-Za-z0-9]{5}$/);
-    expect(node(tx, 'b1')).toMatchObject({
-      descendants: { slot: { children: [{ content: 'Badge' }] } },
-    });
-    expect(node(tx, path)).toMatchObject({ content: 'Badge' });
+    const refused = errorOf(() => insert(tx, 'b1/slot', { type: 'rectangle' }));
+    expect(refused.message).toContain('belongs to a component');
+    expect(refused.hint).toContain('Update("b1/slot", {children');
+    update(tx, 'b1/slot', { children: [{ type: 'text', content: 'Badge', fill: '#000000' }] });
+    const added = (
+      node(tx, 'b1') as unknown as { descendants: { slot: { children: { id: string }[] } } }
+    ).descendants.slot.children[0]?.id as string;
+    expect(added).toMatch(/^[A-Za-z0-9]{5}$/);
+    expect(node(tx, `b1/${added}`)).toMatchObject({ content: 'Badge' });
     // The component itself is untouched.
     expect(node(tx, 'slot')).toMatchObject({ children: [] });
   });
@@ -192,7 +196,7 @@ describe('Update', () => {
 
   test('errors: immutable keys, invalid values, the document', () => {
     const tx = new Transaction(base());
-    for (const key of ['id', 'type', 'ref', 'children']) {
+    for (const key of ['id', 'type', 'ref']) {
       expect(errorOf(() => update(tx, 'page', { [key]: 'x' })).message).toContain(
         `"${key}" cannot be changed`,
       );
@@ -200,20 +204,44 @@ describe('Update', () => {
     expect(errorOf(() => update(tx, 'page', { width: 'huge' })).message).toContain('at width');
     expect(errorOf(() => update(tx, 'b1/label', { fontSize: 'big' })).name).toBe('TypeError');
     expect(errorOf(() => update(tx, 'document', {})).hint).toContain('SetVariables');
+    expect(errorOf(() => update(tx, 'page', { children: 5 })).message).toContain('list of nodes');
+  });
+
+  test('children replace the old ones and get new ids', () => {
+    const tx = new Transaction(base());
+    update(tx, 'box', { children: [{ type: 'ellipse', id: 'mine', width: 4, height: 4 }] });
+    const children = (node(tx, 'box') as { children: { id: string; type: string }[] }).children;
+    expect(children.map((c) => c.type)).toEqual(['ellipse']);
+    expect(children[0]?.id).not.toBe('mine');
+    expect(tx.warnings.map((w) => w.code)).toEqual(['id-ignored']);
   });
 });
 
 describe('Replace', () => {
-  test('keeps the id; inside an instance it becomes a replacement', () => {
+  test('a new id; inside an instance a replacement addressed by its own id', () => {
     const tx = new Transaction(base());
-    expect(replace(tx, 'r1', { type: 'ellipse', width: 10, height: 10 })).toBe('r1');
-    expect(node(tx, 'r1')).toMatchObject({ type: 'ellipse', id: 'r1' });
-    expect(replace(tx, 'b1/label', { type: 'icon', icon: 'check' })).toBe('b1/label');
-    expect(node(tx, 'b1')).toMatchObject({ descendants: { label: { type: 'icon', id: 'label' } } });
-    expect(node(tx, 'b1/label')).toMatchObject({ type: 'icon' });
+    const top = replace(tx, 'r1', { type: 'ellipse', width: 10, height: 10 });
+    expect(top).not.toBe('r1');
+    expect(node(tx, top)).toMatchObject({ type: 'ellipse' });
+    expect(node(tx, 'r1')).toBeUndefined();
+    const inner = replace(tx, 'b1/label', { type: 'icon', icon: 'check' });
+    expect(inner).toMatch(/^b1\/[A-Za-z0-9]{5}$/);
+    const id = inner.split('/')[1] as string;
+    // The key stays the id of the component node; the old path is gone.
+    expect(node(tx, 'b1')).toMatchObject({ descendants: { label: { type: 'icon', id } } });
+    expect(node(tx, inner)).toMatchObject({ type: 'icon' });
+    expect(node(tx, 'b1/label')).toBeUndefined();
     // Replacing the replacement edits it in place.
-    replace(tx, 'b1/label', { type: 'text', content: 'Back', fill: '#000000' });
-    expect(node(tx, 'b1/label')).toMatchObject({ type: 'text', content: 'Back' });
+    const again = replace(tx, inner, { type: 'text', content: 'Back', fill: '#000000' });
+    expect(node(tx, again)).toMatchObject({ type: 'text', content: 'Back' });
+    expect(Object.keys((node(tx, 'b1') as unknown as { descendants: object }).descendants)).toEqual(
+      ['label'],
+    );
+  });
+
+  test('a component with instances is refused', () => {
+    const tx = new Transaction(base());
+    expect(errorOf(() => replace(tx, 'btn', { type: 'frame' })).message).toContain('1 instance');
   });
 });
 
@@ -258,9 +286,12 @@ describe('Delete', () => {
 
   test('an added child of an instance can be deleted', () => {
     const tx = new Transaction(base());
-    const path = insert(tx, 'b1/slot', { type: 'rectangle' });
-    remove(tx, path);
-    expect(node(tx, path)).toBeUndefined();
+    update(tx, 'b1/slot', { children: [{ type: 'rectangle' }] });
+    const id = (
+      node(tx, 'b1') as unknown as { descendants: { slot: { children: { id: string }[] } } }
+    ).descendants.slot.children[0]?.id as string;
+    remove(tx, `b1/${id}`);
+    expect(node(tx, `b1/${id}`)).toBeUndefined();
   });
 });
 

@@ -32,6 +32,8 @@ export interface NodeEntry {
 }
 
 const DEFAULT_DEPTH = 2;
+/** Children below the requested depth, as pen.dev marks them. */
+const MORE = '...';
 const DOCUMENT_DEPTH = 1;
 
 const NOT_FOUND_HINT =
@@ -174,23 +176,22 @@ export class Reader {
         continue;
       result[key] = context ? this.resolve(value, context) : value;
     }
-    if (path.includes('/')) result.path = path;
+    // Inside an instance the id is the whole path, as pen.dev shows it.
+    if (path.includes('/')) result.id = path;
     return result;
   }
 
   /** `Get(path, options)`: the node with children down to `depth`, stubs below. */
   get(pathValue: unknown, optionsValue: unknown): Record<string, unknown> {
     const options = readOptions(optionsValue, 'Get');
-    const resolveInstances = options.resolveInstances === true;
     if (pathValue === DOCUMENT) {
       const depth = options.depth ?? DOCUMENT_DEPTH;
       return {
         id: DOCUMENT,
-        children: this.tx.doc.children.map((child) =>
+        children:
           depth === 0
-            ? this.stub(child.id, child, resolveInstances)
-            : this.tree(child.id, child, options, depth - 1),
-        ),
+            ? MORE
+            : this.tx.doc.children.map((child) => this.tree(child.id, child, options, depth - 1)),
       };
     }
     const { path, node } = this.require(pathValue, 'Get');
@@ -206,27 +207,16 @@ export class Reader {
     const resolveInstances = options.resolveInstances === true;
     const source = node.type === 'ref' && resolveInstances ? (this.expanded(path) ?? node) : node;
     const result = this.props(path, source, options);
-    if (source !== node) result.ref = node.ref;
     const children = this.childPaths(path, node, resolveInstances);
     if (children) {
-      result.children = children.map((childPath) => {
-        const child = this.node(childPath) as PenExtra;
-        return depth > 0
-          ? this.tree(childPath, child, options, depth - 1)
-          : this.stub(childPath, child, resolveInstances);
-      });
+      result.children =
+        depth > 0
+          ? children.map((childPath) =>
+              this.tree(childPath, this.node(childPath) as PenExtra, options, depth - 1),
+            )
+          : MORE;
     }
     return result;
-  }
-
-  private stub(path: string, node: PenExtra, resolveInstances: boolean): Record<string, unknown> {
-    const stub: Record<string, unknown> = { type: node.type, id: node.id };
-    if (path.includes('/')) stub.path = path;
-    if (typeof node.name === 'string') stub.name = node.name;
-    if (node.type === 'ref') stub.ref = node.ref;
-    const children = this.childPaths(path, node, resolveInstances);
-    if (children) stub.children = children.length;
-    return stub;
   }
 
   /** Visitor entries for the top-level nodes. */
@@ -249,7 +239,6 @@ export class Reader {
     const resolveInstances = options.resolveInstances === true;
     const source = node.type === 'ref' && resolveInstances ? (this.expanded(path) ?? node) : node;
     const props = this.props(path, source, options);
-    if (source !== node) props.ref = node.ref;
     return { path, node: props, children: this.childPaths(path, node, resolveInstances) };
   }
 

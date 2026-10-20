@@ -85,14 +85,14 @@ describe('id paths', () => {
   });
 
   test('replacements from the outer instance', () => {
-    const resolved = resolveNodePath(library(), 'quit/no/caption');
+    const resolved = resolveNodePath(library(), 'quit/no/stay');
     expect(resolved?.node).toMatchObject({ id: 'stay', content: 'Stay' });
     expect(resolved?.instances.map((n) => n.id)).toEqual(['quit', 'no']);
     expect(resolved?.overrides).toEqual([]);
   });
 
   test('a component that is itself an instance', () => {
-    expect(resolveNodePath(library(), 'star/caption')?.node).toMatchObject({
+    expect(resolveNodePath(library(), 'star/glyph')?.node).toMatchObject({
       type: 'icon',
       icon: 'star',
     });
@@ -174,7 +174,7 @@ describe('nodes an instance adds itself', () => {
 
   test('a replacement and the nodes inside it', () => {
     const doc = additions();
-    expect(resolveNodePath(doc, 'filled/title')).toMatchObject({
+    expect(resolveNodePath(doc, 'filled/titleBox')).toMatchObject({
       node: { id: 'titleBox' },
       inline: true,
     });
@@ -201,11 +201,11 @@ describe('nodes an instance adds itself', () => {
   test('component nodes are not inline: they change through descendants', () => {
     expect(resolveNodePath(additions(), 'filled/slot')?.inline).toBe(false);
     expect(resolveNodePath(additions(), 'd/c1/title')?.inline).toBe(false);
-    expect(resolveNodePath(library(), 'star/caption')?.inline).toBe(false);
+    expect(resolveNodePath(library(), 'star/glyph')?.inline).toBe(false);
   });
 
   test('a replacement made by the outer instance is inline', () => {
-    expect(resolveNodePath(library(), 'quit/no/caption')?.inline).toBe(true);
+    expect(resolveNodePath(library(), 'quit/no/stay')?.inline).toBe(true);
   });
 });
 

@@ -82,6 +82,20 @@ function findAdded(instance: RefNode, id: string): PenNode | undefined {
   return undefined;
 }
 
+/** The id a replacement is addressed by: its own, or the key when it has none. */
+export const replacementId = (key: string, replacement: PenExtra): string =>
+  typeof replacement.id === 'string' ? replacement.id : key;
+
+/** A replacement of this instance (not of a nested one) whose own id is `id`. */
+function replacementWithId(instance: RefNode, id: string): PenNode | undefined {
+  for (const [key, value] of Object.entries(descendantsOf(instance))) {
+    if (key.includes(PATH_SEPARATOR) || !isObject(value) || typeof value.type !== 'string')
+      continue;
+    if (replacementId(key, value) === id) return value as PenNode;
+  }
+  return undefined;
+}
+
 /** Combines two overrides of the same descendant; `outer` wins (as the projection does). */
 function combine(inner: unknown, outer: PenExtra): PenExtra {
   if (typeof outer.type === 'string' || !isObject(inner)) return outer;
@@ -126,8 +140,11 @@ export function resolveInInstance(
   let found: ResolvedPath | undefined;
 
   const added = findAdded(instance, first);
+  const replacement = replacementWithId(instance, first);
   if (added) {
     found = { node: added, instances: [], overrides: [] };
+  } else if (replacement) {
+    found = { node: replacement, instances: [], overrides: [] };
   } else if (isRef(component)) {
     // The component is itself an instance: look through it.
     found = resolveInInstance(index, component, [first], depth + 1);
@@ -137,8 +154,10 @@ export function resolveInInstance(
   }
   if (!found) return undefined;
 
-  const own = descendantsOf(instance)[first];
+  const own = replacement ? undefined : descendantsOf(instance)[first];
   if (isObject(own) && typeof own.type === 'string') {
+    // A replacement is addressed by its own id: the key of the node it replaced is gone.
+    if (replacementId(first, own) !== first) return undefined;
     found = { node: own as PenNode, instances: [], overrides: [] };
   } else if (isObject(own)) {
     found = { ...found, overrides: [...found.overrides, own] };
