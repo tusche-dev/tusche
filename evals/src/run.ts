@@ -69,6 +69,8 @@ async function runTask(task: Task): Promise<Score> {
   if (values.rescore) return scoreRun(dir, task, executor);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'task.json'), `${JSON.stringify(task, null, 2)}\n`);
+  // A rerun under the same label starts a fresh journal.
+  writeFileSync(join(dir, 'calls.jsonl'), '');
   const work = mkdtempSync(join(tmpdir(), `tusche-eval-${task.id}-`));
   if (task.fixture !== undefined) {
     const target = join(work, task.file);
