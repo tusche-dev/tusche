@@ -137,8 +137,9 @@ class Validator {
   constructor(
     readonly doc: PenDocument,
     readonly options: Required<ValidateOptions>,
+    index?: NodeIndex,
   ) {
-    this.index = indexNodes(doc);
+    this.index = index ?? indexNodes(doc);
     const version = parseVersion(doc.version);
     const newer = version !== undefined && compareVersions(doc.version, CURRENT_VERSION) > 0;
     // A newer file may use things we do not know yet: keep it editable, just warn.
@@ -435,6 +436,13 @@ class Validator {
     });
   }
 
+  /** Checks property overrides of a node of type `type` inside an instance. */
+  override(value: PenExtra, type: KnownNodeType, path: string, nodeId?: unknown) {
+    const result = v.safeParse(OVERRIDE_SCHEMAS[type], value);
+    if (!result.success) this.schemaIssues(result.issues, path, nodeId);
+    this.properties(value, type, path, nodeId, KNOWN_KEYS[type]);
+  }
+
   instance(node: RefNode, path: string) {
     const id = node.id;
     if (typeof node.ref !== 'string') return; // reported by the schema
@@ -575,5 +583,47 @@ export function validatePen(doc: unknown, options: ValidateOptions = {}): Diagno
     unknownProperties: options.unknownProperties ?? true,
   });
   validator.run();
+  return validator.diagnostics;
+}
+
+export interface NodeCheckOptions extends ValidateOptions {
+  /** Index of the document (saves a pass over the tree on every call). */
+  index?: NodeIndex;
+  /** Path of the node in messages. Default `$`. */
+  path?: string;
+  /** `replacement`: the node replaces a descendant inside an instance. Default `tree`. */
+  scope?: 'tree' | 'replacement';
+}
+
+const resolveOptions = (options: ValidateOptions): Required<ValidateOptions> => ({
+  explicitDefaults: options.explicitDefaults ?? true,
+  unknownProperties: options.unknownProperties ?? true,
+});
+
+/**
+ * Checks one node (with its subtree) against the schema and the rules of `doc`:
+ * variables, themes, components. Use it for a node that is about to be inserted.
+ */
+export function validateNode(
+  doc: PenDocument,
+  node: unknown,
+  options: NodeCheckOptions = {},
+): Diagnostic[] {
+  const validator = new Validator(doc, resolveOptions(options), options.index);
+  validator.node(node, options.path ?? '$', options.scope ?? 'tree');
+  return validator.diagnostics;
+}
+
+/** Checks property overrides of a descendant of type `type` (the `descendants` value). */
+export function validateOverride(
+  doc: PenDocument,
+  override: Record<string, unknown>,
+  type: string,
+  options: Omit<NodeCheckOptions, 'scope'> = {},
+): Diagnostic[] {
+  const validator = new Validator(doc, resolveOptions(options), options.index);
+  if (isKnownNodeType(type) && type !== 'ref') {
+    validator.override(override as PenExtra, type, options.path ?? '$');
+  }
   return validator.diagnostics;
 }

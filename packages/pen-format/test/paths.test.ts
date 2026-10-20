@@ -112,6 +112,103 @@ describe('id paths', () => {
   });
 });
 
+// Instances that add nodes of their own: a `children` override, a replacement with
+// children, the instance's own children and a deep `children` override.
+const additions = (): PenDocument =>
+  ({
+    version: '2.21',
+    children: [
+      {
+        type: 'frame',
+        id: 'card',
+        reusable: true,
+        children: [
+          { type: 'text', id: 'title', content: 'Title', fill: '#111111' },
+          { type: 'frame', id: 'slot', children: [] },
+        ],
+      },
+      {
+        type: 'frame',
+        id: 'deck',
+        reusable: true,
+        children: [{ type: 'ref', id: 'c1', ref: 'card' }],
+      },
+      {
+        type: 'ref',
+        id: 'filled',
+        ref: 'card',
+        descendants: {
+          slot: { children: [{ type: 'text', id: 'extra', content: 'Extra', fill: '#222222' }] },
+          extra: { fill: '#333333' },
+          title: {
+            type: 'frame',
+            id: 'titleBox',
+            children: [{ type: 'text', id: 'inner', content: 'Inner', fill: '#444444' }],
+          },
+        },
+      },
+      {
+        type: 'ref',
+        id: 'own',
+        ref: 'card',
+        children: [{ type: 'text', id: 'mine', content: 'Mine', fill: '#555555' }],
+      },
+      {
+        type: 'ref',
+        id: 'd',
+        ref: 'deck',
+        descendants: {
+          'c1/slot': { children: [{ type: 'text', id: 'deep', content: 'Deep', fill: '#666666' }] },
+        },
+      },
+    ],
+  }) as PenDocument;
+
+describe('nodes an instance adds itself', () => {
+  test('a child of a children override, with its own override', () => {
+    const resolved = resolveNodePath(additions(), 'filled/extra');
+    expect(resolved?.node).toMatchObject({ id: 'extra', content: 'Extra' });
+    expect(resolved?.inline).toBe(true);
+    expect(effectiveNode(resolved as never)).toMatchObject({ fill: '#333333' });
+  });
+
+  test('a replacement and the nodes inside it', () => {
+    const doc = additions();
+    expect(resolveNodePath(doc, 'filled/title')).toMatchObject({
+      node: { id: 'titleBox' },
+      inline: true,
+    });
+    expect(resolveNodePath(doc, 'filled/inner')).toMatchObject({
+      node: { id: 'inner' },
+      inline: true,
+    });
+  });
+
+  test("the instance's own children replace the component root's", () => {
+    expect(resolveNodePath(additions(), 'own/mine')).toMatchObject({
+      node: { id: 'mine' },
+      inline: true,
+    });
+  });
+
+  test('a deep children override reaches into the nested instance', () => {
+    const resolved = resolveNodePath(additions(), 'd/c1/deep');
+    expect(resolved?.node).toMatchObject({ id: 'deep' });
+    expect(resolved?.instances.map((n) => n.id)).toEqual(['d', 'c1']);
+    expect(resolved?.inline).toBe(true);
+  });
+
+  test('component nodes are not inline: they change through descendants', () => {
+    expect(resolveNodePath(additions(), 'filled/slot')?.inline).toBe(false);
+    expect(resolveNodePath(additions(), 'd/c1/title')?.inline).toBe(false);
+    expect(resolveNodePath(library(), 'star/caption')?.inline).toBe(false);
+  });
+
+  test('a replacement made by the outer instance is inline', () => {
+    expect(resolveNodePath(library(), 'quit/no/caption')?.inline).toBe(true);
+  });
+});
+
 describe('ids', () => {
   test('collectIds includes replacement nodes', () => {
     const ids = collectIds(library());

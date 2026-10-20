@@ -14,6 +14,12 @@ export * from './parse.ts';
 export * from './paths.ts';
 export { serializePen } from './serialize.ts';
 export type * from './types.ts';
-export { type ValidateOptions, validatePen } from './validate.ts';
+export {
+  type NodeCheckOptions,
+  type ValidateOptions,
+  validateNode,
+  validateOverride,
+  validatePen,
+} from './validate.ts';
 export * from './variables.ts';
 export * from './version.ts';

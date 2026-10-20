@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import type { PenDocument } from '@tusche/pen-format';
+import { type PenDocument, parsePen, resolveNodePath } from '@tusche/pen-format';
 import { projectDocument } from '../src/index.ts';
 
 const doc = (children: unknown[], extra: Record<string, unknown> = {}): PenDocument =>
@@ -515,5 +515,43 @@ describe('laziness', () => {
     expect(p.node('a')).toBeUndefined();
     expect(p.rootOf('a/b#1')).toBe('a');
     expect(p.rootOf('nothing')).toBeUndefined();
+  });
+});
+
+describe('addressing', () => {
+  test('every scene node of the eval file is a path that pen-format resolves', async () => {
+    const text = await Bun.file(
+      new URL('../../../fixtures/pen/eval/design.pen', import.meta.url),
+    ).text();
+    const { doc } = parsePen(text);
+    const projection = projectDocument(doc);
+    const ids = [...projection.graph.getAllNodes()]
+      .map((node) => node.id)
+      .filter((id) => !id.includes('#') && projection.rootOf(id) !== undefined);
+    expect(ids.length).toBeGreaterThan(1000);
+    const missing = ids.filter((id) => !resolveNodePath(doc, id));
+    expect(missing).toEqual([]);
+  });
+
+  test('nodes added by an instance resolve to the same paths as in the scene', () => {
+    const d = doc([
+      {
+        type: 'frame',
+        id: 'card',
+        reusable: true,
+        children: [{ type: 'frame', id: 'slot', children: [] }],
+      },
+      {
+        type: 'ref',
+        id: 'c',
+        ref: 'card',
+        descendants: {
+          slot: { children: [{ type: 'text', id: 'extra', content: 'x', fill: '#000000' }] },
+        },
+      },
+    ]);
+    const projection = projectDocument(d);
+    expect(projection.node('c/extra')).toBeDefined();
+    expect(resolveNodePath(d, 'c/extra')?.node.id).toBe('extra');
   });
 });

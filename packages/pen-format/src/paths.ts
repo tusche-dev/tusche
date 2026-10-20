@@ -31,19 +31,6 @@ export function indexNodes(doc: PenDocument): Map<string, PenNode> {
   return index;
 }
 
-/** Depth-first search below `root` that does not enter nested instances. */
-function findBelow(root: PenExtra, id: string): PenNode | undefined {
-  const stack = [...childrenOf(root)].reverse();
-  while (stack.length > 0) {
-    const node = stack.pop() as PenNode;
-    if (!isObject(node)) continue;
-    if (node.id === id) return node;
-    const children = childrenOf(node);
-    for (let i = children.length - 1; i >= 0; i--) stack.push(children[i] as PenNode);
-  }
-  return undefined;
-}
-
 export interface ResolvedPath {
   /** The node at the path as defined (a component child or a replacement), without overrides. */
   node: PenNode;
@@ -51,13 +38,79 @@ export interface ResolvedPath {
   instances: RefNode[];
   /** Property overrides that apply to the node, outermost last (later entries win). */
   overrides: PenExtra[];
+  /**
+   * The node object lives in the overrides of the outermost instance (a replacement, or a
+   * child of a `children` override): it can be edited in place. Otherwise a node inside an
+   * instance belongs to a component and is changed through `descendants`.
+   */
+  inline?: boolean;
 }
 
 const MAX_DEPTH = 64;
 
+const descendantsOf = (instance: RefNode): Record<string, unknown> =>
+  isObject(instance.descendants) ? instance.descendants : {};
+
+/** Depth-first search through a list of nodes that does not enter nested instances. */
+function findIn(nodes: readonly unknown[], id: string): PenNode | undefined {
+  const stack = [...nodes].reverse();
+  while (stack.length > 0) {
+    const node = stack.pop();
+    if (!isObject(node)) continue;
+    if (node.id === id) return node as PenNode;
+    if (isRef(node)) continue;
+    const children = childrenOf(node);
+    for (let i = children.length - 1; i >= 0; i--) stack.push(children[i] as PenNode);
+  }
+  return undefined;
+}
+
+/**
+ * Nodes the instance adds itself: its own `children` (they replace the component root's
+ * children), children of `children` overrides and contents of replacements.
+ */
+function findAdded(instance: RefNode, id: string): PenNode | undefined {
+  if (Array.isArray(instance.children)) {
+    const found = findIn(instance.children, id);
+    if (found) return found;
+  }
+  for (const value of Object.values(descendantsOf(instance))) {
+    if (!isObject(value) || !Array.isArray(value.children)) continue;
+    const found = findIn(value.children, id);
+    if (found) return found;
+  }
+  return undefined;
+}
+
+/** Combines two overrides of the same descendant; `outer` wins (as the projection does). */
+function combine(inner: unknown, outer: PenExtra): PenExtra {
+  if (typeof outer.type === 'string' || !isObject(inner)) return outer;
+  return { ...inner, ...outer };
+}
+
+/**
+ * A nested instance with the deep overrides of the outer one (`"nested/child"` keys)
+ * moved into its own `descendants`, so that they are found like its own overrides.
+ */
+function withOuterOverrides(nested: RefNode, outer: RefNode, prefix: string): RefNode {
+  const start = `${prefix}${PATH_SEPARATOR}`;
+  const deep = Object.entries(descendantsOf(outer)).filter(
+    ([key, value]) => key.startsWith(start) && isObject(value),
+  );
+  if (deep.length === 0) return nested;
+  const descendants: Record<string, unknown> = { ...descendantsOf(nested) };
+  for (const [key, value] of deep) {
+    const rest = key.slice(start.length);
+    descendants[rest] = combine(descendants[rest], value as PenExtra);
+  }
+  return { ...nested, descendants } as RefNode;
+}
+
 /**
  * Resolves a node inside an instance. `segments` are ids relative to `instance`,
- * e.g. `["ok-button", "label"]`.
+ * e.g. `["ok-button", "label"]`. Within one instance every node is addressed by its own
+ * id, whether it comes from the component, a replacement or a `children` override;
+ * only nested instances add a segment.
  */
 export function resolveInInstance(
   index: NodeIndex,
@@ -72,16 +125,19 @@ export function resolveInInstance(
   const [first, ...rest] = segments as [string, ...string[]];
   let found: ResolvedPath | undefined;
 
-  if (isRef(component)) {
+  const added = findAdded(instance, first);
+  if (added) {
+    found = { node: added, instances: [], overrides: [] };
+  } else if (isRef(component)) {
     // The component is itself an instance: look through it.
     found = resolveInInstance(index, component, [first], depth + 1);
   } else {
-    const node = findBelow(component, first);
+    const node = findIn(childrenOf(component), first);
     if (node) found = { node, instances: [], overrides: [] };
   }
   if (!found) return undefined;
 
-  const own = instance.descendants?.[first];
+  const own = descendantsOf(instance)[first];
   if (isObject(own) && typeof own.type === 'string') {
     found = { node: own as PenNode, instances: [], overrides: [] };
   } else if (isObject(own)) {
@@ -94,24 +150,31 @@ export function resolveInInstance(
 
   const nested = found.node;
   if (!isRef(nested)) return undefined;
-  const inner = resolveInInstance(index, nested, rest, depth + 1);
+  const inner = resolveInInstance(
+    index,
+    withOuterOverrides(nested, instance, first),
+    rest,
+    depth + 1,
+  );
   if (!inner) return undefined;
-
-  // Overrides on the outer instance can reach deep: "ok-button/label".
-  const key = joinIdPath(segments);
-  const deep = instance.descendants?.[key];
-  if (isObject(deep) && typeof deep.type === 'string') {
-    return {
-      node: deep as PenNode,
-      instances: [instance, ...found.instances, ...inner.instances],
-      overrides: [],
-    };
-  }
   return {
     node: inner.node,
-    instances: [instance, ...found.instances, ...inner.instances],
-    overrides: isObject(deep) ? [...inner.overrides, deep] : inner.overrides,
+    instances: [instance, ...found.instances, nested, ...inner.instances.slice(1)],
+    overrides: inner.overrides,
   };
+}
+
+/** Whether `target` is one of the objects in the overrides or own children of `instance`. */
+function ownedBy(instance: RefNode, target: object): boolean {
+  const stack: unknown[] = [...Object.values(descendantsOf(instance))];
+  if (Array.isArray(instance.children)) stack.push(...instance.children);
+  while (stack.length > 0) {
+    const item = stack.pop();
+    if (!isObject(item)) continue;
+    if (item === target) return true;
+    if (Array.isArray(item.children)) stack.push(...item.children);
+  }
+  return false;
 }
 
 /**
@@ -130,7 +193,9 @@ export function resolveNodePath(
   if (!node) return undefined;
   if (rest.length === 0) return { node, instances: [], overrides: [] };
   if (!isRef(node)) return undefined;
-  return resolveInInstance(index, node, rest);
+  const resolved = resolveInInstance(index, node, rest);
+  if (!resolved) return undefined;
+  return { ...resolved, inline: ownedBy(node, resolved.node) };
 }
 
 /** The node at a resolved path with all overrides applied (a new object; the document is not changed). */

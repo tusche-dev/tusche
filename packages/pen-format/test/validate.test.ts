@@ -1,5 +1,13 @@
 import { describe, expect, test } from 'bun:test';
-import { type Diagnostic, formatDiagnostic, type PenDocument, validatePen } from '../src/index.ts';
+import {
+  type Diagnostic,
+  formatDiagnostic,
+  indexNodes,
+  type PenDocument,
+  validateNode,
+  validateOverride,
+  validatePen,
+} from '../src/index.ts';
 import { codes } from './helpers.ts';
 
 const doc = (children: unknown[], extra: Record<string, unknown> = {}): PenDocument =>
@@ -258,5 +266,52 @@ describe('instances', () => {
     const node = { type: 'frame', id: 'f', clip: false, opacity: 1, children: [] };
     expect(codes(validatePen(doc([node])))).toEqual(['explicit-default', 'explicit-default']);
     expect(validatePen(doc([node]), { explicitDefaults: false })).toEqual([]);
+  });
+});
+
+describe('one node at a time', () => {
+  const base = () =>
+    doc([{ type: 'frame', id: 'pill', reusable: true, children: [text()] }], {
+      variables: { brand: { type: 'color', value: '#FF0000' } },
+    });
+
+  test('a valid node with its subtree is clean', () => {
+    const node = { type: 'frame', id: 'f', fill: '$brand', children: [text({ id: 't2' })] };
+    expect(validateNode(base(), node, { explicitDefaults: false })).toEqual([]);
+  });
+
+  test('errors and warnings are found in the subtree, against the document', () => {
+    const node = {
+      type: 'frame',
+      id: 'f',
+      children: [text({ id: 't2', padding: 4, fill: '$nope' })],
+    };
+    const found = validateNode(base(), node, { path: 'Insert(node)' });
+    expect(codes(found, 'error')).toEqual(['layout-on-non-frame']);
+    expect(only(found, 'unknown-variable')[0]?.path).toBe('Insert(node).children[0].fill');
+  });
+
+  test('an index of the document can be passed in', () => {
+    const d = base();
+    const found = validateNode(
+      d,
+      { type: 'ref', id: 'r', ref: 'missing' },
+      { index: indexNodes(d) },
+    );
+    expect(codes(found)).toEqual(['unknown-ref']);
+  });
+
+  test('a replacement is not reported for a missing fill', () => {
+    const node = text({ id: 't3', fill: undefined });
+    expect(codes(validateNode(base(), node))).toEqual(['text-without-fill']);
+    expect(codes(validateNode(base(), node, { scope: 'replacement' }))).toEqual([]);
+  });
+
+  test('overrides are checked against the type of the descendant', () => {
+    expect(validateOverride(base(), { content: 'Ok', fill: '$brand' }, 'text')).toEqual([]);
+    expect(codes(validateOverride(base(), { gap: 4 }, 'text'), 'error')).toEqual([
+      'layout-on-non-frame',
+    ]);
+    expect(codes(validateOverride(base(), { width: '50%' }, 'text'), 'error')).toEqual(['schema']);
   });
 });
