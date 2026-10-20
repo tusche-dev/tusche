@@ -410,6 +410,69 @@ describe('lint', () => {
     expect(messages.every((m) => !m.path.includes('#'))).toBe(true);
   });
 
+  test('a row of links is not one touch target; a small button is', async () => {
+    const link = (id: string) => ({ type: 'text', id, content: id, fill: '#000000', fontSize: 14 });
+    const scene = await engine.open(
+      doc([
+        {
+          type: 'frame',
+          id: 'nav',
+          width: 400,
+          height: 40,
+          fill: '#FFFFFF',
+          children: [
+            { type: 'frame', id: 'links', name: 'Footer links', children: [link('a'), link('b')] },
+            { type: 'frame', id: 'btn', name: 'Close button', width: 16, height: 16 },
+          ],
+        },
+      ]),
+    );
+    const paths = (await scene.lint())
+      .filter((m) => m.ruleId === 'touch-target-size')
+      .map((m) => m.path);
+    expect(paths).toEqual(['btn']);
+  });
+
+  test('contrast composites semi-transparent fills over what is under them', async () => {
+    const scene = await engine.open(
+      doc([
+        {
+          type: 'frame',
+          id: 'dark',
+          width: 300,
+          height: 100,
+          fill: '#111111',
+          children: [
+            {
+              type: 'frame',
+              id: 'tint',
+              width: 200,
+              height: 40,
+              fill: '#B8F04A1F',
+              children: [
+                { type: 'text', id: 'ok', content: 'Lime', fill: '#B8F04A', fontSize: 14 },
+              ],
+            },
+            {
+              type: 'frame',
+              id: 'veil',
+              width: 200,
+              height: 40,
+              fill: '#FFFFFFF0',
+              children: [
+                { type: 'text', id: 'low', content: 'Pale', fill: '#FFFFFF80', fontSize: 14 },
+              ],
+            },
+          ],
+        },
+      ]),
+    );
+    const found = (await scene.lint()).filter((m) => m.ruleId === 'color-contrast');
+    // A lime tint over a near-black card: the rule alone reads lime on lime, 1:1.
+    expect(found.map((m) => m.path)).toEqual(['low']);
+    expect(found[0]?.message).not.toContain('1.00:1');
+  });
+
   test('only the given nodes; unknown paths are skipped', async () => {
     const scene = await engine.open(page());
     const messages = await scene.lint(['tiny', 'nope']);

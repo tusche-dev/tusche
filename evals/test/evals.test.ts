@@ -38,6 +38,23 @@ describe('diff', () => {
     expect(outOfScope(before, after, ['A'])).toEqual(['variables', 'B', 'C']);
     expect(outOfScope(before, after, ['A', 'B', 'C', 'variables'])).toEqual([]);
   });
+
+  test('out of scope: a variable used only by the scoped roots may change', () => {
+    const before = {
+      variables: { r: 14, c: '#000' },
+      children: [
+        { id: 'A', cornerRadius: '$r', fill: '$c' },
+        { id: 'B', fill: '$c' },
+      ],
+    };
+    const radius = { ...before, variables: { r: 18, c: '#000' } };
+    expect(outOfScope(before, radius, ['A'])).toEqual([]);
+    const color = { ...before, variables: { r: 14, c: '#111' } };
+    expect(outOfScope(before, color, ['A'])).toEqual(['variables']);
+    expect(outOfScope(before, { ...before, themes: { mode: ['dark'] } }, ['A'])).toEqual([
+      'variables',
+    ]);
+  });
 });
 
 describe('score', () => {

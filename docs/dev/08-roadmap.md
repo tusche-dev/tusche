@@ -23,7 +23,7 @@ Baseline эвалов скилла 0.1.0 (2026-10-20, [evals/baseline](../../eva
 | 1.5 `mcp` + `cli` ✅ | Инструменты из [06-agent-api](06-agent-api.md); `tusche mcp`, `exec`, `render`, `lint`, `validate` | `claude mcp add tusche -- tusche mcp` работает; сценарий 1 из PRD проходит |
 | 1.6 Скилл и стили ✅ | Скилл v0.1 на основе черновика, 8 архетипов, обвязка для эвалов | Записан baseline эвалов |
 | 1.7 Preview | Веб-страница `tusche preview` с живой перезагрузкой | Работу агента видно в браузере в реальном времени |
-| 1.8 Upstream | PR в OpenPencil: путь к CanvasKit на Windows, обводки 2.x в `@open-pencil/pen`, патчи раскладки из 1.3 (gap при space-between, равные доли fill, перенос по целой ширине) | PR открыты |
+| 1.8 Upstream | PR в OpenPencil: путь к CanvasKit на Windows, обводки 2.x в `@open-pencil/pen`, патчи раскладки из 1.3 (gap при space-between, равные доли fill, перенос по целой ширине); lint: контраст с полупрозрачными заливками и строки контролов в `touch-target-size` (пока это поправки в `@tusche/engine`) | PR открыты |
 | 1.9 Релиз | npm `@tusche/*` 0.1.0, quick start в README, демо-видео | Публичный анонс |
 
 **Критерии выхода:** сценарии 1, 2 и 6 из PRD проходят; открываются 100% `.pen`-файлов мейнтейнеров; файлы, отредактированные в Tusche, открываются в pen.dev.

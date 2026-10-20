@@ -39,18 +39,49 @@ interface PenLike {
   themes?: unknown;
 }
 
+const same = (x: unknown, y: unknown) => JSON.stringify(x) === JSON.stringify(y);
+
+/** Names of the variables a subtree refers to (`"$name"` values). */
+function referenced(node: unknown, into: Set<string>): Set<string> {
+  if (typeof node === 'string') {
+    if (node.startsWith('$')) into.add(node.slice(1));
+  } else if (Array.isArray(node)) {
+    for (const item of node) referenced(item, into);
+  } else if (node !== null && typeof node === 'object') {
+    for (const value of Object.values(node)) referenced(value, into);
+  }
+  return into;
+}
+
+/**
+ * Whether the variable changes stay inside the scope: themes are untouched and every changed
+ * variable is used by the scoped roots only — changing it changes nothing else.
+ */
+function variablesInScope(before: PenLike, after: PenLike, allowed: ReadonlySet<string>): boolean {
+  if (!same(before.themes, after.themes)) return false;
+  const a = (before.variables ?? {}) as Record<string, unknown>;
+  const b = (after.variables ?? {}) as Record<string, unknown>;
+  const changed = [...new Set([...Object.keys(a), ...Object.keys(b)])].filter(
+    (name) => !same(a[name], b[name]),
+  );
+  if (changed.length === 0) return true;
+  const inside = new Set<string>();
+  const outside = new Set<string>();
+  for (const root of before.children ?? []) {
+    referenced(root, allowed.has(root.id ?? '') ? inside : outside);
+  }
+  return changed.every((name) => inside.has(name) && !outside.has(name));
+}
+
 /**
  * Top-level ids changed, added or removed outside `scope`, plus `"variables"` when variables
- * or themes changed and the scope does not allow it.
+ * or themes changed and the scope does not allow it. A variable used only by the scoped roots
+ * may change: that is an edit of those roots.
  */
 export function outOfScope(before: PenLike, after: PenLike, scope: readonly string[]): string[] {
   const allowed = new Set(scope);
   const result: string[] = [];
-  const same = (x: unknown, y: unknown) => JSON.stringify(x) === JSON.stringify(y);
-  if (
-    !allowed.has('variables') &&
-    (!same(before.variables, after.variables) || !same(before.themes, after.themes))
-  ) {
+  if (!allowed.has('variables') && !variablesInScope(before, after, allowed)) {
     result.push('variables');
   }
   const roots = (doc: PenLike) => new Map((doc.children ?? []).map((n) => [n.id ?? '', n]));
