@@ -101,6 +101,9 @@
         "@tusche/pen-format": "workspace:*",
         "valibot": "1.5.0",
       },
+      "devDependencies": {
+        "@tusche/exec": "workspace:*",
+      },
     },
   },
   "patchedDependencies": {

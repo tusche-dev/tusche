@@ -1,0 +1,40 @@
+{
+  "name": "raw-concrete",
+  "title": "Raw Concrete",
+  "summary": "Brutalist: heavy display type, monospaced body, thick black borders, hard offsets and no rounding. For manifestos, agencies, indie products, music and culture sites.",
+  "params": {
+    "accent": {
+      "default": "safety",
+      "options": {
+        "safety": "#FF5A1F",
+        "acid": "#D4FF3A",
+        "electric": "#5C78FF"
+      }
+    }
+  },
+  "fonts": { "display": "Dela Gothic One", "body": "Martian Mono" },
+  "palette": {
+    "bg": "#EDEAE3",
+    "surface": "#FFFFFF",
+    "text": "#0A0A0A",
+    "muted": "#4A4844",
+    "line": "#0A0A0A",
+    "accent": "$param.accent",
+    "on-accent": "#0A0A0A"
+  },
+  "scale": {
+    "type": [12, 14, 18, 28, 48, 88],
+    "space": [4, 8, 16, 24, 32, 48, 72, 120],
+    "radius": [0]
+  },
+  "imagery": "High-contrast black-and-white photos, raw scans, hard crops; no soft lifestyle photography.",
+  "rules": [
+    "Headlines in Dela Gothic One (it has weight 400 only), very large, uppercase allowed, lineHeight 0.95-1.05.",
+    "Body, labels and buttons in Martian Mono 400 or 500, 13-15 px.",
+    "Borders 2-3 px in the line colour around blocks and buttons; radius always 0.",
+    "Hard offset shadows only: a solid text-colour shadow at x 6, y 6, blur 0; nothing soft.",
+    "Accent as large flat fields or a highlight bar behind words; text on it uses on-accent.",
+    "Asymmetric layout: break the grid on purpose with one oversized element per screen.",
+    "No gradients, no rounded corners, no light greys for important text."
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "warm-market",
+  "title": "Warm Market",
+  "summary": "Friendly consumer brand: warm serif headlines, rounded sans body, earthy palette and soft surfaces. For food, retail, wellness, travel, local businesses and lifestyle apps.",
+  "params": {
+    "accent": {
+      "default": "paprika",
+      "options": {
+        "paprika": "#B5441F",
+        "basil": "#3F6B2A",
+        "plum": "#7A2F5B"
+      }
+    }
+  },
+  "fonts": { "display": "Literata", "body": "Nunito" },
+  "palette": {
+    "bg": "#FBF3E6",
+    "surface": "#FFFBF4",
+    "soft": "#F3E3CC",
+    "text": "#2B1D14",
+    "muted": "#6C5A4C",
+    "line": "#E8D7BF",
+    "accent": "$param.accent",
+    "on-accent": "#FFFBF4"
+  },
+  "scale": {
+    "type": [14, 16, 18, 24, 36, 52],
+    "space": [4, 8, 12, 16, 24, 32, 56, 88],
+    "radius": [8, 16, 24, 999]
+  },
+  "imagery": "Warm, natural-light photos of real products, food and people at work; rich textures, no cold studio shots.",
+  "rules": [
+    "Headlines in Literata 500-600, sentence case, can run large; body in Nunito 400 16 px, lineHeight 1.5.",
+    "Use soft as a background band for every other section and surface for cards.",
+    "Radius 16 px for cards and images, pill shapes (999) for buttons and tags.",
+    "One accent for actions, prices and small badges; text on it uses on-accent.",
+    "Photos are large and generous; let one image bleed to the frame edge per page.",
+    "Shadows only very soft (blur 24 or more, opacity under 10 %) and only on floating elements.",
+    "No gradients, no neon colours, no stark black."
+  ]
+}

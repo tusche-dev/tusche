@@ -1,0 +1,43 @@
+{
+  "name": "bento-grid",
+  "title": "Bento Grid",
+  "summary": "Modular tiles of different sizes on a light canvas, each tile one idea. For product overviews, feature pages, portfolios, personal sites and launch pages.",
+  "params": {
+    "accent": {
+      "default": "cobalt",
+      "options": {
+        "cobalt": "#2F4BE0",
+        "forest": "#1E6B45",
+        "coral": "#C2412D"
+      }
+    }
+  },
+  "fonts": { "display": "Onest", "body": "Inter" },
+  "palette": {
+    "bg": "#EEEEEA",
+    "surface": "#FFFFFF",
+    "tile-dark": "#17181A",
+    "tile-tint": "#DDE3F0",
+    "text": "#141518",
+    "muted": "#5C5F66",
+    "line": "#DCDCD6",
+    "accent": "$param.accent",
+    "on-accent": "#FFFFFF",
+    "on-dark": "#F3F3EF"
+  },
+  "scale": {
+    "type": [13, 15, 18, 24, 36, 56],
+    "space": [4, 8, 12, 16, 20, 24, 40, 64],
+    "radius": [12, 20, 28]
+  },
+  "imagery": "Tight product crops, UI fragments, single objects on plain backgrounds; one image per tile.",
+  "rules": [
+    "Build sections as a grid of tiles with one shared gap (16-20 px) and radius 20-28 px.",
+    "Vary tile sizes: one large hero tile, then a mix of wide, tall and small tiles; never a uniform grid of equal cards.",
+    "Each tile holds one idea: a big number, a short headline, an image or a small UI fragment.",
+    "Mix surfaces: mostly surface tiles, one tile-dark (text in on-dark) and one accent or tile-tint per section.",
+    "Headlines in Onest 600; body in Inter 400 15-16 px; tile labels in muted 13 px.",
+    "Padding inside tiles 24-32 px, content anchored to a corner rather than centred.",
+    "No shadows; tiles sit flat on the bg colour."
+  ]
+}

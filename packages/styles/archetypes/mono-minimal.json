@@ -1,0 +1,39 @@
+{
+  "name": "mono-minimal",
+  "title": "Mono Minimal",
+  "summary": "Black, white and greys only; hierarchy purely from type size, weight and space. For premium products, studios, fashion, architecture and any brief that asks for minimal.",
+  "params": {
+    "ink": {
+      "default": "black",
+      "options": {
+        "black": "#0E0E0E",
+        "graphite": "#2B2D30"
+      }
+    }
+  },
+  "fonts": { "display": "Inter Tight", "body": "Inter" },
+  "palette": {
+    "bg": "#FFFFFF",
+    "surface": "#F5F5F4",
+    "text": "$param.ink",
+    "muted": "#6B6B6B",
+    "line": "#E4E4E2",
+    "accent": "$param.ink",
+    "on-accent": "#FFFFFF"
+  },
+  "scale": {
+    "type": [12, 14, 16, 22, 36, 72],
+    "space": [4, 8, 16, 24, 32, 56, 96, 144],
+    "radius": [0, 2]
+  },
+  "imagery": "Black-and-white or desaturated photography with lots of negative space; one image per section at most.",
+  "rules": [
+    "No colour: the accent is the ink colour; primary buttons are filled ink with on-accent text.",
+    "Headlines in Inter Tight 500, large, letterSpacing -1 to -2 at 36 px and up; body Inter 400 14-16 px.",
+    "Contrast of scale: pair one very large element with small text and skip the middle sizes.",
+    "Whitespace is the main material: 96-144 px between sections, wide outer margins.",
+    "Thin 1 px rules for structure; radius 0-2 px; no cards, no shadows, no gradients.",
+    "Small uppercase labels (12 px, letterSpacing 1) for navigation and metadata.",
+    "At most two weights per screen (400 and 500)."
+  ]
+}

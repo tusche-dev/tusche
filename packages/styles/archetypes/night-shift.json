@@ -1,0 +1,41 @@
+{
+  "name": "night-shift",
+  "title": "Night Shift",
+  "summary": "Dark product UI: near-black layers, crisp sans, one luminous accent and monospaced detail. For SaaS dashboards, developer and AI products, analytics and pro tools.",
+  "params": {
+    "accent": {
+      "default": "lime",
+      "options": {
+        "lime": "#B8F04A",
+        "cyan": "#5BD8F0",
+        "violet": "#B69CFF"
+      }
+    }
+  },
+  "fonts": { "display": "Geist", "body": "Geist", "mono": "Geist Mono" },
+  "palette": {
+    "bg": "#0B0D10",
+    "surface": "#15181D",
+    "raised": "#1D2127",
+    "text": "#EDEFF2",
+    "muted": "#9AA1AB",
+    "line": "#2A2F37",
+    "accent": "$param.accent",
+    "on-accent": "#0B0D10"
+  },
+  "scale": {
+    "type": [12, 14, 16, 20, 32, 48],
+    "space": [4, 8, 12, 16, 24, 32, 48, 80],
+    "radius": [6, 10, 16]
+  },
+  "imagery": "Product screenshots on dark backgrounds, charts and code; no stock photos, no neon glows.",
+  "rules": [
+    "Layer depth with bg, surface and raised fills plus 1 px line borders, not shadows.",
+    "Headlines in Geist 600 with tight letterSpacing (-0.5 to -1 at 32 px and up); body 14-16 px, weight 400.",
+    "Numbers, keys and code in Geist Mono.",
+    "The accent marks one primary action, the active state and key data points; text on it uses on-accent.",
+    "Muted text for secondary information; never anything dimmer than muted for text.",
+    "Radius 10 px for panels and inputs, 6 px for small controls.",
+    "No gradients except at most one subtle accent glow per page; no pure black or pure white."
+  ]
+}

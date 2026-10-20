@@ -1,0 +1,40 @@
+{
+  "name": "blueprint",
+  "title": "Blueprint",
+  "summary": "Precise technical look: neutral grotesk, monospaced labels, visible grid and thin rules. For developer tools, APIs, infrastructure, documentation and data-heavy admin screens.",
+  "params": {
+    "accent": {
+      "default": "signal-blue",
+      "options": {
+        "signal-blue": "#1F5FD1",
+        "teal": "#0B6E69",
+        "amber": "#9A5B00"
+      }
+    }
+  },
+  "fonts": { "display": "IBM Plex Sans", "body": "IBM Plex Sans", "mono": "IBM Plex Mono" },
+  "palette": {
+    "bg": "#F4F6F8",
+    "surface": "#FFFFFF",
+    "text": "#121820",
+    "muted": "#56606C",
+    "line": "#D5DBE2",
+    "accent": "$param.accent",
+    "on-accent": "#FFFFFF"
+  },
+  "scale": {
+    "type": [12, 14, 16, 20, 28, 40],
+    "space": [4, 8, 12, 16, 24, 32, 48, 64],
+    "radius": [0, 2, 4]
+  },
+  "imagery": "Diagrams, code, terminal output and real product screenshots; no photography of people, no illustrations.",
+  "rules": [
+    "Headlines in IBM Plex Sans 600, tight and left-aligned; body 14-16 px weight 400.",
+    "Labels, metadata, numbers and table headers in IBM Plex Mono 12-13 px; uppercase only for short labels.",
+    "Structure with 1 px rules in the line colour and a visible column grid; radius 4 px at most.",
+    "Dense but even spacing on a 4 px grid; align everything to shared left edges.",
+    "Accent only for interactive elements, focus and one status highlight; status colours stay muted.",
+    "No shadows, no gradients, no decorative blobs.",
+    "Show real data: code samples, numbers with units, ids, timestamps."
+  ]
+}

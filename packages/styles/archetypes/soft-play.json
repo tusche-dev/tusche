@@ -1,0 +1,43 @@
+{
+  "name": "soft-play",
+  "title": "Soft Play",
+  "summary": "Bold rounded display type, saturated colour blocks and big radii. For consumer apps, education, kids and casual games, events and friendly onboarding.",
+  "params": {
+    "accent": {
+      "default": "grape",
+      "options": {
+        "grape": "#6A3FD6",
+        "tomato": "#C2361B",
+        "lagoon": "#00707A"
+      }
+    }
+  },
+  "fonts": { "display": "Unbounded", "body": "Rubik" },
+  "palette": {
+    "bg": "#FFF8EC",
+    "surface": "#FFFFFF",
+    "text": "#231A3A",
+    "muted": "#625A74",
+    "line": "#EADFCB",
+    "accent": "$param.accent",
+    "on-accent": "#FFFFFF",
+    "pop-yellow": "#FFD24A",
+    "pop-pink": "#FF9EC4",
+    "pop-mint": "#8EE3C0"
+  },
+  "scale": {
+    "type": [14, 16, 20, 28, 40, 56],
+    "space": [4, 8, 12, 16, 24, 32, 48, 72],
+    "radius": [12, 20, 32, 999]
+  },
+  "imagery": "Flat colour shapes, cut-out objects on colour blocks, cheerful real photos; no 3D mascots, no clip art.",
+  "rules": [
+    "Headlines in Unbounded 600-700, short and punchy; body in Rubik 400, 16 px.",
+    "Use the pop colours (pop-yellow, pop-pink, pop-mint) as large flat blocks behind content, never for text.",
+    "Text on pop colours is always the text colour; on the accent it is on-accent.",
+    "Generous radius: 20 px for cards, pill shapes (999) for buttons and chips.",
+    "Buttons are big (height 52 or more, 24 px side padding) with weight 500 labels.",
+    "Tilt or overlap at most one element per screen for energy; keep the rest on the grid.",
+    "No gradients and no drop shadows; depth comes from colour blocks."
+  ]
+}
