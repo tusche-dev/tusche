@@ -2,6 +2,13 @@ export { applyEdits, type Edit } from './edits.ts';
 export { ExecError } from './errors.ts';
 export { writeAtomic } from './file.ts';
 export { type FormattedResult, formatResult } from './format.ts';
+export {
+  formatLint,
+  type LintDocumentOptions,
+  type LintIssue,
+  lintCounts,
+  lintDocument,
+} from './lint.ts';
 export { DEFAULT_SANDBOX_LIMITS, type SandboxLimits, type SnippetError } from './sandbox.ts';
 export {
   type ChangeEvent,

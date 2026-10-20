@@ -37,11 +37,12 @@ The API and the response format are described in [06-agent-api](../../docs/dev/0
 | `src/api/reads.ts` | Get (with visitors), GetVariables, FindEmptySpace, bounds and clipping |
 | `src/api/output.ts` | Print, TakeScreenshot, Export, Generate |
 | `src/session.ts` | Executor and DocumentSession: commit, rollback, undo/redo, delayed save, changes on disk, screenshots, exports |
+| `src/lint.ts` | `lintDocument`: validator, the checks of `execute` and OpenPencil rules over a whole document |
 | `src/edits.ts`, `src/warnings.ts`, `src/format.ts`, `src/file.ts` | edits/editId, warnings, response text, atomic writes |
 
 ## Contract test coverage
 
-`test/contract.test.ts` runs every case through `session.execute`; each error case checks the error, the rollback (the file is unchanged) and the `editId`. Lower-level cases are in `test/mutations.test.ts`, `test/reads.test.ts`, `test/sandbox.test.ts`, `test/session.test.ts`, `test/history.test.ts`.
+`test/contract.test.ts` runs every case through `session.execute`; each error case checks the error, the rollback (the file is unchanged) and the `editId`. Lower-level cases are in `test/mutations.test.ts`, `test/reads.test.ts`, `test/sandbox.test.ts`, `test/session.test.ts`, `test/history.test.ts`, `test/lint.test.ts`.
 
 | Function | Success | Error paths |
 |---|---|---|
@@ -66,3 +67,4 @@ The API and the response format are described in [06-agent-api](../../docs/dev/0
 | File | reads leave the bytes as they are; an edit keeps the file style and changes only the edited lines | — |
 | History | undo/redo of the document, globals and file, several steps, redo cleared by a commit, failed calls are not steps | more steps than there are |
 | Saving | delayed write, `flush`, `flushAll`, `close`; a changed file is read again when nothing is unsaved | a conflict with unsaved changes, `force`, `reload`, a deleted file |
+| Lint | every node: catalog warnings, validator warnings, OpenPencil rules; one subtree; `info` on request; errors first | schema errors, unknown path |
