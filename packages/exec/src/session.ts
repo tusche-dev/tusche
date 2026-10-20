@@ -50,6 +50,8 @@ export interface ExecutorOptions {
   limits?: Partial<ExecLimits>;
   /** A folder exports may write to besides the document's own. Default `$TUSCHE_ROOT`. */
   root?: string;
+  /** Load remote images (`https://…` fills). Default `$TUSCHE_ALLOW_REMOTE_ASSETS === '1'`. */
+  allowRemoteAssets?: boolean;
   /**
    * When a change reaches the file: right after the commit (default), or `delayMs` after
    * the last one, so a burst of calls writes once (ADR-009).
@@ -240,7 +242,9 @@ export class Executor {
       ({ doc, format } = parseDocument(text));
     }
     const engine = await this.engine();
-    const scene = await engine.open(doc, { baseDir: dirname(file) });
+    const allowRemoteAssets =
+      this.options.allowRemoteAssets ?? process.env.TUSCHE_ALLOW_REMOTE_ASSETS === '1';
+    const scene = await engine.open(doc, { baseDir: dirname(file), allowRemoteAssets });
     const roots = [dirname(file)];
     const extra = this.options.root ?? process.env.TUSCHE_ROOT;
     if (extra) roots.push(resolve(extra));

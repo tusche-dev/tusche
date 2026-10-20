@@ -1,7 +1,7 @@
 {
   "name": "@tusche/mcp",
   "version": "0.0.0",
-  "description": "MCP server for Tusche (phase 1.5).",
+  "description": "MCP server for Tusche: execute, render, lint, undo and the skill over stdio.",
   "license": "MIT",
   "type": "module",
   "private": true,
@@ -15,5 +15,18 @@
     "type": "git",
     "url": "git+https://github.com/tusche-dev/tusche.git",
     "directory": "packages/mcp"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.3.1",
+    "@tusche/engine": "workspace:*",
+    "@tusche/exec": "workspace:*",
+    "@tusche/pen-format": "workspace:*",
+    "@tusche/skill": "workspace:*",
+    "@tusche/styles": "workspace:*",
+    "@valibot/to-json-schema": "1.8.0",
+    "valibot": "1.5.0"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.3.1"
   }
 }
