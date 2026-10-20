@@ -214,7 +214,7 @@ TakeScreenshot([screen])`,
         images: 0,
       },
       { tool: 'undo', ok: true, steps: 1 },
-      { tool: 'get_style', ok: false },
+      { tool: 'get_style', ok: false, style: 'missing' },
     ]);
   });
 });

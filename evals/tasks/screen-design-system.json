@@ -1,0 +1,6 @@
+{
+  "id": "screen-design-system",
+  "kind": "screen",
+  "file": "design/system.pen",
+  "prompt": "Set up a small design system in design/system.pen for a fintech app: colour, type and spacing tokens with light and dark themes, and components for buttons (primary, secondary, ghost), a text input and a transaction list row. Show them on a board."
+}

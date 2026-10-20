@@ -1,0 +1,6 @@
+{
+  "id": "screen-landing-saas",
+  "kind": "screen",
+  "file": "design/app.pen",
+  "prompt": "Design a landing page for Shiplog, a changelog and release-notes tool for software teams, in design/app.pen. Hero, how it works, integrations, pricing and footer."
+}

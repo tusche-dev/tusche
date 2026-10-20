@@ -1,0 +1,8 @@
+{
+  "id": "edit-digit-token",
+  "kind": "edit",
+  "file": "design/eval.pen",
+  "fixture": "fixtures/pen/eval/design.pen",
+  "scope": ["variables", "eRmJH"],
+  "prompt": "In design/eval.pen the yellow digits on the dark theme are too cold. Make the dark-mode digit colour #FFC400 everywhere it is used, and update the token swatch on the components board if it shows the value."
+}

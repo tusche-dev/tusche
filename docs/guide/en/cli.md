@@ -31,6 +31,7 @@ Tusche is not on npm yet. Clone the repository, run `bun install`, and use `bun 
 | `TUSCHE_ALLOW_REMOTE_ASSETS=1` | Allow image fills with `http(s)` URLs |
 | `TUSCHE_FONTS_OFFLINE=1` | Never download fonts; use cached and system fonts only |
 | `TUSCHE_CACHE_DIR` | Where downloaded fonts and icons are cached (default `~/.cache/tusche`) |
+| `TUSCHE_CALL_LOG` | `tusche mcp` only: append one JSON line per tool call to this file (tool, result, timing; used by the skill evals) |
 
 ## Example: check designs in CI
 

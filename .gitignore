@@ -14,3 +14,6 @@ coverage/
 # Local experiments and renders
 packages/*/scratch/
 .tusche/
+
+# Eval runs (the baseline lives in evals/baseline)
+evals/runs/

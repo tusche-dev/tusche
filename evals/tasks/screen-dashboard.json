@@ -1,0 +1,6 @@
+{
+  "id": "screen-dashboard",
+  "kind": "screen",
+  "file": "design/app.pen",
+  "prompt": "Design the main analytics dashboard for a B2B email marketing tool in design/app.pen: desktop, sidebar navigation, key metrics for the last 30 days, a campaign performance chart and a table of recent campaigns."
+}

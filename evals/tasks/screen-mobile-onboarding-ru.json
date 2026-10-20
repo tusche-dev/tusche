@@ -1,0 +1,6 @@
+{
+  "id": "screen-mobile-onboarding-ru",
+  "kind": "screen",
+  "file": "design/app.pen",
+  "prompt": "Нарисуй онбординг мобильного приложения для учёта личных финансов в design/app.pen: три экрана для iPhone и экран регистрации. Тексты на русском."
+}

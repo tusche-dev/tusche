@@ -1,0 +1,6 @@
+{
+  "id": "screen-slides",
+  "kind": "screen",
+  "file": "design/deck.pen",
+  "prompt": "Make the first three slides of a seed pitch deck for Tidewater, a startup that predicts flooding for city utilities, in design/deck.pen: title, problem, solution."
+}

@@ -1,0 +1,8 @@
+{
+  "id": "edit-key-radius",
+  "kind": "edit",
+  "file": "design/eval.pen",
+  "fixture": "fixtures/pen/eval/design.pen",
+  "scope": ["eRmJH"],
+  "prompt": "In design/eval.pen, make all calculator keys a bit rounder: add 4 px to the corner radius of the key components, so every screen follows."
+}

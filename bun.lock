@@ -10,6 +10,16 @@
         "typescript": "7.0.2",
       },
     },
+    "evals": {
+      "name": "@tusche/evals",
+      "version": "0.0.0",
+      "dependencies": {
+        "@tusche/exec": "workspace:*",
+        "@tusche/pen-format": "workspace:*",
+        "@tusche/skill": "workspace:*",
+        "valibot": "1.5.0",
+      },
+    },
     "packages/cli": {
       "name": "@tusche/cli",
       "version": "0.0.0",
@@ -207,6 +217,8 @@
     "@tusche/cli": ["@tusche/cli@workspace:packages/cli"],
 
     "@tusche/engine": ["@tusche/engine@workspace:packages/engine"],
+
+    "@tusche/evals": ["@tusche/evals@workspace:evals"],
 
     "@tusche/exec": ["@tusche/exec@workspace:packages/exec"],
 

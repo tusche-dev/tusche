@@ -1,0 +1,6 @@
+{
+  "id": "screen-mobile-tabs",
+  "kind": "screen",
+  "file": "design/app.pen",
+  "prompt": "Design the home screen of a habit-tracking iPhone app in design/app.pen: today's habits with progress, a streak summary and a bottom tab bar with four tabs. Make it playful."
+}

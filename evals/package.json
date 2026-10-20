@@ -1,0 +1,14 @@
+{
+  "name": "@tusche/evals",
+  "version": "0.0.0",
+  "description": "Skill evals: tasks, a claude -p runner, scoring, blind review sheet, baseline comparison.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@tusche/exec": "workspace:*",
+    "@tusche/pen-format": "workspace:*",
+    "@tusche/skill": "workspace:*",
+    "valibot": "1.5.0"
+  }
+}

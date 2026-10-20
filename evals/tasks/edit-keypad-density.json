@@ -1,0 +1,8 @@
+{
+  "id": "edit-keypad-density",
+  "kind": "edit",
+  "file": "design/eval.pen",
+  "fixture": "fixtures/pen/eval/design.pen",
+  "scope": ["BNzAC"],
+  "prompt": "In design/eval.pen, on the first-launch screen (04), make the keypad denser: halve the spacing between keys and between rows, keep the key sizes, and give the freed space to the history tape."
+}

@@ -1,0 +1,6 @@
+{
+  "id": "screen-orders-table",
+  "kind": "screen",
+  "file": "design/app.pen",
+  "prompt": "Make an admin screen for an online furniture store in design/app.pen: a filterable orders table with status, customer, total and date, plus bulk actions. Dark theme, use night-shift."
+}

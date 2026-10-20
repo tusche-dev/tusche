@@ -1,0 +1,6 @@
+{
+  "id": "screen-settings",
+  "kind": "screen",
+  "file": "design/app.pen",
+  "prompt": "Create an account settings screen for a project management web app in design/app.pen: profile, notification preferences, connected integrations and a danger zone to delete the workspace. Use the blueprint style."
+}

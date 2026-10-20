@@ -47,6 +47,10 @@ export interface CallLogEntry {
   images?: number;
   /** `undo` / `redo`: steps asked for. */
   steps?: number;
+  /** `read_skill`: the file read. */
+  path?: string;
+  /** `get_style`: the style asked for. */
+  style?: string;
 }
 
 type CallDetails = Omit<CallLogEntry, 't' | 'tool' | 'ok' | 'ms'>;
@@ -252,7 +256,10 @@ export function createServer(options: ServerOptions): McpServer {
         ),
       ),
     },
-    async ({ path }) => text(await readSkill(path)),
+    async ({ path }, _notes, details) => {
+      details.path = path ?? 'SKILL.md';
+      return text(await readSkill(path));
+    },
   );
 
   tool(
@@ -264,7 +271,8 @@ export function createServer(options: ServerOptions): McpServer {
         v.pipe(v.record(v.string(), v.string()), v.description('e.g. {"accent": "olive"}')),
       ),
     },
-    async ({ name, params }) => {
+    async ({ name, params }, _notes, details) => {
+      if (name !== undefined) details.style = name;
       if (name === undefined) {
         const lines = ['styles:'];
         for (const style of await listStyles()) {

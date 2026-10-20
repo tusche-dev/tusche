@@ -1,0 +1,8 @@
+{
+  "id": "edit-history-row",
+  "kind": "edit",
+  "file": "design/eval.pen",
+  "fixture": "fixtures/pen/eval/design.pen",
+  "scope": ["fnqsI"],
+  "prompt": "In design/eval.pen, on the dark theme screen (02), add one more row at the end of the history tape: expression sqrt(2), result 1.41421. It must look like the existing rows."
+}

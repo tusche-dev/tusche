@@ -1,0 +1,6 @@
+{
+  "id": "screen-pricing",
+  "kind": "screen",
+  "file": "design/app.pen",
+  "prompt": "Create a pricing page for a photo-editing SaaS in design/app.pen with three plans, a monthly/yearly switch, a feature comparison table and an FAQ."
+}
