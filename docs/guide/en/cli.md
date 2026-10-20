@@ -9,13 +9,19 @@ Install globally with `npm i -g @tusche/cli` (or `bun add -g @tusche/cli`), or r
 | Command | What it does |
 |---|---|
 | `tusche mcp` | Start the MCP server on stdio. This is what your agent runs. |
-| `tusche preview <file.pen>` | Open a live preview in the browser that updates on every change. |
-| `tusche render <file.pen> [--node <id>…] [--scale 2] [--out dir/]` | Render top-level frames (or the given nodes) to PNG. |
-| `tusche export <file.pen> --format png\|jpeg\|webp\|pdf\|svg [--node <id>…] --out <path>` | Export nodes to image or PDF files. |
-| `tusche exec <file.pen> <script.js>` | Run an `execute` snippet against a file, without an agent. Useful for scripted edits. |
-| `tusche lint <file.pen>` | Report layout and design problems: clipped content, invisible text, unknown fonts, and more. Exit code 1 on errors. |
-| `tusche validate <file.pen>` | Check the file against the `.pen` schema. |
-| `tusche migrate <file.pen>` | Upgrade an older `.pen` file to the current format version. |
+| `tusche preview <file.pen>` | Open a live preview in the browser that updates on every change. *(Coming next.)* |
+| `tusche render <file.pen> [--node <id>…] [--scale 2] [--max-side px] [--out dir/]` | Render top-level frames (or the given nodes) to PNG, one file per node, `<id>.png`. The default folder is `<name>.renders`. |
+| `tusche export <file.pen> --format png\|jpeg\|webp\|svg\|html-tailwind [--node <id>…] --out <path>` | Export nodes to files. With `--node`, one file with those nodes; without it, one file per top-level frame in the `--out` folder. PDF is not available yet. |
+| `tusche exec <file.pen> <script.js \| -> [--create] [--out dir/]` | Run an `execute` snippet against a file, without an agent (`-` reads it from stdin). The file is saved right away; screenshots go to `--out`. Exit code 1 if the snippet fails. |
+| `tusche lint <file.pen> [--node <id>] [--info] [--format text\|json]` | Report layout and design problems: clipped content, invisible text, unknown fonts, low contrast, tiny text, and more. Exit code 1 on errors. |
+| `tusche validate <file.pen> [--info]` | Check the file against the `.pen` schema. Exit code 1 on errors. |
+| `tusche migrate <file.pen> [--dry-run]` | Upgrade an older `.pen` file to the current format version, keeping its formatting. |
+
+Exit code 2 means a wrong command or option. `tusche --help` lists everything.
+
+## Before the first release
+
+Tusche is not on npm yet. Clone the repository, run `bun install`, and use `bun <repo>/packages/cli/src/index.ts <command>` wherever this page says `tusche`.
 
 ## Environment variables
 
@@ -24,6 +30,7 @@ Install globally with `npm i -g @tusche/cli` (or `bun add -g @tusche/cli`), or r
 | `TUSCHE_ROOT` | Extra directory where `Export` is allowed to write (by default only next to the `.pen` file) |
 | `TUSCHE_ALLOW_REMOTE_ASSETS=1` | Allow image fills with `http(s)` URLs |
 | `TUSCHE_FONTS_OFFLINE=1` | Never download fonts; use cached and system fonts only |
+| `TUSCHE_CACHE_DIR` | Where downloaded fonts and icons are cached (default `~/.cache/tusche`) |
 
 ## Example: check designs in CI
 

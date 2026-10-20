@@ -18,7 +18,7 @@
 | 1.2 `pen-format` ✅ | Типы, схема Valibot, валидатор, канонический writer, миграции 2.6→2.21, фикстуры из реальных файлов | Все фикстуры проходят круговую конвертацию байт в байт; ошибки валидации понятны |
 | 1.3 `pen-bridge` + `engine` ✅ | Проекция в scene graph (фреймы, фигуры, текст, иконки, ref'ы, переменные и темы, заливки, эффекты); layout; границы по id из `.pen`; headless PNG | Эталонные рендеры 5 реальных файлов совпадают с проверенным baseline; shader / script / browser показывают заглушки |
 | 1.4 `exec` ✅ | Песочница QuickJS, весь API, транзакции, edits / editId, карта имён, предупреждения, глобальные переменные | Контрактные тесты для каждой функции и каждого пути ошибки |
-| 1.5 `mcp` + `cli` | Инструменты из [06-agent-api](06-agent-api.md); `tusche mcp`, `exec`, `render`, `lint`, `validate` | `claude mcp add tusche -- tusche mcp` работает; сценарий 1 из PRD проходит |
+| 1.5 `mcp` + `cli` ✅ | Инструменты из [06-agent-api](06-agent-api.md); `tusche mcp`, `exec`, `render`, `lint`, `validate` | `claude mcp add tusche -- tusche mcp` работает; сценарий 1 из PRD проходит |
 | 1.6 Скилл и стили | Скилл v0.1 на основе черновика, 8 архетипов, обвязка для эвалов | Записан baseline эвалов |
 | 1.7 Preview | Веб-страница `tusche preview` с живой перезагрузкой | Работу агента видно в браузере в реальном времени |
 | 1.8 Upstream | PR в OpenPencil: путь к CanvasKit на Windows, обводки 2.x в `@open-pencil/pen`, патчи раскладки из 1.3 (gap при space-between, равные доли fill, перенос по целой ширине) | PR открыты |

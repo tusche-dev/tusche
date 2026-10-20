@@ -32,6 +32,14 @@ claude mcp add tusche -- npx -y @tusche/cli mcp
 
 Если на Windows клиент не находит `npx`, укажите `"command": "cmd", "args": ["/c", "npx", "-y", "@tusche/cli", "mcp"]`.
 
+**До первого релиза** Tusche в npm нет. Склонируйте репозиторий, выполните в нём `bun install` и подключите сервер из клона:
+
+```bash
+claude mcp add tusche -- bun /path/to/tusche/packages/cli/src/index.ts mcp
+```
+
+Сервер работает в папке, где запущен агент, поэтому `design/app.pen` появится в вашем проекте.
+
 ## 2. Попросите сделать дизайн
 
 Откройте агента в папке проекта и напишите:

@@ -4,18 +4,21 @@
 
 ## 1. Инструменты MCP
 
-Транспорт: stdio (фаза 1). Имя сервера: `tusche`. Каждый инструмент принимает необязательный `filePath`; если он не указан, используется активный документ.
+Транспорт: stdio (фаза 1). Имя сервера: `tusche`. Каждый инструмент принимает необязательный `filePath`; если он не указан, используется активный документ — последний открытый или использованный. Относительные пути считаются от рабочей папки процесса. Перед каждым инструментом файл сверяется с диском, запись отложена на 300 мс ([ADR-009](adr/009-mcp-sessions.md)). Описания инструментов и ответы — на английском. Реализация — `@tusche/mcp` (этап 1.5).
 
 | Инструмент | Вход | Выход |
 |---|---|---|
 | `get_app_state` | — | Активный документ, открытые документы, версии, выделение (фаза 2), несохранённые изменения, конфликты, короткая подсказка «с чего начать» |
 | `read_skill` | `path?` | `SKILL.md` или файл-гайд, на который он ссылается (`execute.md`, `guide/web-app.md`, …) |
-| `get_style` | `name?`, `params?` | Без аргументов — список архетипов. С `name` — стиль или список его обязательных параметров |
-| `open_document` | `filePath`, `create?` | Открывает или создаёт `.pen`; возвращает сводку: фреймы верхнего уровня, компоненты, переменные |
-| `save_document` | `filePath?` | Принудительное сохранение (обычно файл сохраняется сам после каждого успешного `execute`) |
-| `execute` | `filePath`, `input` **или** `editId` + `edits[]` | См. ниже |
-| `render` | `nodeIds[]`, `scale?` | PNG-картинки — для людей и агентов, которым нужна картинка без запуска JS |
-| `lint` (could) | `nodeId?` | Замечания линтера OpenPencil, привязанные к id в `.pen` |
+| `get_style` | `name?`, `params?` | Без аргументов — список архетипов с вариантами параметров. С `name` — стиль в JSON с применёнными параметрами (для остальных — значения по умолчанию) и payload для `SetVariables` |
+| `open_document` | `filePath`, `create?`, `reload?` | Открывает или создаёт `.pen` и делает его активным; возвращает сводку: ноды верхнего уровня (id, имя, тип, размер), компоненты, переменные, темы. `reload: true` отбрасывает несохранённое и перечитывает файл |
+| `save_document` | `filePath?` | Записывает сейчас, в том числе поверх файла, изменённого на диске (так разрешается конфликт). Обычно файл сохраняется сам через 300 мс после `execute` |
+| `execute` | `filePath?`, `input` **или** `editId` + `edits[]` | См. ниже. Упавший сниппет — ответ с `isError: true` |
+| `render` | `nodeIds[]` (до 6), `scale?` | PNG-картинки без запуска JS, длинная сторона до 1600 px. Неизвестный id — ошибка |
+| `lint` | `nodeId?`, `info?` | Весь документ или поддерево: ошибки схемы, проверки из §3 по всем нодам, правила линтера OpenPencil (пресет `recommended`, коды `op/<правило>`). Сначала ошибки; `info: true` добавляет стилевые советы |
+| `undo` / `redo` | `steps?` | Шаг — один `execute`, изменивший документ (вместе с глобальными переменными); глубина 50. Новый `execute` очищает redo |
+
+Ошибки самих инструментов (нет открытого документа, нет файла, конфликт с диском, неизвестный id) приходят как `isError: true` с текстом `error: …` и строкой `hint: …`. Если файл изменился на диске и был перечитан, ответ начинается со строки `[reloaded] …`.
 
 В фазе 1 **нет** `browser` и `Generate` (см. roadmap).
 
@@ -145,23 +148,26 @@ interface Ctx {
 | `id-ignored` | Во входных данных указан `id` |
 | `unsupported-render` | Нода или заливка пока не рендерится (shader, script, browser); в файле сохраняется |
 
-Кроме кодов каталога ответ может содержать предупреждения валидатора и проекции (`unknown-variable`, `unknown-ref`, `unknown-property`, `missing-asset`, `unknown-icon`) и служебные (`global-not-saved`, `save-failed`, `export-failed`, `empty-screenshot`). Все проверки идут только по нодам, которые вызов создал или изменил. Полностью показываются первые 20 предупреждений, остальные считаются.
+Кроме кодов каталога ответ может содержать предупреждения валидатора и проекции (`unknown-variable`, `unknown-ref`, `unknown-property`, `missing-asset`, `unknown-icon`) и служебные (`global-not-saved`, `save-failed`, `export-failed`, `empty-screenshot`). `lint` прогоняет те же проверки по всему документу. Все проверки идут только по нодам, которые вызов создал или изменил. Полностью показываются первые 20 предупреждений, остальные считаются.
 
 ## 4. Формат архетипа для `get_style`
 
 ```jsonc
 {
-  "name": "Quiet Editorial",
+  "name": "quiet-editorial",
+  "title": "Quiet Editorial",
   "summary": "Serif display + grotesk body, generous whitespace, one accent",
-  "params": { "accent": ["terracotta", "ink-blue", "olive"] },   // optional
+  "params": { "accent": { "default": "terracotta",                // optional
+    "options": { "terracotta": "#B4532F", "ink-blue": "#2C4A7A", "olive": "#5F6B2E" } } },
   "fonts": { "display": "Fraunces", "body": "Inter" },
   "palette": { "bg": "#F7F4EE", "text": "#1B1A17", "muted": "#6B675F", "accent": "$param.accent" },
   "scale": { "type": [14, 16, 20, 28, 40, 64], "space": [4, 8, 12, 16, 24, 40, 64, 96], "radius": [0, 4, 8] },
   "imagery": "Warm natural-light photography; no 3D renders",
-  "rules": ["Left-aligned headlines", "No drop shadows", "Max 2 font weights per screen"],
-  "variables": { /* ready-to-pass SetVariables payload */ }
+  "rules": ["Left-aligned headlines", "No drop shadows", "Max 2 font weights per screen"]
 }
 ```
+
+Файл архетипа — `packages/styles/archetypes/<name>.json`, схема проверяется Valibot. `get_style` с именем возвращает архетип с подставленными параметрами и готовым `variables` для `SetVariables`: `color-<слот палитры>`, `font-display` / `font-body`, `text-N`, `space-N`, `radius-N` (N — шаг шкалы с единицы).
 
 Архетипы — собственные, придуманы для Tusche и лежат в `@tusche/styles` в виде JSON. Вклад приветствуется.
 
