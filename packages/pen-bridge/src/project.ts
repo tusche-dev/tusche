@@ -221,6 +221,13 @@ export class PenProjection {
 
   // --- Emission ---------------------------------------------------------------
 
+  /**
+   * Nesting of disabled nodes being emitted. They are projected hidden rather than
+   * skipped: layout leaves them out, the renderer skips them, and they still have a
+   * size to read (as in pen.dev).
+   */
+  private hidden = 0;
+
   private create(
     path: string,
     type: NodeType,
@@ -228,7 +235,8 @@ export class PenProjection {
     fields: Partial<SceneNode>,
   ): SceneNode {
     this.stats.sceneNodes++;
-    return this.graph.createNodeWithId(path, type, parent.id, fields);
+    const own = this.hidden > 0 ? { ...fields, visible: false } : fields;
+    return this.graph.createNodeWithId(path, type, parent.id, own);
   }
 
   private childPath(child: PenObject, parent: Parent): string {
@@ -245,8 +253,23 @@ export class PenProjection {
   ): void {
     const theme = themeAt(inherited, node.theme);
     const scope = new Scope(path, theme, this.resolver, this.warnings);
-    if (!scope.bool(node.enabled, true)) return;
+    const disabled = !scope.bool(node.enabled, true);
+    if (disabled) this.hidden++;
+    try {
+      this.emitOwn(node, path, parent, inherited, depth, scope);
+    } finally {
+      if (disabled) this.hidden--;
+    }
+  }
 
+  private emitOwn(
+    node: PenObject,
+    path: string,
+    parent: Parent,
+    inherited: ThemeContext,
+    depth: number,
+    scope: Scope,
+  ): void {
     if (node.type === 'ref') {
       if (depth >= MAX_INSTANCE_DEPTH) {
         scope.warn('depth-limit', 'Instances are nested too deeply');
@@ -278,8 +301,24 @@ export class PenProjection {
   ): void {
     const theme = themeAt(inherited, node.theme);
     const scope = new Scope(path, theme, this.resolver, this.warnings);
-    if (!scope.bool(node.enabled, true)) return;
+    const disabled = !scope.bool(node.enabled, true);
+    if (disabled) this.hidden++;
+    try {
+      this.emitByType(node, path, parent, inherited, depth, prefix, scope);
+    } finally {
+      if (disabled) this.hidden--;
+    }
+  }
 
+  private emitByType(
+    node: PenObject,
+    path: string,
+    parent: Parent,
+    inherited: ThemeContext,
+    depth: number,
+    prefix: string | undefined,
+    scope: Scope,
+  ): void {
     switch (node.type) {
       case 'frame':
         this.frame(node, scope, parent, depth, prefix);

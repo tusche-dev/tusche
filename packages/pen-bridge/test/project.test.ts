@@ -98,7 +98,7 @@ describe('frames and layout', () => {
     expect(p.warnings.map((w) => w.code)).toContain('circular-size');
   });
 
-  test('disabled nodes are not projected', () => {
+  test('disabled nodes are projected hidden: no layout, no render, a size to read', () => {
     const p = project([
       {
         type: 'frame',
@@ -109,7 +109,9 @@ describe('frames and layout', () => {
         ],
       },
     ]);
-    expect(p.node('f')?.childIds).toEqual(['on']);
+    expect(p.node('f')?.childIds).toEqual(['on', 'off']);
+    expect(p.node('on')?.visible).toBe(true);
+    expect(p.node('off')).toMatchObject({ visible: false, width: 1, height: 1 });
   });
 });
 
@@ -376,7 +378,7 @@ describe('instances', () => {
     ]);
     expect(p.node('star/caption')).toMatchObject({ text: 'Icon' });
     expect(p.node('star/caption')?.fills[0]?.color).toMatchObject({ r: 0, g: 0, b: 0 });
-    expect(p.node('hidden/body')).toBeUndefined();
+    expect(p.node('hidden/body')?.visible).toBe(false);
     expect(p.node('custom/actions')?.childIds).toEqual(['custom/only']);
   });
 

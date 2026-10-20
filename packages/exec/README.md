@@ -35,12 +35,12 @@ The API and the response format are described in [06-agent-api](../../docs/dev/0
 
 | Function | Success | Error paths |
 |---|---|---|
-| Insert | ids and instance paths, names, into the document, into a frame inside an instance | unknown parent, `#` path, non-string path, leaf parent, instance as parent, layout property on a non-frame, schema error, no `type`, non-object node and child, non-finite number, function value |
+| Insert | ids, names (roots only), into the document | unknown parent, `#` path, non-string path, leaf parent, instance as parent, a component node inside an instance, layout property on a non-frame, schema error, no `type`, non-object node and child, non-finite number, function value |
 | Copy | plain copy with overrides and `descendants`, component → instance | unknown source or parent, the document, override of `id`/`type`/`children`, non-object overrides or `descendants`, unknown descendant, schema error |
-| Update | properties, `null` deletes, overrides inside instances | unknown path (also inside an instance), the document, `id`/`type`/`ref`/`children`, non-object props, schema error (also of an override) |
-| Replace | keeps the id, replacement inside an instance, in place | unknown path, the document, no `type`, schema error |
+| Update | properties, `null` deletes, overrides inside instances, `children` (also of a component node inside an instance) | unknown path (also inside an instance), the document, `id`/`type`/`ref`, `children` that is not a list, non-object props, schema error (also of an override) |
+| Replace | new id, replacement inside an instance addressed by its id, replacing a replacement | unknown path, the document, no `type`, schema error, component with instances |
 | Move | other parent with index, same parent | unknown path or parent, the document, into itself or a descendant, out of an instance, into an instance, negative / fractional / too large index |
-| Delete | node, added child of an instance, component without instances | unknown path, the document, component child in an instance, replacement, component with instances |
+| Delete | node, added child of an instance, component without instances | unknown path, the document, component child in an instance, replacement, the old path of a replaced node, component with instances |
 | SetVariables | merge, `null` deletes, replace, new theme values | non-object, unknown type, no value, `$` in the name |
 | Get | depth and stubs, instances (ref / expanded), resolveVariables, path geometry, the document, visitors with depth / index / parentCtx / skipChildren / bounds / problems | unknown path (with and without a visitor), `#` path, no arguments, non-string path, bad depth, an exception in the visitor |
 | GetVariables | variables and themes | — |
