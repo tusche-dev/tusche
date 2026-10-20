@@ -1,0 +1,19 @@
+{
+  "name": "@tusche/exec",
+  "version": "0.0.0",
+  "description": "The execute engine: QuickJS sandbox, host API, transactions (phase 1.4).",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tusche-dev/tusche.git",
+    "directory": "packages/exec"
+  }
+}

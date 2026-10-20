@@ -2,7 +2,7 @@
 
 **English** · [Русский](CONTRIBUTING.ru.md)
 
-Thanks for your interest! Tusche is in **phase 0 (specification)**. Right now the most valuable contributions are:
+Thanks for your interest! Tusche is in **phase 1 (first usable version)**. Right now the most valuable contributions are:
 
 1. **Share `.pen` test files** that you have the right to share. They become golden files for the round-trip and render tests.
 2. **Fix upstream OpenPencil issues** that we depend on. See "Risks" in [docs/dev/02-research.md](docs/dev/02-research.md).
@@ -20,7 +20,7 @@ Thanks for your interest! Tusche is in **phase 0 (specification)**. Right now th
 - **Decisions go to ADRs** in `docs/dev/adr/`.
 - **Conventional commits:** `feat:`, `fix:`, `docs:`, `chore:` …
 
-## Development (from phase 1)
+## Development
 
 ```bash
 bun install

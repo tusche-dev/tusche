@@ -3,3 +3,4 @@
 *.jpg binary
 *.webp binary
 *.wasm binary
+*.pen -text

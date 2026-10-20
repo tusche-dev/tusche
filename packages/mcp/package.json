@@ -1,0 +1,19 @@
+{
+  "name": "@tusche/mcp",
+  "version": "0.0.0",
+  "description": "MCP server for Tusche (phase 1.5).",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tusche-dev/tusche.git",
+    "directory": "packages/mcp"
+  }
+}

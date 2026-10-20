@@ -13,7 +13,7 @@
 
 ## Status
 
-🚧 **Not released yet.** The project is in phase 0: research and specification. The first usable version (phase 1: MCP server + CLI + live preview) is next. See the [roadmap](docs/dev/08-roadmap.md) (in Russian).
+🚧 **Not released yet.** The project is in phase 1: building the first usable version (MCP server + CLI + live preview). The `.pen` format package comes first. See the [roadmap](docs/dev/08-roadmap.md) (in Russian).
 
 ## Quick start (phase 1 preview)
 

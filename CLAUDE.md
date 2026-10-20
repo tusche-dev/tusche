@@ -6,7 +6,7 @@
 
 Tusche — открытый дизайн-холст для ИИ-агентов. Формат `.pen` — родной, движок — OpenPencil, сверху — API `execute` в духе pen.dev. Начни с [docs/dev/README.md](docs/dev/README.md), затем прочитай [04-architecture](docs/dev/04-architecture.md) и [06-agent-api](docs/dev/06-agent-api.md).
 
-**Текущая фаза — 0 (спецификация).** Продуктового кода пока нет. Не создавай пакеты, если задача прямо этого не требует.
+**Текущая фаза — 1 (MCP-компаньон).** Пакеты лежат в `packages/`; наполнен `@tusche/pen-format`, остальные пока заготовки. Проверка — `bun run check` (типы, Biome, `bun test`).
 
 ## Языки документации
 
@@ -29,6 +29,6 @@ Tusche — открытый дизайн-холст для ИИ-агентов. 
 ```
 docs/dev/            01-vision … 08-roadmap, adr/, drafts/SKILL.md   (RU)
 docs/guide/en|ru/    getting-started, cli, faq                       (EN + RU)
-packages/            (фаза 1) pen-format, pen-bridge, engine, exec, mcp, skill, styles, cli
+packages/            pen-format, pen-bridge, engine, exec, mcp, skill, styles, cli
 apps/                (фаза 1) preview, (фаза 2) desktop
 ```
