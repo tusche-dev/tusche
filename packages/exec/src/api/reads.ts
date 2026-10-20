@@ -65,6 +65,8 @@ export class Reader {
   private resolver: VariableResolver | undefined;
   /** The scene was updated during the call: it has to go back on rollback. */
   sceneChanged = false;
+  /** Font faces the layouts of this call could not find. */
+  readonly missingFonts = new Set<string>();
 
   constructor(
     readonly tx: Transaction,
@@ -275,8 +277,30 @@ export class Reader {
         await scene.update(this.tx.doc, changes);
       }
       const id = scene.projection.rootOf(root);
-      if (id !== undefined) await scene.layout([id]);
+      if (id !== undefined) await this.layout([id]);
     })();
+  }
+
+  /** Lays out top-level nodes of the scene, remembering missing fonts. */
+  async layout(roots: Iterable<string>): Promise<void> {
+    const report = await this.requireScene('layout').layout(roots);
+    for (const font of report.missingFonts) this.missingFonts.add(font);
+  }
+
+  /** Brings the scene to the transaction's document (after the commit, before rendering). */
+  async syncScene(): Promise<void> {
+    const changes = this.tx.takeSceneChanges();
+    if (changes === undefined) return;
+    this.sceneChanged = true;
+    await this.requireScene('sync').update(this.tx.doc, changes);
+  }
+
+  /** Parent of a node of the tree; `undefined` for top-level nodes and nodes inside instances. */
+  parent(path: string): PenExtra | undefined {
+    if (path.includes('/')) return undefined;
+    const node = this.tx.index.get(path);
+    const chain = node ? chainTo(this.tx.doc, node) : undefined;
+    return chain && chain.length > 2 ? chain.at(-2) : undefined;
   }
 
   /** `ctx.bounds`: resolved box in the parent's space. */
