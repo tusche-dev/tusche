@@ -455,6 +455,16 @@ describe('the real file (fixtures/pen/eval/design.pen)', () => {
     expect(readFileSync(path)).toEqual(readFileSync(FIXTURE));
   });
 
+  test('a copy of a board names only the copy and keeps old problems of the source quiet', async () => {
+    const session = await createExecutor({ engine }).open(copyFixture());
+    const result = await session.execute({
+      input:
+        'const c = Copy("eRmJH", document, {x: 0, y: 8000, name: "Board copy"}); Print(Get(c, {depth: 1}).children.filter((n) => n.reusable).length)',
+    });
+    expect(result).toMatchObject({ ok: true, prints: ['0'], warnings: [] });
+    expect(result.names.map(([name]) => name)).toEqual(['Board copy']);
+  });
+
   test('an edit rewrites the file in its own style and changes only what was edited', async () => {
     const path = copyFixture();
     const session = await createExecutor({ engine }).open(path);

@@ -119,7 +119,7 @@ interface Prepared {
 function assignIds(
   tx: Transaction,
   input: PenExtra,
-  options: { fn: string; warn: boolean; keepRootId?: string; path?: string },
+  options: { fn: string; warn: boolean; keepRootId?: string; path?: string; names?: boolean },
 ): Prepared {
   const ids = new Map<string, string>();
   let ignored = 0;
@@ -145,7 +145,8 @@ function assignIds(
       props.descendants = descendants;
     }
     const node = createNode(props as PenNode);
-    if (typeof node.name === 'string') tx.names.push([node.name, node.id]);
+    if (options.names !== false && typeof node.name === 'string')
+      tx.names.push([node.name, node.id]);
     return node;
   };
   const node = visit(input, true);
@@ -402,17 +403,21 @@ export function copy(
       Object.assign(instance, nullsToUndefined(props));
       if (descendants !== undefined) instance.descendants = descendants;
       node = createNode(instance as unknown as PenNode);
-      if (typeof node.name === 'string') tx.names.push([node.name, node.id]);
     } else {
       const clone = stripReusable(structuredClone(source.node) as PenExtra);
-      const prepared = assignIds(tx, clone, { fn: 'Copy', warn: false });
+      const prepared = assignIds(tx, clone, { fn: 'Copy', warn: false, names: false });
       node = withChanges(prepared.node, nullsToUndefined(props));
       if (descendants !== undefined)
         node = applyCopyDescendants(node, prepared.ids, descendants, tx);
     }
-    checkNode(tx, node, 'Copy', node.id);
+    // The copied content was already in the document: only what the call set is checked,
+    // and only the copy itself is named and watched for warnings.
+    const keys = new Set(Object.keys(props));
+    if (descendants !== undefined) keys.add('children');
+    check(tx, validateNode(tx.doc, node, { index: tx.index, path: '$' }), 'Copy', node.id, keys);
+    if (typeof node.name === 'string') tx.names.push([node.name, node.id]);
     const path = place(tx, parent, node, 'Copy');
-    touchSubtree(tx, node, path);
+    tx.touched.add(path);
     tx.counts.inserted++;
     return path;
   });
