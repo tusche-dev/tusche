@@ -193,3 +193,28 @@ test('gap is kept with space_between, as in CSS', async () => {
   expect(await scene.bounds('grow')).toMatchObject({ width: 170 });
   expect(await scene.bounds('icon')).toMatchObject({ x: 182 });
 });
+
+test('fill_container siblings share the space equally, padded or not', async () => {
+  const scene = await engine.open(
+    doc([
+      {
+        type: 'frame',
+        id: 'row',
+        width: 1472,
+        gap: 20,
+        children: [
+          { type: 'frame', id: 'plain', width: 'fill_container', height: 10 },
+          {
+            type: 'frame',
+            id: 'padded',
+            width: 'fill_container',
+            padding: [26, 28],
+            layout: 'vertical',
+          },
+        ],
+      },
+    ]),
+  );
+  expect((await scene.bounds('plain'))?.width).toBe(726);
+  expect((await scene.bounds('padded'))?.width).toBe(726);
+});

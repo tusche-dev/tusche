@@ -1,3 +1,21 @@
+diff --git a/dist/canvas/text/paragraph/index.js b/dist/canvas/text/paragraph/index.js
+index 1320e1dfc75a80bc7655057ae9d660cd5ccdce47..5dcd56de712d536fb14503520d0dfca5c9519100 100644
+--- a/dist/canvas/text/paragraph/index.js
++++ b/dist/canvas/text/paragraph/index.js
+@@ -8,9 +8,11 @@ import { resolveRGBAForPreview } from "@open-pencil/scene-graph/color";
+ import { resolveNodeTextDirection } from "@open-pencil/scene-graph/text-direction";
+ //#region src/canvas/text/paragraph/index.ts
+ function resolveParagraphLayoutWidth(node, maxWidth) {
+-	if (maxWidth !== void 0) return maxWidth;
++	// Tusche: wrap at whole pixels. Shaping differs from pen.dev by under a pixel, and a line
++	// that is 0.1 px wider than a 227.25 px box must not wrap there and not here.
++	if (maxWidth !== void 0) return Math.ceil(maxWidth - 1e-6);
+ 	if (node.textAutoResize === "WIDTH_AND_HEIGHT") return 1e6;
+-	return node.width || 1e6;
++	return Math.ceil((node.width || 1e6) - 1e-6);
+ }
+ function buildTruncateOpts(node, baseFontSize) {
+ 	if (node.textTruncation !== "ENDING") return {};
 diff --git a/dist/canvaskit.js b/dist/canvaskit.js
 index e361cd132ff4213456194a125256ce2ac1b11bc4..d1688d3664ae07535372b49e60b3e4223816a9f0 100644
 --- a/dist/canvaskit.js
@@ -32,10 +50,18 @@ index 45374fd18849e21b4ca5d694fb1b16467df66832..dd54bf1acc3158e27ab8fbf9d830734a
  }
  async function getRenderer() {
 diff --git a/dist/layout.js b/dist/layout.js
-index 30e2da793b7f5f6885e593de18e7a93e46bdec2e..8470daa2dc2bc2f49632908b248722782e1c4917 100644
+index 30e2da793b7f5f6885e593de18e7a93e46bdec2e..9a2a775f25155dc2ff62f219fa0c886814a526b8 100644
 --- a/dist/layout.js
 +++ b/dist/layout.js
-@@ -109,7 +109,8 @@ function configureFlexContainer(yogaNode, node, direction) {
+@@ -95,6 +95,7 @@ function buildYogaTree(graph, frame, inheritedDirection) {
+ 		else configureChildAsLeaf(yogaChild, child, frame, graph);
+ 		root.insertChild(yogaChild, root.getChildCount());
+ 	}
++	tuscheEqualFill(frame, children, root);
+ 	return root;
+ }
+ function configureFlexContainer(yogaNode, node, direction) {
+@@ -109,7 +110,8 @@ function configureFlexContainer(yogaNode, node, direction) {
  	yogaNode.setPadding(Edge.Right, node.paddingRight);
  	yogaNode.setPadding(Edge.Bottom, node.paddingBottom);
  	yogaNode.setPadding(Edge.Left, node.paddingLeft);
@@ -45,3 +71,29 @@ index 30e2da793b7f5f6885e593de18e7a93e46bdec2e..8470daa2dc2bc2f49632908b24872278
  	yogaNode.setGap(Gutter.Column, node.layoutMode === "HORIZONTAL" ? primaryGap : node.counterAxisSpacing);
  	yogaNode.setGap(Gutter.Row, node.layoutMode === "HORIZONTAL" ? node.counterAxisSpacing : primaryGap);
  	applyMinMaxConstraints(yogaNode, node);
+@@ -213,6 +215,25 @@ function configureChildAsAutoLayout(yogaChild, child, parent, graph, inheritedDi
+ 		else configureChildAsLeaf(yogaGC, gc, child, graph);
+ 		yogaChild.insertChild(yogaGC, yogaChild.getChildCount());
+ 	}
++	tuscheEqualFill(child, grandchildren, yogaChild);
++}
++/**
++* Tusche: fill children share the free space equally (pen.dev, Figma). Yoga keeps a zero
++* flex basis at least as large as the padding, so a padded child got more; a common basis of
++* the largest padding makes the shares equal again. Only for frames marked by @tusche/pen-bridge.
++*/
++function tuscheEqualFill(frame, children, yogaNode) {
++	if (!frame.pluginData?.some((entry) => entry.pluginId === "tusche" && entry.key === "equalFill")) return;
++	const row = frame.layoutMode === "HORIZONTAL";
++	let basis = 0;
++	const growing = [];
++	children.forEach((child, index) => {
++		if (child.layoutPositioning === "ABSOLUTE" || !child.visible || !(child.layoutGrow > 0)) return;
++		const padding = row ? child.paddingLeft + child.paddingRight : child.paddingTop + child.paddingBottom;
++		basis = Math.max(basis, padding || 0);
++		growing.push(yogaNode.getChild(index));
++	});
++	if (growing.length > 1 && basis > 0) for (const node of growing) node.setFlexBasis(basis);
+ }
+ function derivedGrowingLeafFitsParent(graph, parent, child, axis) {
+ 	if (child.type !== "TEXT" || child.layoutGrow <= 0 || child.derivedLayout?.[axis] === void 0) return false;

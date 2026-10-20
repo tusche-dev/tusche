@@ -485,6 +485,17 @@ export class PenProjection {
         ];
       }
       fields.counterAxisAlign = ALIGN[scope.str(node.alignItems) ?? 'start'] ?? 'MIN';
+      const mainKey = layout === 'HORIZONTAL' ? 'width' : 'height';
+      const filling = flowChildren.filter((c) =>
+        isFill(parseSize(this.childSize(c, mainKey), scope)),
+      );
+      if (filling.length > 1) {
+        // Fill children share the free space equally, padded or not (see the layout patch).
+        fields.pluginData = [
+          ...(fields.pluginData ?? []),
+          { pluginId: PLUGIN_ID, key: 'equalFill', value: '1' },
+        ];
+      }
       fields.strokesIncludedInLayout = scope.bool(node.layoutIncludeStroke, false);
     }
     // OpenPencil draws a frame's stroke under its children; pen.dev (like Figma) draws it on
