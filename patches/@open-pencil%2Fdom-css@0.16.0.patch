@@ -1,0 +1,50 @@
+diff --git a/package.json b/package.json
+index d0c77de3879e09ea82980d8234c37faae1980542..215b8ba1973a974590a5cdd12f47d38d10afed95 100644
+--- a/package.json
++++ b/package.json
+@@ -27,37 +27,31 @@
+   "exports": {
+     ".": {
+       "types": "./dist/index.d.ts",
+-      "bun": "./src/index.ts",
+       "import": "./dist/index.js",
+       "default": "./dist/index.js"
+     },
+     "./browser": {
+       "types": "./dist/browser.d.ts",
+-      "bun": "./src/browser.ts",
+       "import": "./dist/browser.js",
+       "default": "./dist/browser.js"
+     },
+     "./export": {
+       "types": "./dist/export.d.ts",
+-      "bun": "./src/export/index.ts",
+       "import": "./dist/export.js",
+       "default": "./dist/export.js"
+     },
+     "./scene-graph": {
+       "types": "./dist/scene-graph.d.ts",
+-      "bun": "./src/import/scene-graph.ts",
+       "import": "./dist/scene-graph.js",
+       "default": "./dist/scene-graph.js"
+     },
+     "./jsx-runtime": {
+       "types": "./dist/jsx-runtime.d.ts",
+-      "bun": "./src/import/jsx/runtime.ts",
+       "import": "./dist/jsx-runtime.js",
+       "default": "./dist/jsx-runtime.js"
+     },
+     "./jsx-dev-runtime": {
+       "types": "./dist/jsx-dev-runtime.d.ts",
+-      "bun": "./src/import/jsx/dev-runtime.ts",
+       "import": "./dist/jsx-dev-runtime.js",
+       "default": "./dist/jsx-dev-runtime.js"
+     }
+@@ -65,7 +59,6 @@
+   "imports": {
+     "#dom-css/*": {
+       "types": "./src/*",
+-      "bun": "./src/*",
+       "default": "./dist/*"
+     },
+     "#dom-css-tests/*": "./tests/*.ts"

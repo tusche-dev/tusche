@@ -97,3 +97,19 @@ index 30e2da793b7f5f6885e593de18e7a93e46bdec2e..9a2a775f25155dc2ff62f219fa0c8868
  }
  function derivedGrowingLeafFitsParent(graph, parent, child, axis) {
  	if (child.type !== "TEXT" || child.layoutGrow <= 0 || child.derivedLayout?.[axis] === void 0) return false;
+diff --git a/package.json b/package.json
+index 87eb9bd19d54072afccbc17f954aa575e2fa57ae..1ded9ffd968dd7cf3c7ee9bded39ba8b0432a969 100644
+--- a/package.json
++++ b/package.json
+@@ -162,6 +162,11 @@
+       "import": "./dist/io/formats/design-tokens/index.js",
+       "default": "./dist/io/formats/design-tokens/index.js"
+     },
++    "./io/formats/html": {
++      "types": "./dist/io/formats/html/index.d.ts",
++      "import": "./dist/io/formats/html/index.js",
++      "default": "./dist/io/formats/html/index.js"
++    },
+     "./io/formats/svg": {
+       "types": "./dist/io/formats/svg/index.d.ts",
+       "import": "./dist/io/formats/svg/index.js",

@@ -235,3 +235,149 @@ test('auto-growing text never wraps, even when it overflows', async () => {
   expect(t?.width).toBeGreaterThan(120);
   expect(t?.height).toBeLessThan(25);
 });
+
+describe('new versions of the document', () => {
+  const card = (content: string, extra: unknown[] = []) => ({
+    type: 'frame',
+    id: 'card',
+    layout: 'vertical',
+    padding: 8,
+    children: [{ type: 'text', id: 'label', content, fontSize: 16, fill: '#000000' }, ...extra],
+  });
+  const other = { type: 'rectangle', id: 'other', x: 400, width: 10, height: 10 };
+
+  test('update re-projects only the changed top-level nodes', async () => {
+    const scene = await engine.open(doc([card('Hi'), other]));
+    await scene.layout();
+    const short = await scene.bounds('label');
+    const before = scene.projection.node('other');
+
+    const next = doc([card('A much longer label'), other]);
+    await scene.update(next, ['card']);
+    expect(scene.doc).toBe(next);
+    expect(scene.isLaidOut('card')).toBe(false);
+    expect(scene.isLaidOut('other')).toBe(true);
+    expect((await scene.bounds('label'))?.width).toBeGreaterThan((short?.width ?? 0) * 3);
+    expect(scene.projection.node('other')).toBe(before);
+  });
+
+  test('added and removed top-level nodes', async () => {
+    const scene = await engine.open(doc([card('Hi')]));
+    await scene.layout();
+    await scene.update(doc([other]), ['card', 'other']);
+    expect(await scene.bounds('card')).toBeUndefined();
+    expect(await scene.bounds('other')).toMatchObject({ x: 400, width: 10 });
+  });
+
+  test("'all' re-projects everything (variables changed)", async () => {
+    const withVar = (width: number) =>
+      ({
+        version: '2.21',
+        variables: { w: { type: 'number', value: width } },
+        children: [{ type: 'rectangle', id: 'r', width: '$w', height: 10 }],
+      }) as PenDocument;
+    const scene = await engine.open(withVar(20));
+    expect((await scene.bounds('r'))?.width).toBe(20);
+    await scene.update(withVar(50), 'all');
+    expect((await scene.bounds('r'))?.width).toBe(50);
+  });
+
+  test('new characters are added to the font subsets', async () => {
+    const scene = await engine.open(doc([card('abc')]));
+    await scene.layout();
+    await scene.update(doc([card('Привет, мир')]), ['card']);
+    expect((await scene.bounds('label'))?.width).toBeGreaterThan(40);
+  });
+});
+
+describe('clipping', () => {
+  const box = (children: unknown[], clip = true) =>
+    doc([{ type: 'frame', id: 'box', width: 100, height: 100, layout: 'none', clip, children }]);
+  const rect = (id: string, x: number, y: number) => ({
+    type: 'rectangle',
+    id,
+    x,
+    y,
+    width: 40,
+    height: 40,
+    fill: '#FF0000',
+  });
+
+  test('inside, partially and fully outside a clipping frame', async () => {
+    const scene = await engine.open(
+      box([rect('inside', 10, 10), rect('edge', 80, 10), rect('out', 200, 10)]),
+    );
+    expect(await scene.clipping('inside')).toBeUndefined();
+    expect(await scene.clipping('edge')).toEqual({ state: 'partially clipped', by: 'box' });
+    expect(await scene.clipping('out')).toEqual({ state: 'fully clipped', by: 'box' });
+  });
+
+  test('without clip nothing is clipped; unknown paths are undefined', async () => {
+    const scene = await engine.open(box([rect('out', 200, 10)], false));
+    expect(await scene.clipping('out')).toBeUndefined();
+    expect(await scene.clipping('nope')).toBeUndefined();
+  });
+
+  test('a nested node is clipped by a clipping ancestor further up', async () => {
+    const scene = await engine.open(
+      box([
+        {
+          type: 'frame',
+          id: 'inner',
+          x: 70,
+          y: 0,
+          layout: 'none',
+          width: 60,
+          height: 60,
+          children: [rect('deep', 0, 0)],
+        },
+      ]),
+    );
+    expect(scene.isLaidOut('box')).toBe(false);
+    expect(await scene.clipping('deep')).toEqual({ state: 'partially clipped', by: 'box' });
+    expect(scene.isLaidOut('box')).toBe(true);
+    expect(scene.clippingSync('deep')).toEqual({ state: 'partially clipped', by: 'box' });
+    expect(scene.boundsSync('deep')).toMatchObject({ x: 0, absolute: { x: 70 } });
+  });
+});
+
+describe('export', () => {
+  const page = doc([
+    {
+      type: 'frame',
+      id: 'page',
+      width: 200,
+      height: 100,
+      fill: '#FFFFFF',
+      children: [{ type: 'text', id: 'hello', content: 'Hello', fontSize: 24, fill: '#000000' }],
+    },
+  ]);
+  const text = (bytes: Uint8Array | undefined) => new TextDecoder().decode(bytes);
+
+  test('raster formats', async () => {
+    const scene = await engine.open(page);
+    const png = await scene.export(['page'], 'png', { scale: 2 });
+    expect([...(png ?? []).slice(0, 8)]).toEqual(PNG_SIGNATURE);
+    expect(pngSize(png as Uint8Array)).toEqual({ width: 400, height: 200 });
+    const jpeg = await scene.export(['page'], 'jpeg');
+    expect([...(jpeg ?? []).slice(0, 2)]).toEqual([0xff, 0xd8]);
+    const webp = await scene.export(['page'], 'webp');
+    expect(text(webp?.slice(0, 4))).toBe('RIFF');
+    expect(text(webp?.slice(8, 12))).toBe('WEBP');
+  });
+
+  test('vector and code formats', async () => {
+    const scene = await engine.open(page);
+    expect(text(await scene.export(['page'], 'svg'))).toContain('<svg');
+    await expect(scene.export(['page'], 'pdf')).rejects.toThrow(/svg or png/);
+    const html = text(await scene.export(['page'], 'html-tailwind'));
+    expect(html).toContain('<html');
+    expect(html).toContain('Hello');
+  });
+
+  test('nothing to export', async () => {
+    const scene = await engine.open(page);
+    expect(await scene.export([], 'png')).toBeUndefined();
+    expect(await scene.export(['nope'], 'svg')).toBeUndefined();
+  });
+});

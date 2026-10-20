@@ -93,22 +93,44 @@ export class PenProjection {
   readonly warnings: ProjectionWarning[] = [];
   readonly stats: ProjectionStats = { sceneNodes: 0, instances: 0, ms: 0 };
 
-  private readonly index: NodeIndex;
-  private readonly resolver: VariableResolver;
-  private readonly rootTheme: ThemeContext;
-  private readonly icons: IconProvider;
+  private current: PenDocument;
+  private index: NodeIndex;
+  private resolver: VariableResolver;
+  private rootTheme: ThemeContext;
+  private icons: IconProvider;
   private readonly images = new Map<string, string | null>();
   /** Top-level node id → id of the page it is projected on (one page per top-level node). */
   private readonly pages = new Map<string, string>();
 
   constructor(
-    readonly doc: PenDocument,
+    doc: PenDocument,
     private readonly options: ProjectOptions = {},
   ) {
+    this.current = doc;
     this.index = indexNodes(doc);
     this.resolver = createVariableResolver(doc);
     this.rootTheme = defaultTheme(doc);
     this.icons = options.icons ?? bundledIcons();
+  }
+
+  /** The document the projection reads. */
+  get doc(): PenDocument {
+    return this.current;
+  }
+
+  /**
+   * Switches to a new version of the document (edits make a new document object).
+   * Projected top-level nodes stay as they are: invalidate the ones that changed.
+   * `options` replaces the asset loader or the icon provider when given.
+   */
+  setDocument(doc: PenDocument, options: ProjectOptions = {}): void {
+    this.current = doc;
+    this.index = indexNodes(doc);
+    this.resolver = createVariableResolver(doc);
+    this.rootTheme = defaultTheme(doc);
+    this.tops = undefined;
+    if (options.icons) this.icons = options.icons;
+    if (options.loadAsset) this.options.loadAsset = options.loadAsset;
   }
 
   /** Ids of the document's top-level nodes, in paint order. */
@@ -119,6 +141,11 @@ export class PenProjection {
   /** Top-level nodes projected so far. */
   get roots(): string[] {
     return this.topLevelIds.filter((id) => this.pages.has(id));
+  }
+
+  /** Every projected top-level node, including ones no longer in the current document. */
+  get projectedRoots(): string[] {
+    return [...this.pages.keys()];
   }
 
   /**
@@ -161,7 +188,9 @@ export class PenProjection {
       const page = this.graph.addPage(node.id);
       this.pages.set(node.id, page.id);
       const parent: Parent = { id: page.id, layout: 'NONE', prefix: undefined };
+      const before = this.warnings.length;
       this.emit(node as PenObject, node.id, parent, this.rootTheme, 0);
+      for (const warning of this.warnings.slice(before)) this.warningRoots.set(warning, node.id);
     }
     this.stats.ms += performance.now() - started;
     return this;
@@ -172,14 +201,18 @@ export class PenProjection {
     const page = this.pages.get(id);
     if (page === undefined) return;
     this.pages.delete(id);
-    this.overlays = this.overlays.filter((o) => this.rootOf(o) !== id);
     this.graph.deleteNode(page);
+    // By what is left in the graph: the node may be gone from the current document.
+    this.overlays = this.overlays.filter((o) => this.graph.getNode(o) !== undefined);
     this.warnings.splice(
       0,
       this.warnings.length,
-      ...this.warnings.filter((w) => w.path !== id && !w.path.startsWith(`${id}/`)),
+      ...this.warnings.filter((w) => this.warningRoots.get(w) !== id),
     );
   }
+
+  /** Top-level node whose projection reported each warning. */
+  private readonly warningRoots = new WeakMap<ProjectionWarning, string>();
 
   /** The scene node of a pen path, if projected. */
   node(path: string): SceneNode | undefined {

@@ -66,29 +66,35 @@ export interface AssetOptions {
   allowRemoteAssets?: boolean | undefined;
 }
 
+export type AssetLoader = (url: string) => Uint8Array | undefined;
+
 /**
  * A synchronous asset loader for the projection: local files are read on demand,
- * remote images are fetched up front (only when allowed).
+ * remote images are fetched up front (only when allowed). With `base`, only remote
+ * images that `base` does not have are fetched, and `base` answers the rest.
  */
 export async function createAssetLoader(
   doc: PenDocument,
   { baseDir, allowRemoteAssets = false }: AssetOptions,
-): Promise<(url: string) => Uint8Array | undefined> {
+  base?: AssetLoader,
+): Promise<AssetLoader> {
   const remote = new Map<string, Uint8Array>();
   if (allowRemoteAssets) {
     await Promise.all(
-      [...imageUrls(doc)].filter(isRemote).map(async (url) => {
-        try {
-          const response = await fetch(url);
-          if (response.ok) remote.set(url, new Uint8Array(await response.arrayBuffer()));
-        } catch {
-          // Reported by the projection as a missing asset.
-        }
-      }),
+      [...imageUrls(doc)]
+        .filter((url) => isRemote(url) && !base?.(url))
+        .map(async (url) => {
+          try {
+            const response = await fetch(url);
+            if (response.ok) remote.set(url, new Uint8Array(await response.arrayBuffer()));
+          } catch {
+            // Reported by the projection as a missing asset.
+          }
+        }),
     );
   }
   return (url) => {
-    if (isRemote(url)) return remote.get(url);
+    if (isRemote(url)) return remote.get(url) ?? base?.(url);
     if (baseDir === undefined) return undefined;
     try {
       return new Uint8Array(readFileSync(resolve(baseDir, decodeURI(url))));
@@ -110,9 +116,11 @@ const ICONIFY_API = 'https://api.iconify.design';
  */
 export async function createIconProvider(
   doc: PenDocument,
-  { cacheDir, allowNetwork }: { cacheDir: string; allowNetwork: boolean },
+  options: { cacheDir: string; allowNetwork: boolean },
+  /** Icons already available; only the ones it does not have are loaded. Default: bundled sets. */
+  base: IconProvider = bundledIcons(),
 ): Promise<IconProvider> {
-  const bundled = bundledIcons();
+  const { cacheDir, allowNetwork } = options;
   const wanted = new Map<string, Set<string>>();
   for (const obj of objects(doc.children)) {
     if (obj.type !== 'icon' || typeof obj.library !== 'string' || typeof obj.icon !== 'string') {
@@ -120,14 +128,14 @@ export async function createIconProvider(
     }
     if (obj.library.startsWith('$') || obj.icon.startsWith('$')) continue;
     const weight = typeof obj.weight === 'number' ? obj.weight : undefined;
-    if (bundled.get(obj.library, obj.icon, weight)) continue;
+    if (base.get(obj.library, obj.icon, weight)) continue;
     const target = iconifyName(obj.library, obj.icon, weight);
     if (!target) continue;
     const names = wanted.get(target.prefix) ?? new Set<string>();
     for (const name of target.names) names.add(name);
     wanted.set(target.prefix, names);
   }
-  if (wanted.size === 0) return bundled;
+  if (wanted.size === 0) return base;
 
   const dir = join(cacheDir, 'icons');
   const sets = new Map<string, IconifyJSON>();
@@ -160,5 +168,5 @@ export async function createIconProvider(
     }
     sets.set(prefix, set);
   }
-  return chainIconProviders(bundled, iconSetProvider(sets));
+  return chainIconProviders(base, iconSetProvider(sets));
 }
