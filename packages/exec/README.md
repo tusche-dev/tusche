@@ -63,7 +63,7 @@ The API and the response format are described in [06-agent-api](../../docs/dev/0
 | Snippet | caught errors undo only their operation | syntax error (line), reference error, thrown value, stack overflow, time, memory, operations limit |
 | edits | fix under the same editId, `all: true`, editId forgotten after success, a new failure gets a new editId | unknown editId, 0 matches, 2 matches, empty list, malformed edit |
 | Globals | JSON values persist | non-JSON values are reported and dropped, a failed call keeps the old values |
-| Warnings | every code: `id-ignored`, `invisible-text`, `ignored-xy`, `clipped`, `zero-size`, `circular-size`, `unknown-font`, `unsupported-render`, `unknown-variable`; none for a clean insert; more than 20 are counted | — |
+| Warnings | every code: `id-ignored`, `invisible-text`, `ignored-xy`, `clipped`, `zero-size`, `circular-size`, `unknown-font`, `missing-glyphs`, `unsupported-render`, `unknown-variable`; none for a clean insert; more than 20 are counted | — |
 | File | reads leave the bytes as they are; an edit keeps the file style and changes only the edited lines | — |
 | History | undo/redo of the document, globals and file, several steps, redo cleared by a commit, failed calls are not steps | more steps than there are |
 | Saving | delayed write, `flush`, `flushAll`, `close`; a changed file is read again when nothing is unsaved | a conflict with unsaved changes, `force`, `reload`, a deleted file |

@@ -145,6 +145,7 @@ interface Ctx {
 | `circular-size` | У родителя `fit_content`, а все дети по этой оси — `fill_container` |
 | `ignored-xy` | `x` / `y` заданы у потомка flex-родителя |
 | `unknown-font` | Семейство шрифта не найдено, используется запасное |
+| `missing-glyphs` | В загруженном шрифте нет глифов для части символов текста (например, шрифт только с латиницей и русский текст); они рисуются запасным шрифтом |
 | `id-ignored` | Во входных данных указан `id` |
 | `unsupported-render` | Нода или заливка пока не рендерится (shader, script, browser); в файле сохраняется |
 
@@ -159,7 +160,7 @@ interface Ctx {
   "summary": "Serif display + grotesk body, generous whitespace, one accent",
   "params": { "accent": { "default": "terracotta",                // optional
     "options": { "terracotta": "#B4532F", "ink-blue": "#2C4A7A", "olive": "#5F6B2E" } } },
-  "fonts": { "display": "Fraunces", "body": "Inter" },
+  "fonts": { "display": "Lora", "body": "Inter" },
   "palette": { "bg": "#F7F4EE", "text": "#1B1A17", "muted": "#6B675F", "accent": "$param.accent" },
   "scale": { "type": [14, 16, 20, 28, 40, 64], "space": [4, 8, 12, 16, 24, 40, 64, 96], "radius": [0, 4, 8] },
   "imagery": "Warm natural-light photography; no 3D renders",

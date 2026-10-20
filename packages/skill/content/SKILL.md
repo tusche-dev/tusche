@@ -65,6 +65,7 @@ Check: nothing clipped, nothing collapsed to 0, contrast is sufficient, spacing 
 - Vary rhythm between sections. Make at least one deliberate, memorable layout move per page.
 - Use `icon` nodes for icons. Never draw logos or illustrations from paths. Use an image fill or a neutral placeholder and tell the user.
 - Real-sounding content beats lorem ipsum. Keep the user's language.
+- Fonts must cover that language: many display fonts are Latin-only. A `missing-glyphs` warning means the text falls back to another font — pick a font that covers the script.
 
 ## Images
 

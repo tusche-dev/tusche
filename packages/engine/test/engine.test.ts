@@ -418,3 +418,26 @@ describe('lint', () => {
     expect(await scene.lint(['nope'])).toEqual([]);
   });
 });
+
+describe('missing glyphs', () => {
+  test('text whose font lacks some characters; only laid-out roots', async () => {
+    const scene = await engine.open(
+      doc([
+        {
+          type: 'frame',
+          id: 'f',
+          layout: 'vertical',
+          children: [
+            { type: 'text', id: 'cjk', content: 'Hi 漢字 漢', fill: '#000000' },
+            { type: 'text', id: 'ru', content: 'Привет', fill: '#000000' },
+          ],
+        },
+      ]),
+    );
+    expect(scene.missingGlyphs()).toEqual([]);
+    await scene.layout();
+    expect(scene.missingGlyphs()).toEqual([
+      { path: 'cjk', family: 'Inter', style: 'Regular', characters: '漢字' },
+    ]);
+  });
+});

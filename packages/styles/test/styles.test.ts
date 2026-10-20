@@ -20,7 +20,7 @@ describe('styles', () => {
     const blue = await getStyle('quiet-editorial', { accent: 'ink-blue' });
     expect(blue.palette.accent).toBe('#2C4A7A');
     expect(blue.variables['color-accent']).toEqual({ type: 'color', value: '#2C4A7A' });
-    expect(blue.variables['font-display']).toEqual({ type: 'string', value: 'Fraunces' });
+    expect(blue.variables['font-display']).toEqual({ type: 'string', value: 'Lora' });
     expect(blue.variables['space-1']).toEqual({ type: 'number', value: 4 });
     for (const name of (await archetypes()).keys()) {
       const { variables } = await getStyle(name);

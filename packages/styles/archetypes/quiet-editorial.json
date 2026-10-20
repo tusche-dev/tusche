@@ -12,7 +12,7 @@
       }
     }
   },
-  "fonts": { "display": "Fraunces", "body": "Inter" },
+  "fonts": { "display": "Lora", "body": "Inter" },
   "palette": {
     "bg": "#F7F4EE",
     "surface": "#FFFDF9",

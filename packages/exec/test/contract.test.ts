@@ -426,6 +426,8 @@ describe('warnings', () => {
       'Insert("box", {type: "rectangle", width: 5, height: 5, fill: {type: "shader", url: "x.glsl"}})',
     ],
     ['unknown-variable', 'Insert("box", {type: "rectangle", width: 5, height: 5, fill: "$nope"})'],
+    // The bundled Inter has no CJK glyphs.
+    ['missing-glyphs', 'Insert("box", {type: "text", content: "Hi 漢字", fill: "#000000"})'],
   ])('%s', async (code, snippet) => {
     const result = await run(snippet);
     expect(result.ok).toBe(true);

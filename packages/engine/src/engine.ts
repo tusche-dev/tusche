@@ -24,6 +24,7 @@ import { type IconProvider, PenProjection, type ProjectionWarning } from '@tusch
 import type { PenDocument } from '@tusche/pen-format';
 import { defaultCacheDir } from './cache.ts';
 import { configureFonts } from './fonts.ts';
+import { findMissingGlyphs, type MissingGlyphs } from './glyphs.ts';
 import { type LintOptions, lintScene, type SceneLintMessage } from './lint.ts';
 import {
   type AssetLoader,
@@ -346,6 +347,17 @@ export class Scene {
       id = ancestor.parentId;
     }
     return partial;
+  }
+
+  /**
+   * Text of laid-out top-level nodes (all by default) whose font lacks glyphs for some
+   * characters: they are drawn in a fallback font. Roots not laid out yet are skipped.
+   */
+  missingGlyphs(roots: Iterable<string> = this.projection.topLevelIds): MissingGlyphs[] {
+    const graph = this.projection.graph;
+    const ids = [...new Set(roots)].filter((id) => this.laidOut.has(id) && graph.getNode(id));
+    if (ids.length === 0) return [];
+    return findMissingGlyphs(this.engine.ck, collectGraphFontRequirements(graph, ids).nodes);
   }
 
   /**

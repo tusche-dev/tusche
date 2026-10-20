@@ -107,6 +107,20 @@ export function afterCommit(
       message: `Font "${font}" was not found; a fallback was used`,
     });
   }
+  const roots = new Set<string>();
+  for (const path of touched) {
+    const root = scene.projection.rootOf(path);
+    if (root !== undefined) roots.add(root);
+  }
+  for (const glyphs of scene.missingGlyphs(roots)) {
+    if (!touched.has(glyphs.path)) continue;
+    const sample = [...glyphs.characters].slice(0, 12).join('');
+    warnings.push({
+      code: 'missing-glyphs',
+      message: `${label(source, glyphs.path)}: font "${glyphs.family}" has no glyphs for "${sample}"; they are drawn in a fallback font. Pick a font that covers this script`,
+      path: glyphs.path,
+    });
+  }
   for (const warning of scene.warnings) {
     const code = PROJECTION_CODES[warning.code];
     if (code === undefined || !touched.has(warning.path)) continue;

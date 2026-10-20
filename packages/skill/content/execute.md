@@ -91,6 +91,7 @@ Warnings are checked only for the nodes the call created or changed:
 | `circular-size` | `fit_content` parent, only `fill_container` children |
 | `ignored-xy` | `x`/`y` set inside a parent with layout |
 | `unknown-font` | The font was not found; a fallback was used |
+| `missing-glyphs` | The font has no glyphs for some characters (e.g. a Latin-only font with Cyrillic text); they are drawn in a fallback font |
 | `id-ignored` | You passed an `id` |
 | `unsupported-render` | Kept in the file but drawn as a placeholder |
 
