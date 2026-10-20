@@ -29,13 +29,14 @@ const isObject = (value: unknown): value is Record<string, unknown> =>
 
 /**
  * `.pen` stroke: `stroke` is a fill or a list of fills; `strokeWidth` is uniform or per side.
- * `defaultAlign` is used when `strokeAlignment` is absent.
+ * Without `strokeAlignment` pen.dev centers the stroke on the outline (checked against its
+ * export of fixtures/pen/eval).
  */
 export function convertStroke(
   node: Record<string, unknown>,
   scope: Scope,
   target: PaintTarget,
-  defaultAlign: Stroke['align'] = 'INSIDE',
+  defaultAlign: Stroke['align'] = 'CENTER',
 ): Partial<StrokeFields> {
   if (node.stroke === undefined) return {};
   const paints = convertFills(node.stroke, scope, target);
@@ -62,7 +63,8 @@ export function convertStroke(
       borderLeftWeight: left,
     });
   } else {
-    weight = scope.num(width, 1);
+    // Without `strokeWidth` pen.dev draws no stroke.
+    weight = scope.num(width, 0);
   }
   if (weight <= 0) return {};
 

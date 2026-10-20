@@ -172,6 +172,7 @@ export class PenProjection {
     const page = this.pages.get(id);
     if (page === undefined) return;
     this.pages.delete(id);
+    this.overlays = this.overlays.filter((o) => this.rootOf(o) !== id);
     this.graph.deleteNode(page);
     this.warnings.splice(
       0,
@@ -478,9 +479,88 @@ export class PenProjection {
       fields.counterAxisAlign = ALIGN[scope.str(node.alignItems) ?? 'start'] ?? 'MIN';
       fields.strokesIncludedInLayout = scope.bool(node.layoutIncludeStroke, false);
     }
+    // OpenPencil draws a frame's stroke under its children; pen.dev (like Figma) draws it on
+    // top. Move the stroke to an overlay drawn after the children. A clipped frame keeps an
+    // outer or centered stroke itself, since the overlay would be clipped.
+    const overlay =
+      (fields.strokes?.length ?? 0) > 0 &&
+      Array.isArray(node.children) &&
+      node.children.length > 0 &&
+      (!fields.clipsContent || fields.strokeAlign === 'INSIDE');
+    const strokeFields = overlay ? this.takeStroke(fields) : undefined;
     this.create(scope.path, 'FRAME', parent, fields);
     this.emitChildren(node, scope, { id: scope.path, layout, prefix }, depth);
+    if (strokeFields) {
+      const id = `${scope.path}#stroke`;
+      this.create(
+        id,
+        'FRAME',
+        { id: scope.path, layout, prefix },
+        {
+          ...strokeFields,
+          name: 'stroke',
+          width: fields.width ?? 0,
+          height: fields.height ?? 0,
+          fills: [],
+          layoutMode: 'NONE',
+          ...(layout !== 'NONE' ? { layoutPositioning: 'ABSOLUTE' as const } : {}),
+          cornerRadius: fields.cornerRadius ?? 0,
+          independentCorners: fields.independentCorners ?? false,
+          topLeftRadius: fields.topLeftRadius ?? 0,
+          topRightRadius: fields.topRightRadius ?? 0,
+          bottomRightRadius: fields.bottomRightRadius ?? 0,
+          bottomLeftRadius: fields.bottomLeftRadius ?? 0,
+        },
+      );
+      this.overlays.push(id);
+    }
   }
+
+  /** Removes the stroke fields from `fields` and returns them. */
+  private takeStroke(fields: Partial<SceneNode>): Partial<SceneNode> {
+    const keys = [
+      'strokes',
+      'strokeWeight',
+      'strokeAlign',
+      'strokeCap',
+      'strokeJoin',
+      'dashPattern',
+      'independentStrokeWeights',
+      'borderTopWeight',
+      'borderRightWeight',
+      'borderBottomWeight',
+      'borderLeftWeight',
+    ] as const;
+    const taken: Partial<SceneNode> = {};
+    for (const key of keys) {
+      if (fields[key] === undefined) continue;
+      Object.assign(taken, { [key]: fields[key] });
+      delete fields[key];
+    }
+    return taken;
+  }
+
+  /**
+   * Stroke overlays (`…#stroke`) take the size of their frame. Call after layout, which may
+   * have resized the frames.
+   */
+  syncOverlays(): void {
+    for (const id of this.overlays) {
+      const overlay = this.graph.getNode(id);
+      const frame = overlay?.parentId ? this.graph.getNode(overlay.parentId) : undefined;
+      if (!overlay || !frame) continue;
+      if (
+        overlay.width !== frame.width ||
+        overlay.height !== frame.height ||
+        overlay.x ||
+        overlay.y
+      ) {
+        this.graph.updateNode(id, { x: 0, y: 0, width: frame.width, height: frame.height });
+      }
+    }
+  }
+
+  private overlays: string[] = [];
 
   private group(node: PenObject, scope: Scope, parent: Parent, depth: number, prefix?: string) {
     const fields: Partial<SceneNode> = {
@@ -531,7 +611,7 @@ export class PenProjection {
       height,
       // Text has no default fill in `.pen`: without one it is invisible.
       fills: convertFills(node.fill, scope, target),
-      ...convertStroke(node, scope, target, 'OUTSIDE'),
+      ...convertStroke(node, scope, target),
       effects: convertEffects(node.effect, scope),
     });
     this.create(scope.path, 'TEXT', parent, fields);
@@ -586,7 +666,7 @@ export class PenProjection {
       ...w.fill,
       ...h.fill,
       fills: convertFills(node.fill, scope, target),
-      ...convertStroke(node, scope, target, type === 'VECTOR' ? 'CENTER' : 'INSIDE'),
+      ...convertStroke(node, scope, target),
       effects: convertEffects(node.effect, scope),
     };
     if (type === 'RECTANGLE') Object.assign(fields, this.cornerFields(node.cornerRadius, scope));

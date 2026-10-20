@@ -209,7 +209,8 @@ describe('text', () => {
 describe('paints', () => {
   test('a stroke given as a list of fills (2.x) with per-side widths', () => {
     const p = project([
-      { type: 'frame', id: 'a', width: 10, height: 10, stroke: ['#000000'] },
+      { type: 'frame', id: 'a', width: 10, height: 10, stroke: ['#000000'], strokeWidth: 1 },
+      { type: 'frame', id: 'none', width: 10, height: 10, stroke: '#000000' },
       {
         type: 'frame',
         id: 'b',
@@ -221,7 +222,8 @@ describe('paints', () => {
       },
     ]);
     expect(p.node('a')?.strokes).toHaveLength(1);
-    expect(p.node('a')).toMatchObject({ strokeWeight: 1, strokeAlign: 'INSIDE' });
+    expect(p.node('none')?.strokes).toHaveLength(0);
+    expect(p.node('a')).toMatchObject({ strokeWeight: 1, strokeAlign: 'CENTER' });
     expect(p.node('b')).toMatchObject({
       independentStrokeWeights: true,
       borderBottomWeight: 2,
