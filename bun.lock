@@ -18,6 +18,7 @@
       "name": "@tusche/engine",
       "version": "0.0.0",
       "dependencies": {
+        "@iconify/types": "2.0.0",
         "@open-pencil/core": "0.16.0",
         "@open-pencil/scene-graph": "0.16.0",
         "@tusche/pen-bridge": "workspace:*",

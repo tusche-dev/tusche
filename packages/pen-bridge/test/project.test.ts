@@ -512,5 +512,6 @@ describe('laziness', () => {
     p.invalidate('a');
     expect(p.node('a')).toBeUndefined();
     expect(p.rootOf('a/b#1')).toBe('a');
+    expect(p.rootOf('nothing')).toBeUndefined();
   });
 });

@@ -129,10 +129,27 @@ export class PenProjection {
     return this.pages.get(rootId);
   }
 
-  /** The top-level node a pen path belongs to. */
-  rootOf(path: string): string {
-    return path.split(/[/#]/, 1)[0] as string;
+  /** The top-level node a pen path belongs to (`undefined` for an unknown id). */
+  rootOf(path: string): string | undefined {
+    const first = path.split(/[/#]/, 1)[0] as string;
+    if (!this.tops) {
+      this.tops = new Map();
+      for (const top of this.doc.children ?? []) {
+        if (!isObject(top) || typeof top.id !== 'string') continue;
+        const stack: unknown[] = [top];
+        while (stack.length > 0) {
+          const node = stack.pop();
+          if (!isObject(node)) continue;
+          if (typeof node.id === 'string' && !this.tops.has(node.id))
+            this.tops.set(node.id, top.id);
+          if (Array.isArray(node.children)) stack.push(...node.children);
+        }
+      }
+    }
+    return this.tops.get(first);
   }
+
+  private tops: Map<string, string> | undefined;
 
   /** Projects top-level nodes (all by default) that are not projected yet. */
   project(ids: Iterable<string> = this.topLevelIds): this {
