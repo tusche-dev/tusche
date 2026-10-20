@@ -159,3 +159,45 @@ export function instancesOf(doc: PenDocument, component: PenNode): number {
   }
   return count;
 }
+
+const componentIds = (root: PenNode, into: Set<string>): void => {
+  const stack: PenExtra[] = [root];
+  while (stack.length > 0) {
+    const node = stack.pop() as PenExtra;
+    if (node.reusable === true && typeof node.id === 'string') into.add(node.id);
+    if (node.type !== 'ref') stack.push(...childrenOf(node));
+  }
+};
+
+/**
+ * Top-level nodes a scene that shows `from` must project again to show `to` (an undo
+ * step or a reload): roots that differ, roots that were added or removed, and roots that
+ * use a component from a changed root. `'all'` when document-wide data (variables,
+ * themes) differs.
+ */
+export function rootsBetween(from: PenDocument, to: PenDocument): Set<string> | 'all' {
+  const keys = new Set([...Object.keys(from), ...Object.keys(to)]);
+  keys.delete('children');
+  const a = from as PenExtra;
+  const b = to as PenExtra;
+  for (const key of keys) if (a[key] !== b[key]) return 'all';
+
+  const before = new Map(from.children.map((node) => [node.id, node]));
+  const changed = new Set<string>();
+  const components = new Set<string>();
+  for (const node of to.children) {
+    const old = before.get(node.id);
+    before.delete(node.id);
+    if (old === node) continue;
+    changed.add(node.id);
+    componentIds(node, components);
+    if (old) componentIds(old, components);
+  }
+  for (const [id, old] of before) {
+    changed.add(id);
+    componentIds(old, components);
+  }
+  const roots = affectedRoots(to, changed, components);
+  for (const id of changed) roots.add(id);
+  return roots;
+}

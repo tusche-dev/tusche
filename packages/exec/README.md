@@ -13,9 +13,19 @@ const result = await session.execute({ input: 'Insert(document, {type: "frame", 
 const { text, images } = formatResult(result);
 // fix a failed snippet without resending it:
 await session.execute({ editId: 'e1', edits: [{ find: 'fontSize:64', replace: 'fontSize:56' }] });
+await session.undo(); // one step per committed change, globals included
 ```
 
-The API and the response format are described in [06-agent-api](../../docs/dev/06-agent-api.md), the runtime model in [ADR-008](../../docs/dev/adr/008-execute-runtime.md).
+A long-lived process (the MCP server) delays writes and checks the file before each tool:
+
+```ts
+const exec = createExecutor({ save: { delayMs: 300 } });
+const state = await session.checkDisk(); // 'same' | 'reloaded' | 'conflict' | 'deleted'
+await session.flush(); // write pending changes now; { force: true } writes over a conflict
+await exec.flushAll(); // before the process exits
+```
+
+The API and the response format are described in [06-agent-api](../../docs/dev/06-agent-api.md), the runtime model in [ADR-008](../../docs/dev/adr/008-execute-runtime.md), sessions, undo and saving in [ADR-009](../../docs/dev/adr/009-mcp-sessions.md).
 
 ## Layout
 
@@ -26,12 +36,12 @@ The API and the response format are described in [06-agent-api](../../docs/dev/0
 | `src/api/mutations.ts` | Insert, Copy, Update, Replace, Move, Delete, SetVariables |
 | `src/api/reads.ts` | Get (with visitors), GetVariables, FindEmptySpace, bounds and clipping |
 | `src/api/output.ts` | Print, TakeScreenshot, Export, Generate |
-| `src/session.ts` | Executor and DocumentSession: commit, rollback, file, screenshots, exports |
+| `src/session.ts` | Executor and DocumentSession: commit, rollback, undo/redo, delayed save, changes on disk, screenshots, exports |
 | `src/edits.ts`, `src/warnings.ts`, `src/format.ts`, `src/file.ts` | edits/editId, warnings, response text, atomic writes |
 
 ## Contract test coverage
 
-`test/contract.test.ts` runs every case through `session.execute`; each error case checks the error, the rollback (the file is unchanged) and the `editId`. Lower-level cases are in `test/mutations.test.ts`, `test/reads.test.ts`, `test/sandbox.test.ts`, `test/session.test.ts`.
+`test/contract.test.ts` runs every case through `session.execute`; each error case checks the error, the rollback (the file is unchanged) and the `editId`. Lower-level cases are in `test/mutations.test.ts`, `test/reads.test.ts`, `test/sandbox.test.ts`, `test/session.test.ts`, `test/history.test.ts`.
 
 | Function | Success | Error paths |
 |---|---|---|
@@ -54,3 +64,5 @@ The API and the response format are described in [06-agent-api](../../docs/dev/0
 | Globals | JSON values persist | non-JSON values are reported and dropped, a failed call keeps the old values |
 | Warnings | every code: `id-ignored`, `invisible-text`, `ignored-xy`, `clipped`, `zero-size`, `circular-size`, `unknown-font`, `unsupported-render`, `unknown-variable`; none for a clean insert; more than 20 are counted | — |
 | File | reads leave the bytes as they are; an edit keeps the file style and changes only the edited lines | — |
+| History | undo/redo of the document, globals and file, several steps, redo cleared by a commit, failed calls are not steps | more steps than there are |
+| Saving | delayed write, `flush`, `flushAll`, `close`; a changed file is read again when nothing is unsaved | a conflict with unsaved changes, `force`, `reload`, a deleted file |
