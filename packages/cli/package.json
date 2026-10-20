@@ -1,10 +1,13 @@
 {
   "name": "@tusche/cli",
   "version": "0.0.0",
-  "description": "The tusche command line: mcp, exec, render, lint, validate, migrate (phase 1.5).",
+  "description": "The tusche command line: mcp, exec, render, export, lint, validate, migrate.",
   "license": "MIT",
   "type": "module",
   "private": true,
+  "bin": {
+    "tusche": "./src/index.ts"
+  },
   "exports": {
     ".": "./src/index.ts"
   },
@@ -15,5 +18,14 @@
     "type": "git",
     "url": "git+https://github.com/tusche-dev/tusche.git",
     "directory": "packages/cli"
+  },
+  "dependencies": {
+    "@tusche/engine": "workspace:*",
+    "@tusche/exec": "workspace:*",
+    "@tusche/mcp": "workspace:*",
+    "@tusche/pen-format": "workspace:*"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.3.1"
   }
 }
