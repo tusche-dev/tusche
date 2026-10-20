@@ -97,9 +97,23 @@ execute(input | editId+edits, filePath)
 
 ## Рендер и скриншоты
 
-- `engine.render(nodeIds, {scale})` использует `@open-pencil/core/io/formats/raster` с **«тёплым» закэшированным экземпляром CanvasKit** на процесс. Шрифты загружаются один раз и кэшируются на диске (Google Fonts через `unifont`).
+API `@tusche/engine` (этап 1.3):
+
+```ts
+const engine = await createEngine({ cacheDir?, allowNetwork? })   // тёплый CanvasKit на процесс
+const scene = await engine.open(doc, { baseDir, allowRemoteAssets? })
+await scene.layout(roots?)          // проекция и раскладка по корням, лениво
+await scene.bounds('inst/child')    // {x, y, width, height} в пространстве родителя + absolute
+await scene.render(paths, { scale: 1, maxSide: 1600 })  // PNG
+scene.invalidate(rootId)            // корень пересоберётся из документа
+engine.compare(pngA, pngB)          // pixelmatch через comparePNGs
+```
+
+- Рендер — `renderNodesToImage` из `@open-pencil/core/io/formats/raster` с **«тёплым» экземпляром CanvasKit и SkiaRenderer** на процесс. Каждая нода верхнего уровня лежит на своей странице графа, поэтому раскладка и рендер одного корня не трогают остальные.
+- Шрифты загружаются один раз и кэшируются на диске (`$TUSCHE_CACHE_DIR` или `~/.cache/tusche`). Веб-шрифты Google Fonts через `unifont` приходят подмножествами под символы. Поэтому сразу запрашиваются все символы документа, а кэш хранит несколько подмножеств на начертание.
 - Скриншоты возвращаются как MCP-контент `image`: PNG, по умолчанию scale 1, длинная сторона не больше 1600 px для экономии токенов.
-- Иконки берутся из данных Iconify (OpenPencil уже зависит от `@iconify/utils`). Библиотеки сопоставляются по именам из pen: `lucide`, `feather`, `Material Symbols *`, `phosphor`.
+- Иконки — векторы из данных Iconify. lucide и phosphor берутся из офлайн-пакетов `@iconify-json/*`, остальные библиотеки (`feather`, `Material Symbols *`) — из Iconify API с кэшем на диске.
+- Там, где раскладка OpenPencil расходится с pen.dev, разницу закрывают метки в `pluginData` и патчи `@open-pencil/core` (см. [02-research](02-research.md), раздел об этапе 1.3).
 
 ## Живой предпросмотр (фаза 1)
 
@@ -119,7 +133,7 @@ execute(input | editId+edits, filePath)
 
 ## Тестирование
 
-- **Эталонные файлы:** примеры и `.pen`-файлы от пользователей → рендер → сравнение PNG через `pixelmatch` (OpenPencil экспортирует `comparePNGs`).
+- **Эталонные файлы:** примеры и `.pen`-файлы от пользователей → рендер → сравнение PNG через `pixelmatch` (OpenPencil экспортирует `comparePNGs`). Скрипт — `packages/engine/scripts/render-baseline.ts`. Эталоны фикстур лежат рядом с ними (`fixtures/pen/eval/baseline/`), рендеры приватных файлов — в `.tusche/renders/` (в `.gitignore`). Baseline проверяется сверкой с экспортом pen.dev.
 - **Тесты круговой конвертации:** чтение → запись должны давать побайтно тот же файл для каноничных входных данных; неизвестные свойства сохраняются.
 - **Контрактные тесты `execute`:** каждая функция API, каждый путь ошибки, откат и патч через edits.
 - **Оценка агента (конец фазы 1):** фиксированный набор запросов прогоняется через Claude Code и оценивается по проблемам раскладки, замечаниям линта и расходу токенов.

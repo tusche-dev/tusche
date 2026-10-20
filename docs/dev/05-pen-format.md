@@ -89,7 +89,7 @@
 | `shader` | `url` на фрагментный шейдер GLSL ES 1.0, `uniforms` |
 | `mesh_gradient` | `columns`, `rows`, `colors[]`, `points[]` с необязательными безье-ручками |
 
-**Обводка:** `stroke` (заливки), `strokeWidth` (общая или по сторонам), `strokeAlignment` (`inner|center|outer`), `strokeLinecap`, `strokeLinejoin`.
+**Обводка:** `stroke` (заливки), `strokeWidth` (общая или по сторонам; без неё обводки нет), `strokeAlignment` (`inner|center|outer`, по умолчанию `center`), `strokeLinecap`, `strokeLinejoin`.
 
 **Эффекты:** `blur`, `background_blur`, `shadow` (`inner|outer`, `offset`, `blur`, `color`, `blendMode`), `shader` (постобработка). Режимы наложения — привычные 18 названий в духе Figma.
 
@@ -129,30 +129,44 @@
 
 ## 10. Матрица совместимости: `.pen` → scene graph OpenPencil (через `pen-bridge`)
 
-Статусы: ✅ запланировано прямое соответствие · 🟡 приближение · ⬜ только заглушка (в файле остаётся нетронутым)
+Статусы: ✅ прямое соответствие · 🟡 приближение · ⬜ только заглушка (в файле остаётся нетронутым)
 
-| Возможность `.pen` | Во что превращается в scene graph | Статус | Наблюдения из тестов 2026-10-20 |
+Проекцию пишет `@tusche/pen-bridge` ([ADR-007](adr/007-pen-scene-projection.md)), импортёр `@open-pencil/pen` не используется. Наблюдения — по сверке с экспортом pen.dev 2026-10-20 (eval, `app.pen`, `website.pen`, `main.pen`; [02-research](02-research.md)).
+
+| Возможность `.pen` | Во что превращается в scene graph | Статус | Наблюдения (этап 1.3) |
 |---|---|---|---|
-| frame / flex-layout / gap / padding / выравнивание | FRAME + auto layout (Yoga) | ✅ | В рендерах корректно |
-| `fit_content` / `fill_container` / запасное значение | Режимы HUG / FILL | ✅ | |
+| frame / flex-layout / gap / padding / выравнивание | FRAME + auto layout (Yoga) | ✅ | Совпадает с pen.dev до пикселя. `gap` при `space_between` сохраняется (патч), `space_around` рисуется как `space_between` 🟡 |
+| `fit_content` / `fill_container` / запасное значение | Режимы HUG / FILL | ✅ | Соседи `fill_container` делят место поровну и с разным padding (патч); запасное значение — вне layout и при циклическом размере |
 | `clip` | clipsContent | ✅ | |
-| group | GROUP | ✅ | Сейчас `@open-pencil/pen` её не переносит |
-| rectangle, ellipse (дуги, кольцо) | RECTANGLE, ELLIPSE (arcData) | ✅ | |
-| polygon | REGULAR_POLYGON | ✅ | Сейчас не переносится |
-| path + viewBox | VECTOR (с масштабированием) | ✅ | |
-| text + textGrowth | TEXT с режимами авторазмера | ✅ | Кириллица в порядке |
-| icon | VECTOR из данных Iconify | 🟡 | OpenPencil сейчас рисует её текстовым глифом; нам нужны векторы |
-| ref + descendants | INSTANCE + переопределения | ✅ | Разворачивание раздувает число нод (39 тыс. из 2,5 тыс.); при рендере его стоит делать лениво |
-| переменные + темы | Variables + modes | 🟡 | В одном тесте пропали заливки, зависящие от темы; исправить |
-| заливки цветом / градиентом / картинкой | Paints | ✅ | |
-| обводки: `stroke` (заливка или список) + `strokeWidth` | Strokes | ✅ | `@open-pencil/pen` 0.16.0 ждёт старую форму `{fill, thickness}`: теряет все обводки 2.x, а на `stroke`-массиве падает. Конвертируем сами |
-| mesh_gradient | — | 🟡 | Растеризовать в image-заливку или приблизить градиентом |
-| shader fill / effect | — | ⬜ → 🟡 | Сейчас рисуется чёрным. В фазе 1 показываем нейтральную заглушку, в фазе 2 можно использовать CanvasKit `RuntimeEffect` (SkSL) после трансляции GLSL |
-| shadow, blur, background blur | Effects | ✅ | |
-| note / prompt / context | фрейм в духе STICKY | ⬜ | Показываются карточками с подписью |
-| script | FRAME | ⬜ | Фаза 3: выполнять в песочнице QuickJS |
-| browser | FRAME | ⬜ | Фаза 2: настоящий webview поверх холста в десктопе |
-| imports (библиотеки) | Library | 🟡 | Фаза 3 |
+| group | GROUP | ✅ | Размер — по детям. В реальных файлах не встретилась |
+| rectangle, ellipse (дуги, кольцо) | RECTANGLE, ELLIPSE (arcData) | ✅ | Углы против часовой → по часовой |
+| polygon | POLYGON | ✅ | В реальных файлах не встретился |
+| path + viewBox | VECTOR (с масштабированием) | ✅ | Без `viewBox` — точные границы геометрии |
+| text + textGrowth | TEXT с режимами авторазмера | ✅ | `auto` никогда не переносится; высота строки округляется до пикселя; перенос — по целой ширине (патч) |
+| icon | VECTOR из данных Iconify | ✅ | Офлайн-наборы lucide и phosphor, прочие — Iconify API с кэшем |
+| ref + descendants | плоское разворачивание, id = pen-путь | ✅ | Без INSTANCE OpenPencil. Ленивость по корням: `app.pen` целиком — 44 тыс. нод сцены за 0,6 с |
+| переменные + темы | конкретные значения по контексту темы | ✅ | Тема берётся по месту вставки инстанса, заливки состояний больше не пропадают |
+| заливки цветом / градиентом / картинкой | Paints | ✅ | `cover` / `contain` / `stretch` → FILL / FIT / CROP; миграция `fill` → `cover` подтверждена рендером `website.pen`. `transform` картинки пока не применяется 🟡 |
+| обводки: `stroke` (заливка или список) + `strokeWidth` | Strokes | ✅ | По умолчанию по центру; без `strokeWidth` не рисуется; у фрейма — поверх детей (служебная нода `…#stroke`) |
+| mesh_gradient | линейный градиент | 🟡 | Цвета верхнего и нижнего ряда. В реальных файлах не встретился |
+| shader fill / effect | заглушка | ⬜ | Шейдер-заливка без других заливок — серая плашка, поверх других — пропускается; эффект пропускается. Фаза 2: CanvasKit `RuntimeEffect` |
+| shadow, blur, background blur | Effects | ✅ | Тени совпадают; pen.dev отводит под размытие при экспорте чуть больше полей |
+| note / prompt / context | карточка-стикер | ⬜ | Подпись типа и текст |
+| script | FRAME с пунктирной рамкой | ⬜ | Фаза 3: выполнять в песочнице QuickJS |
+| browser | FRAME с пунктирной рамкой и URL | ⬜ | Фаза 2: настоящий webview поверх холста в десктопе |
+| imports (библиотеки) | — | ⬜ | Фаза 3 |
+
+### Уточнения семантики по сверке с pen.dev
+
+В публичной схеме этого нет, в рендерах pen.dev — есть:
+
+- `strokeAlignment` по умолчанию — `center`. Без `strokeWidth` обводка не рисуется.
+- Обводка фрейма рисуется поверх его детей.
+- `gap` при `justifyContent: space_between` — минимальный промежуток (как в CSS), а не ноль.
+- Соседи с `fill_container` по главной оси получают равные доли независимо от своего padding.
+- Высота строки — `round(lineHeight × fontSize)` на каждую строку.
+- Текст с `textGrowth: auto` не переносится, даже если выходит за родителя.
+- Ребёнок с `fill_container` по поперечной оси у `fit_content`-родителя растягивается до размера, который задали остальные дети.
 
 ## 11. Сериализация (как Tusche пишет файлы)
 
