@@ -64,7 +64,7 @@ hint: wrap the text in a frame and put padding on the frame
 
 - Каждый вызов — **транзакция**: либо применяются все изменения, либо ни одно.
 - Каждый вызов получает свежую область видимости. **Глобальные переменные сохраняются** между вызовами на одном документе, если присвоены без `const` / `let` / `var` (`heroId = Insert(...)`). Сохраняются только значения, которые сериализуются в JSON.
-- Лимиты: 10 с CPU, 256 МБ памяти, 2000 операций и 6 скриншотов за вызов.
+- Лимиты: 10 с на вызов (время хоста, например раскладки, тоже считается), 256 МБ памяти, 2000 изменений, 6 скриншотов и 20 000 символов `Print` за вызов.
 - `document` — заранее определённая константа, id корня.
 - Id всегда генерирует Tusche. Если во входных данных указан `id`, он игнорируется с предупреждением.
 
@@ -74,10 +74,10 @@ hint: wrap the text in a frame and put padding on the frame
 declare const document: string
 
 // ── mutations ────────────────────────────────────────────────
-Insert(parent: string, node: PenNode): string          // appends; returns new id
+Insert(parent: string, node: PenNode): string          // appends; returns the new id (or instance path)
 Copy(path: string, parent: string, overrides?: Partial<PenNode> & { descendants?: Descendants }): string
-Update(path: string, props: Partial<PenNode>): void    // cannot change id/type/ref/children
-Replace(path: string, node: PenNode): string           // whole node, incl. inside instances
+Update(path: string, props: Partial<PenNode>): void    // cannot change id/type/ref/children; null deletes
+Replace(path: string, node: PenNode): string           // whole node, incl. inside instances; keeps the id
 Move(path: string, parent?: string, index?: number): void
 Delete(path: string): void                             // inside instances: use Update(path,{enabled:false})
 SetVariables(vars: Record<string, VariableDef>, replace?: boolean): void
@@ -113,6 +113,23 @@ interface Ctx {
 - **`TakeScreenshot`** рендерит после применения всех изменений вызова; картинки прикладываются к ответу. Упавший вызов скриншотов не возвращает.
 - **`Export`** пишет в папку документа, если `TUSCHE_ROOT` не разрешает больше. Пути записанных файлов возвращаются в ответе.
 
+### Уточнения семантики (этап 1.4)
+
+Как ведёт себя реализация там, где справочник выше оставляет выбор. Пункты, отмеченные «сверить», проверяются на копиях в pen.dev.
+
+- **Ошибки и откат.** Ошибка, которую сниппет не поймал, откатывает весь вызов. Если сниппет поймал ошибку операции через `try/catch`, отменяется только эта операция, остальные правки вызова остаются.
+- **`Insert` внутри инстанса** (`Insert("inst/slot", …)`) пишет нового ребёнка в `children` переопределения `descendants` и возвращает путь `inst/<newId>`. Если у переопределения ещё нет `children`, туда копируются текущие дети компонента с теми же id, поэтому их пути не меняются.
+- **`Copy`.** Копия переиспользуемой ноды — это инстанс `{type: "ref", ref}` с `overrides` на корне и `descendants` как есть. Остальные копии получают новые id на всё поддерево; `reusable` у вложенных нод снимается, а `ref` внутри копии по-прежнему указывают на оригиналы. Ключи `descendants` у обычной копии — id *исходных* нод: свойства сливаются, нода с `type` заменяет ту, что была. Сверить.
+- **`Update`.** `null` удаляет свойство. Внутри инстанса правка — переопределение в `descendants`; переопределение, ставшее пустым, удаляется.
+- **`Replace` сохраняет id** заменённой ноды: пути, `ref` и ключи `descendants` остаются верными. Возвращает путь. Внутри инстанса — замена с `type` в `descendants`.
+- **`Move`.** `index` считается после того, как нода убрана со старого места. Нельзя перемещать в инстанс и из него.
+- **`Delete`** компонента, у которого есть инстансы, — ошибка. Внутри инстанса — ошибка с подсказкой `Update(path, {enabled: false})`; ребёнка, добавленного самим инстансом, удалить можно.
+- **`SetVariables`.** `null` удаляет переменную; `replace: true` заменяет весь набор. Значения тем из тематических значений дописываются в `themes`.
+- **`Get` без visitor'а.** `depth` по умолчанию 2: столько уровней детей отдаётся полностью, следующий уровень — заглушки `{type, id, name, children: N}`. `Get(document)` отдаёт ноды верхнего уровня, `depth` по умолчанию 1. У нод внутри инстансов есть поле `path` (`inst/child`). `geometry` у path-нод скрыта, пока не указан `includePathGeometry`. С `resolveInstances` инстанс раскрыт в дерево компонента, поле `ref` сохраняется. Сверить.
+- **Visitor'ы.** Дети инстансов обходятся только с `resolveInstances`. `ctx.bounds` — `undefined` у нод, которые не рендерятся (`enabled: false` и всё внутри них).
+- **`FindEmptySpace`.** По умолчанию `direction: "right"`, `padding: 100`. Без `nodeId` место ищется рядом со всем содержимым холста, с `nodeId` — рядом с этой нодой. Координаты холста.
+- **`Export`.** `pdf` пока недоступен (OpenPencil строит его через DOM браузера). Без расширения в `outPath` оно добавляется по формату.
+
 ## 3. Каталог предупреждений (фаза 1)
 
 | Код | Когда срабатывает |
@@ -125,6 +142,8 @@ interface Ctx {
 | `unknown-font` | Семейство шрифта не найдено, используется запасное |
 | `id-ignored` | Во входных данных указан `id` |
 | `unsupported-render` | Нода или заливка пока не рендерится (shader, script, browser); в файле сохраняется |
+
+Кроме кодов каталога ответ может содержать предупреждения валидатора и проекции (`unknown-variable`, `unknown-ref`, `unknown-property`, `missing-asset`, `unknown-icon`) и служебные (`global-not-saved`, `save-failed`, `export-failed`, `empty-screenshot`). Все проверки идут только по нодам, которые вызов создал или изменил. Полностью показываются первые 20 предупреждений, остальные считаются.
 
 ## 4. Формат архетипа для `get_style`
 

@@ -75,11 +75,12 @@ execute(input | editId+edits, filePath)
   │     • mutations go to tx (validated per op; invalid → throw)
   │     • Get / FindEmptySpace / TakeScreenshot flush pending ops to pen-bridge and run layout
   ├─ on throw → tx.rollback(); store snippet under new editId; return error + line + hint
-  └─ on success → tx.commit(); persist globals; save file (debounced);
+  └─ on success → tx.commit(); persist globals; save file (atomic; debounce — stage 1.5);
                   return Print lines + names→ids map + warnings + screenshots
 ```
 
-- **Снапшоты** используют структурное разделение (иммутабельные обновления), поэтому откат стоит O(1).
+- **Снапшоты** используют структурное разделение (иммутабельные обновления), поэтому откат стоит O(1). Каждая операция ещё и атомарна сама по себе: если сниппет поймал её ошибку через `try/catch`, отменяется только она.
+- Модель выполнения (asyncify-сборка QuickJS, контекст на вызов, синхронизация сцены посреди вызова) — [ADR-008](adr/008-execute-runtime.md).
 - **Валидация** проходит на каждой операции: по схеме Valibot и по смысловым правилам («`padding` только у фреймов», «текст с `width` требует `textGrowth`»). Нарушения, которые pen.dev считает ошибками, у нас тоже ошибки. Стилистические недочёты — предупреждения.
 - **Предупреждения** собирает проход после коммита:
   - дочерние элементы обрезаны;
@@ -105,8 +106,20 @@ const scene = await engine.open(doc, { baseDir, allowRemoteAssets? })
 await scene.layout(roots?)          // проекция и раскладка по корням, лениво
 await scene.bounds('inst/child')    // {x, y, width, height} в пространстве родителя + absolute
 await scene.render(paths, { scale: 1, maxSide: 1600 })  // PNG
+await scene.export(paths, 'png' | 'jpeg' | 'webp' | 'svg' | 'html-tailwind', { scale })
+await scene.update(doc, roots | 'all')  // новая версия документа, пересборка корней
+scene.clippingSync(path)            // {state: 'partially clipped' | 'fully clipped', by}
 scene.invalidate(rootId)            // корень пересоберётся из документа
 engine.compare(pngA, pngB)          // pixelmatch через comparePNGs
+```
+
+API `@tusche/exec` (этап 1.4):
+
+```ts
+const exec = createExecutor({ engine?, limits?, root? })   // root — то же, что TUSCHE_ROOT
+const session = await exec.open(filePath, { create? })      // одна сессия на файл
+const result = await session.execute({ input } | { editId, edits })
+const { text, images } = formatResult(result)               // ответ как в 06-agent-api
 ```
 
 - Рендер — `renderNodesToImage` из `@open-pencil/core/io/formats/raster` с **«тёплым» экземпляром CanvasKit и SkiaRenderer** на процесс. Каждая нода верхнего уровня лежит на своей странице графа, поэтому раскладка и рендер одного корня не трогают остальные.
