@@ -87,6 +87,8 @@ describe('id paths', () => {
   test('replacements from the outer instance', () => {
     const resolved = resolveNodePath(library(), 'quit/no/caption');
     expect(resolved?.node).toMatchObject({ id: 'stay', content: 'Stay' });
+    expect(resolved?.instances.map((n) => n.id)).toEqual(['quit', 'no']);
+    expect(resolved?.overrides).toEqual([]);
   });
 
   test('a component that is itself an instance', () => {

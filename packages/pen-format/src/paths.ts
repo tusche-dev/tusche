@@ -103,7 +103,7 @@ export function resolveInInstance(
   if (isObject(deep) && typeof deep.type === 'string') {
     return {
       node: deep as PenNode,
-      instances: [instance, nested, ...inner.instances],
+      instances: [instance, ...found.instances, ...inner.instances],
       overrides: [],
     };
   }
