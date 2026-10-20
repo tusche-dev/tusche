@@ -14,6 +14,7 @@ export {
   type RenderOptions,
   Scene,
 } from './engine.ts';
+export type { LintOptions, LintPreset, SceneLintMessage } from './lint.ts';
 export {
   type AssetLoader,
   createAssetLoader,

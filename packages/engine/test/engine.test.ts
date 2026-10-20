@@ -381,3 +381,40 @@ describe('export', () => {
     expect(await scene.export(['nope'], 'svg')).toBeUndefined();
   });
 });
+
+describe('lint', () => {
+  const page = () =>
+    doc([
+      {
+        type: 'frame',
+        id: 'card',
+        width: 200,
+        height: 100,
+        fill: '#FFFFFF',
+        children: [
+          { type: 'text', id: 'low', content: 'Pale', fill: '#F4F4F4', fontSize: 16 },
+          { type: 'text', id: 'tiny', content: 'Small print', fill: '#000000', fontSize: 6 },
+        ],
+      },
+      { type: 'frame', id: 'other', width: 50, height: 50, fill: '#000000' },
+    ]);
+
+  test('OpenPencil rules report by pen path', async () => {
+    const scene = await engine.open(page());
+    const messages = await scene.lint();
+    const found = (ruleId: string) => messages.filter((m) => m.ruleId === ruleId);
+    expect(found('color-contrast')).toEqual([
+      expect.objectContaining({ severity: 'error', path: 'low' }),
+    ]);
+    expect(found('min-text-size').map((m) => m.path)).toEqual(['tiny']);
+    expect(messages.every((m) => !m.path.includes('#'))).toBe(true);
+  });
+
+  test('only the given nodes; unknown paths are skipped', async () => {
+    const scene = await engine.open(page());
+    const messages = await scene.lint(['tiny', 'nope']);
+    expect(messages.some((m) => m.path === 'low')).toBe(false);
+    expect(messages.some((m) => m.ruleId === 'min-text-size')).toBe(true);
+    expect(await scene.lint(['nope'])).toEqual([]);
+  });
+});

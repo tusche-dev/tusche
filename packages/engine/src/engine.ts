@@ -24,6 +24,7 @@ import { type IconProvider, PenProjection, type ProjectionWarning } from '@tusch
 import type { PenDocument } from '@tusche/pen-format';
 import { defaultCacheDir } from './cache.ts';
 import { configureFonts } from './fonts.ts';
+import { type LintOptions, lintScene, type SceneLintMessage } from './lint.ts';
 import {
   type AssetLoader,
   createAssetLoader,
@@ -345,6 +346,29 @@ export class Scene {
       id = ancestor.parentId;
     }
     return partial;
+  }
+
+  /**
+   * Runs the OpenPencil linter on nodes (every top-level node by default), after laying
+   * out their top-level nodes.
+   */
+  async lint(
+    paths: Iterable<string> = this.projection.topLevelIds,
+    options: LintOptions = {},
+  ): Promise<SceneLintMessage[]> {
+    const list = [...new Set(paths)];
+    const roots = new Set<string>();
+    for (const path of list) {
+      const root = this.projection.rootOf(path);
+      if (root !== undefined) roots.add(root);
+    }
+    await this.layout(roots);
+    const graph = this.projection.graph;
+    return lintScene(
+      graph,
+      list.filter((path) => graph.getNode(path)),
+      options,
+    );
   }
 
   /** Renders nodes of one top-level node to PNG. Returns `undefined` for an empty area. */
