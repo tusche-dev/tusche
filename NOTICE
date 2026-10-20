@@ -1,0 +1,30 @@
+Tusche
+Copyright (c) 2026 Roman Purtov and Tusche contributors
+Licensed under the MIT License (see LICENSE).
+
+This project builds on third-party open-source software. Planned runtime
+dependencies and their licenses:
+
+- OpenPencil packages (@open-pencil/core, @open-pencil/scene-graph,
+  @open-pencil/pen, @open-pencil/fig, @open-pencil/kiwi, @open-pencil/vue)
+  https://github.com/open-pencil/open-pencil — MIT License
+- CanvasKit / Skia (canvaskit-wasm) — BSD-3-Clause
+- Yoga layout (via @open-pencil/yoga-layout fork) — MIT License
+- QuickJS (via a WebAssembly build such as quickjs-emscripten) — MIT License
+- Model Context Protocol TypeScript SDK — MIT License
+- Tauri (phase 2 desktop shell) — MIT OR Apache-2.0
+
+Trademarks
+----------
+"pen.dev" and "Pencil" are trademarks of High Agency, Inc. "Figma" is a
+trademark of Figma, Inc. Tusche is an independent project and is not
+affiliated with, endorsed by, or sponsored by either company.
+
+The `.pen` file format support is implemented from High Agency's publicly
+published format documentation
+(https://docs.pencil.dev/for-developers/the-pen-format) for the purpose of
+interoperability. No code, binaries, skill texts, or other assets of pen.dev
+are included in this repository.
+
+This list is updated as dependencies are added; the authoritative list is
+the lockfile plus each package's license field.
