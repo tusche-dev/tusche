@@ -1,0 +1,40 @@
+{
+  "name": "quiet-editorial",
+  "title": "Quiet Editorial",
+  "summary": "Serif display with a grotesk body, generous whitespace and a single accent. For content-led products, portfolios, journals and calm landing pages.",
+  "params": {
+    "accent": {
+      "default": "terracotta",
+      "options": {
+        "terracotta": "#B4532F",
+        "ink-blue": "#2C4A7A",
+        "olive": "#5F6B2E"
+      }
+    }
+  },
+  "fonts": { "display": "Fraunces", "body": "Inter" },
+  "palette": {
+    "bg": "#F7F4EE",
+    "surface": "#FFFDF9",
+    "text": "#1B1A17",
+    "muted": "#6B675F",
+    "line": "#E3DDD2",
+    "accent": "$param.accent",
+    "on-accent": "#FFFDF9"
+  },
+  "scale": {
+    "type": [13, 16, 20, 28, 40, 64],
+    "space": [4, 8, 12, 16, 24, 40, 64, 96],
+    "radius": [0, 4, 8]
+  },
+  "imagery": "Warm natural-light photography with real textures; no 3D renders, no stock smiles.",
+  "rules": [
+    "Headlines in the display serif, left-aligned, weight 400-500; never a bold serif.",
+    "Body text 16 px with lineHeight 1.5, lines at most 640 px wide.",
+    "One accent colour, used for links, one primary action and small marks only.",
+    "Hairline rules (1 px, line colour) instead of cards and shadows.",
+    "No drop shadows, no gradients.",
+    "Large outer margins (64-96 px on desktop); 96 px between sections.",
+    "At most two font weights per screen."
+  ]
+}

@@ -1,7 +1,7 @@
 ---
 name: tusche
 description: Design UI on the Tusche canvas — app screens, dashboards, landing pages, slides, design systems — by editing .pen files through the Tusche MCP `execute` tool. Use when the user asks to design, mock up, restyle, or visually explore an interface, or to turn a .pen design into code.
-version: 0.1.0-draft
+version: 0.1.0-draft.1
 ---
 
 # Tusche
@@ -14,13 +14,10 @@ Tusche is an infinite canvas stored as a `.pen` file (JSON) next to the user's c
 |---|---|
 | [pen-format.md](pen-format.md) | Always, before the first edit |
 | [execute.md](execute.md) | Always, before the first edit |
-| [guide/design-system.md](guide/design-system.md) | The design has repeated UI or the user mentions tokens or components |
-| `guide/web-app.md`, `guide/mobile-app.md`, `guide/landing-page.md`, `guide/slides.md` | Matching task type |
-| [guide/code.md](guide/code.md) | Turning a design into code or code into a design |
 
 ## Workflow
 
-1. `get_app_state` → know which file is open and what is in it.
+1. `get_app_state` → know which file is open and what is in it. No file yet: `open_document` with `create: true` (the user's path, or `design/<name>.pen`).
 2. Look before you build: list top-level frames, components and variables with a `Get` visitor. Reuse what exists.
 3. Pick a direction: the project's tokens, the user's brand, or an archetype from `get_style`.
 4. Tokens first: `SetVariables` for colours, type, spacing (themed if light and dark are needed).
@@ -36,6 +33,7 @@ Tusche is an infinite canvas stored as a `.pen` file (JSON) next to the user's c
 - Never set `id`. Capture returned ids in globals without `const`: `heroId = Insert(...)`.
 - Mark a top-level frame `placeholder: true` while you work on it.
 - When a call fails, fix it with `editId` + `edits`. Never resend the snippet.
+- A committed change you regret: `undo`, not a counter-snippet.
 - Think in this format, not CSS: no margins, no percentages, no wrap, no `alignItems: stretch`. If a property is not in `pen-format.md`, it does not exist.
 - Prefer `fill_container` / `fit_content` over pixel sizes. Never guess text sizes; use `textGrowth`.
 - Text is invisible without `fill`.
@@ -48,6 +46,8 @@ Tusche is an infinite canvas stored as a `.pen` file (JSON) next to the user's c
 Get(screenId, (n, c) => c.problems && Print(n.name, n.id, c.problems, "in", c.parentCtx?.node.name))
 TakeScreenshot([screenId])
 ```
+
+Before you finish, run `lint` on the screen and fix errors (contrast, tiny text, clipped content).
 
 Check: nothing clipped, nothing collapsed to 0, contrast is sufficient, spacing follows the scale, alignment is consistent.
 

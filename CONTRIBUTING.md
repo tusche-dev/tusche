@@ -12,7 +12,7 @@ Thanks for your interest! Tusche is in **phase 1 (first usable version)**. Right
 
 - **User docs** (README, `docs/guide/`) are kept in **English and Russian**. Every page in `docs/guide/en` has a mirror with the same name in `docs/guide/ru`.
 - **Development docs** (`docs/dev/`: vision, architecture, specs, ADRs) are written in **Russian**. Issues and PRs in English are welcome; a machine translation of `docs/dev` works well enough to follow along.
-- The agent skill (`docs/dev/drafts/SKILL.md`, later `packages/skill`) is written in **English**, because models follow English instructions most reliably.
+- Everything the agent reads — the skill (`packages/skill/content`), style archetypes (`packages/styles/archetypes`), MCP tool descriptions and answers — is written in **English**, because models follow English instructions most reliably.
 
 ## Ground rules
 

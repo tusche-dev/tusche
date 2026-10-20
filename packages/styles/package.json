@@ -1,7 +1,7 @@
 {
   "name": "@tusche/styles",
   "version": "0.0.0",
-  "description": "Style archetypes as data: fonts, palettes, spacing (phase 1.6).",
+  "description": "Style archetypes as data: fonts, palettes, scales, rules, served by get_style.",
   "license": "MIT",
   "type": "module",
   "private": true,
@@ -9,11 +9,16 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "src"
+    "src",
+    "archetypes"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tusche-dev/tusche.git",
     "directory": "packages/styles"
+  },
+  "dependencies": {
+    "@tusche/pen-format": "workspace:*",
+    "valibot": "1.5.0"
   }
 }

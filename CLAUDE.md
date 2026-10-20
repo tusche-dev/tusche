@@ -13,7 +13,7 @@ Tusche — открытый дизайн-холст для ИИ-агентов. 
 - `docs/dev/` — документация для разработки: **только русский**. ADR лежат в `docs/dev/adr/`.
 - `docs/guide/en/` и `docs/guide/ru/` — пользовательская документация, **на двух языках**, имена файлов совпадают. Меняешь одну версию — в том же коммите меняй вторую. Первая строка под заголовком — ссылка на версию на другом языке.
 - `README.md` (EN) и `README.ru.md` (RU) держи синхронными. С `CONTRIBUTING.md` и `CONTRIBUTING.ru.md` так же.
-- Скилл агента (`docs/dev/drafts/SKILL.md`) — **на английском**.
+- Всё, что читает агент, — **на английском**: скилл (`packages/skill/content/`), архетипы (`packages/styles/archetypes/`), описания и ответы инструментов MCP, вывод CLI.
 
 ## Правила
 
@@ -27,7 +27,7 @@ Tusche — открытый дизайн-холст для ИИ-агентов. 
 ## Карта
 
 ```
-docs/dev/            01-vision … 08-roadmap, adr/, drafts/SKILL.md   (RU)
+docs/dev/            01-vision … 08-roadmap, adr/                    (RU)
 docs/guide/en|ru/    getting-started, cli, faq                       (EN + RU)
 packages/            pen-format, pen-bridge, engine, exec, mcp, skill, styles, cli
 apps/                (фаза 1) preview, (фаза 2) desktop
