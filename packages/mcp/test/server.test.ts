@@ -174,8 +174,10 @@ TakeScreenshot([screen])`,
     await call('execute', { input: 'Insert(document, {type: "frame", name: "Soon"})' });
     const file = join(dir, 'later.pen');
     expect(readFileSync(file, 'utf8')).not.toContain('Soon');
-    await sleep(80);
-    expect(existsSync(file) && readFileSync(file, 'utf8')).toContain('Soon');
+    // A busy CI runner can take longer than the 20 ms delay.
+    const saved = () => existsSync(file) && readFileSync(file, 'utf8').includes('Soon');
+    for (let waited = 0; !saved() && waited < 2000; waited += 20) await sleep(20);
+    expect(saved()).toBe(true);
   });
 
   test('every call goes to the journal with execute details', async () => {

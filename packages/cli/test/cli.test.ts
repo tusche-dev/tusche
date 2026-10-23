@@ -1,9 +1,12 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, setDefaultTimeout, test } from 'bun:test';
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { Client } from '@modelcontextprotocol/client';
 import { getDefaultEnvironment, StdioClientTransport } from '@modelcontextprotocol/client/stdio';
+
+// Each test starts the CLI several times; process start-up is slow on CI runners (Windows).
+setDefaultTimeout(30_000);
 
 const dir = mkdtempSync(join(tmpdir(), 'tusche-cli-'));
 const entry = resolve(import.meta.dir, '../src/index.ts');
