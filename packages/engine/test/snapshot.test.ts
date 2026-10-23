@@ -37,7 +37,8 @@ const card = (id: string, x: number, title: string) => ({
   padding: 16,
   fill: '#FFFFFF',
   cornerRadius: 12,
-  stroke: { thickness: 1, fill: '#DDDDDD' },
+  stroke: '#DDDDDD',
+  strokeWidth: 1,
   children: [
     {
       type: 'text',
@@ -161,6 +162,9 @@ describe('preview snapshot', () => {
     const label = page.info('a-button/label');
     expect(label?.ancestors.map((a) => a.id)).toEqual(['a', 'a-button']);
     expect(page.nodeAt(-50, -50)).toBeNull();
+    // The padding of the card: the stroke overlay (`a#stroke`) stands for the card.
+    expect(page.has('a#stroke')).toBe(true);
+    expect(page.nodeAt(4, 4)).toBe('a');
   });
 
   test('loaded font files: every face with stable ids', async () => {

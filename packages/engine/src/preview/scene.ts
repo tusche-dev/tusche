@@ -19,6 +19,8 @@ export class PreviewScene {
   readonly graph = new SceneGraph();
   readonly pageId: string;
   private readonly rootNodes = new Map<string, string[]>();
+  /** Stroke overlays of frames, left out of hit tests. */
+  private overlays: string[] = [];
 
   constructor() {
     const page = this.graph.getPages()[0];
@@ -49,6 +51,7 @@ export class PreviewScene {
       for (const [hash, bytes] of root.images) this.graph.images.set(hash, bytes);
     }
     this.page().childIds = order.filter((id) => this.rootNodes.has(id));
+    this.overlays = [...this.rootNodes.values()].flat().filter((id) => id.endsWith(STROKE_OVERLAY));
     this.graph.clearAbsPosCache();
   }
 
@@ -56,9 +59,30 @@ export class PreviewScene {
     return this.graph.getNode(id) !== undefined;
   }
 
-  /** The deepest node at a point of the canvas. */
+  /**
+   * The deepest node of the document at a point of the canvas. Scene nodes that the
+   * projection adds (`path#stroke`, note labels, …) stand for the pen node they belong to.
+   */
   nodeAt(x: number, y: number): string | null {
-    return this.graph.hitTestDeep(x, y, this.pageId)?.id ?? null;
+    // A frame's stroke overlay is drawn over its children and would take every click inside
+    // the frame: leave the overlays out of the hit test.
+    const hidden: SceneNode[] = [];
+    for (const overlay of this.overlays) {
+      const node = this.graph.getNode(overlay);
+      if (node?.visible) {
+        node.visible = false;
+        hidden.push(node);
+      }
+    }
+    let id: string | undefined;
+    try {
+      id = this.graph.hitTestDeep(x, y, this.pageId)?.id;
+    } finally {
+      for (const node of hidden) node.visible = true;
+    }
+    if (id === undefined) return null;
+    const own = id.split('#', 1)[0] as string;
+    return this.has(own) ? own : id;
   }
 
   /** Bounds on the canvas of nodes (all top-level nodes by default). */
@@ -101,6 +125,9 @@ export class PreviewScene {
     this.rootNodes.delete(id);
   }
 }
+
+/** Suffix of the scene node that draws a frame's stroke over its children (pen-bridge). */
+const STROKE_OVERLAY = '#stroke';
 
 function union(a: Rect, b: Rect): Rect {
   const x = Math.min(a.x, b.x);

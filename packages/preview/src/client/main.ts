@@ -89,7 +89,8 @@ function showInfo(): void {
     button.textContent = ancestor.name || ancestor.id;
     button.title = ancestor.id;
     button.onclick = () => select(ancestor.id);
-    path.append(button, '›');
+    if (path.childElementCount > 0) path.append('›');
+    path.append(button);
   }
 }
 

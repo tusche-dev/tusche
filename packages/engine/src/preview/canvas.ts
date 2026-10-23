@@ -22,7 +22,8 @@ export interface PreviewCanvasOptions {
 
 const MIN_ZOOM = 0.02;
 const MAX_ZOOM = 64;
-const FIT_MARGIN = 48;
+/** Room around fitted content; the status bar takes the top ~56 px. */
+const FIT_MARGIN = 72;
 
 /** Read-only canvas of the preview: pan, zoom, hover and selection by pen id. */
 export class PreviewCanvas {
