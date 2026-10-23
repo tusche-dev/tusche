@@ -47,9 +47,7 @@
         "undo": 0,
         "render": 2,
         "lint": 0,
-        "skill": [
-          "execute.md"
-        ],
+        "skill": ["execute.md"],
         "styles": []
       },
       "session": {
@@ -68,9 +66,7 @@
         "changedLines": 6,
         "outOfScope": []
       },
-      "renders": [
-        "renders/01-eRmJH.png"
-      ]
+      "renders": ["renders/01-eRmJH.png"]
     },
     {
       "task": "edit-history-row",
@@ -94,9 +90,7 @@
         "undo": 0,
         "render": 0,
         "lint": 0,
-        "skill": [
-          "execute.md"
-        ],
+        "skill": ["execute.md"],
         "styles": []
       },
       "session": {
@@ -115,9 +109,7 @@
         "changedLines": 40,
         "outOfScope": []
       },
-      "renders": [
-        "renders/01-fnqsI.png"
-      ]
+      "renders": ["renders/01-fnqsI.png"]
     },
     {
       "task": "edit-key-label",
@@ -141,9 +133,7 @@
         "undo": 0,
         "render": 1,
         "lint": 0,
-        "skill": [
-          "execute.md"
-        ],
+        "skill": ["execute.md"],
         "styles": []
       },
       "session": {
@@ -162,9 +152,7 @@
         "changedLines": 2,
         "outOfScope": []
       },
-      "renders": [
-        "renders/01-JbAx9.png"
-      ]
+      "renders": ["renders/01-JbAx9.png"]
     },
     {
       "task": "edit-key-radius",
@@ -188,10 +176,7 @@
         "undo": 0,
         "render": 0,
         "lint": 0,
-        "skill": [
-          "SKILL.md",
-          "execute.md"
-        ],
+        "skill": ["SKILL.md", "execute.md"],
         "styles": []
       },
       "session": {
@@ -210,9 +195,7 @@
         "changedLines": 4,
         "outOfScope": []
       },
-      "renders": [
-        "renders/01-eRmJH.png"
-      ]
+      "renders": ["renders/01-eRmJH.png"]
     },
     {
       "task": "edit-keypad-density",
@@ -236,10 +219,7 @@
         "undo": 0,
         "render": 1,
         "lint": 0,
-        "skill": [
-          "SKILL.md",
-          "execute.md"
-        ],
+        "skill": ["SKILL.md", "execute.md"],
         "styles": []
       },
       "session": {
@@ -258,9 +238,7 @@
         "changedLines": 33,
         "outOfScope": []
       },
-      "renders": [
-        "renders/01-BNzAC.png"
-      ]
+      "renders": ["renders/01-BNzAC.png"]
     },
     {
       "task": "screen-dashboard",
@@ -284,15 +262,8 @@
         "undo": 0,
         "render": 0,
         "lint": 2,
-        "skill": [
-          "SKILL.md",
-          "pen-format.md",
-          "execute.md",
-          "guide/web-app.md"
-        ],
-        "styles": [
-          "blueprint"
-        ]
+        "skill": ["SKILL.md", "pen-format.md", "execute.md", "guide/web-app.md"],
+        "styles": ["blueprint"]
       },
       "session": {
         "model": "claude-opus-5-5",
@@ -307,10 +278,7 @@
         "error": null
       },
       "edit": null,
-      "renders": [
-        "renders/01-t5HsZ.png",
-        "renders/02-ZvlpE.png"
-      ]
+      "renders": ["renders/01-t5HsZ.png", "renders/02-ZvlpE.png"]
     },
     {
       "task": "screen-design-system",
@@ -334,15 +302,8 @@
         "undo": 0,
         "render": 1,
         "lint": 1,
-        "skill": [
-          "SKILL.md",
-          "pen-format.md",
-          "execute.md",
-          "guide/design-system.md"
-        ],
-        "styles": [
-          "bento-grid"
-        ]
+        "skill": ["SKILL.md", "pen-format.md", "execute.md", "guide/design-system.md"],
+        "styles": ["bento-grid"]
       },
       "session": {
         "model": "claude-opus-5-5",
@@ -357,9 +318,7 @@
         "error": null
       },
       "edit": null,
-      "renders": [
-        "renders/01-9ZbAK.png"
-      ]
+      "renders": ["renders/01-9ZbAK.png"]
     },
     {
       "task": "screen-landing-coffee-ru",
@@ -383,15 +342,8 @@
         "undo": 0,
         "render": 0,
         "lint": 2,
-        "skill": [
-          "SKILL.md",
-          "pen-format.md",
-          "execute.md",
-          "guide/landing-page.md"
-        ],
-        "styles": [
-          "warm-market"
-        ]
+        "skill": ["SKILL.md", "pen-format.md", "execute.md", "guide/landing-page.md"],
+        "styles": ["warm-market"]
       },
       "session": {
         "model": "claude-opus-5-5",
@@ -406,10 +358,7 @@
         "error": null
       },
       "edit": null,
-      "renders": [
-        "renders/01-cojCH.png",
-        "renders/02-xyUlB.png"
-      ]
+      "renders": ["renders/01-cojCH.png", "renders/02-xyUlB.png"]
     },
     {
       "task": "screen-landing-saas",
@@ -433,15 +382,8 @@
         "undo": 0,
         "render": 1,
         "lint": 2,
-        "skill": [
-          "SKILL.md",
-          "pen-format.md",
-          "execute.md",
-          "guide/landing-page.md"
-        ],
-        "styles": [
-          "blueprint"
-        ]
+        "skill": ["SKILL.md", "pen-format.md", "execute.md", "guide/landing-page.md"],
+        "styles": ["blueprint"]
       },
       "session": {
         "model": "claude-opus-5-5",
@@ -485,15 +427,8 @@
         "undo": 0,
         "render": 0,
         "lint": 1,
-        "skill": [
-          "SKILL.md",
-          "pen-format.md",
-          "execute.md",
-          "guide/mobile-app.md"
-        ],
-        "styles": [
-          "soft-play"
-        ]
+        "skill": ["SKILL.md", "pen-format.md", "execute.md", "guide/mobile-app.md"],
+        "styles": ["soft-play"]
       },
       "session": {
         "model": "claude-opus-5-5",
@@ -538,15 +473,8 @@
         "undo": 0,
         "render": 1,
         "lint": 1,
-        "skill": [
-          "SKILL.md",
-          "pen-format.md",
-          "execute.md",
-          "guide/mobile-app.md"
-        ],
-        "styles": [
-          "soft-play"
-        ]
+        "skill": ["SKILL.md", "pen-format.md", "execute.md", "guide/mobile-app.md"],
+        "styles": ["soft-play"]
       },
       "session": {
         "model": "claude-opus-5-5",
@@ -561,10 +489,7 @@
         "error": null
       },
       "edit": null,
-      "renders": [
-        "renders/01-W7lQj.png",
-        "renders/02-mR2if.png"
-      ]
+      "renders": ["renders/01-W7lQj.png", "renders/02-mR2if.png"]
     },
     {
       "task": "screen-orders-table",
@@ -590,15 +515,8 @@
         "undo": 0,
         "render": 0,
         "lint": 1,
-        "skill": [
-          "SKILL.md",
-          "pen-format.md",
-          "execute.md",
-          "guide/web-app.md"
-        ],
-        "styles": [
-          "night-shift"
-        ]
+        "skill": ["SKILL.md", "pen-format.md", "execute.md", "guide/web-app.md"],
+        "styles": ["night-shift"]
       },
       "session": {
         "model": "claude-opus-5-5",
@@ -613,11 +531,7 @@
         "error": null
       },
       "edit": null,
-      "renders": [
-        "renders/01-I4dIV.png",
-        "renders/02-KgwCo.png",
-        "renders/03-Wnqnr.png"
-      ]
+      "renders": ["renders/01-I4dIV.png", "renders/02-KgwCo.png", "renders/03-Wnqnr.png"]
     },
     {
       "task": "screen-pricing",
@@ -641,15 +555,8 @@
         "undo": 0,
         "render": 0,
         "lint": 1,
-        "skill": [
-          "SKILL.md",
-          "pen-format.md",
-          "execute.md",
-          "guide/landing-page.md"
-        ],
-        "styles": [
-          "night-shift"
-        ]
+        "skill": ["SKILL.md", "pen-format.md", "execute.md", "guide/landing-page.md"],
+        "styles": ["night-shift"]
       },
       "session": {
         "model": "claude-opus-5-5",
@@ -664,10 +571,7 @@
         "error": null
       },
       "edit": null,
-      "renders": [
-        "renders/01-UkKk6.png",
-        "renders/02-HWfr1.png"
-      ]
+      "renders": ["renders/01-UkKk6.png", "renders/02-HWfr1.png"]
     },
     {
       "task": "screen-settings",
@@ -691,15 +595,8 @@
         "undo": 0,
         "render": 0,
         "lint": 2,
-        "skill": [
-          "SKILL.md",
-          "pen-format.md",
-          "execute.md",
-          "guide/web-app.md"
-        ],
-        "styles": [
-          "blueprint"
-        ]
+        "skill": ["SKILL.md", "pen-format.md", "execute.md", "guide/web-app.md"],
+        "styles": ["blueprint"]
       },
       "session": {
         "model": "claude-opus-5-5",
@@ -743,15 +640,8 @@
         "undo": 0,
         "render": 0,
         "lint": 1,
-        "skill": [
-          "SKILL.md",
-          "pen-format.md",
-          "execute.md",
-          "guide/slides.md"
-        ],
-        "styles": [
-          "blueprint"
-        ]
+        "skill": ["SKILL.md", "pen-format.md", "execute.md", "guide/slides.md"],
+        "styles": ["blueprint"]
       },
       "session": {
         "model": "claude-opus-5-5",
@@ -766,11 +656,7 @@
         "error": null
       },
       "edit": null,
-      "renders": [
-        "renders/01-t21f0.png",
-        "renders/02-abOyO.png",
-        "renders/03-5kVyn.png"
-      ]
+      "renders": ["renders/01-t21f0.png", "renders/02-abOyO.png", "renders/03-5kVyn.png"]
     }
   ]
 }
