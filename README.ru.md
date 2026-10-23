@@ -19,6 +19,8 @@
 - **Движок [OpenPencil](https://github.com/open-pencil/open-pencil):** рендер на Skia, flex-раскладка, компоненты, переменные и темы.
 - **Удобно для git:** канонический JSON, маленькие диффы, линтер и рендер в CI.
 
+https://github.com/user-attachments/assets/190ed5a0-f968-4a17-9dce-901345ca1db1
+
 ## Быстрый старт
 
 Нужен Node.js ≥ 22 или Bun ≥ 1.3. Подключите Tusche к Claude Code:

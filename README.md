@@ -19,6 +19,8 @@
 - **Built on [OpenPencil](https://github.com/open-pencil/open-pencil)'s engine:** Skia rendering, flex layout, components, variables and themes.
 - **Git-friendly:** canonical JSON, small diffs, lint and render in CI.
 
+https://github.com/user-attachments/assets/190ed5a0-f968-4a17-9dce-901345ca1db1
+
 ## Quick start
 
 You need Node.js ≥ 22 or Bun ≥ 1.3. Connect Tusche to Claude Code:
