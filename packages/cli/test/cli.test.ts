@@ -51,7 +51,10 @@ const CARD = {
 describe('tusche CLI', () => {
   test('help, version, unknown command', async () => {
     expect((await tusche(['--help'])).stdout).toContain('usage: tusche <command>');
-    expect((await tusche(['--version'])).stdout.trim()).toBe('0.0.0');
+    const { version } = JSON.parse(
+      readFileSync(resolve(import.meta.dir, '../package.json'), 'utf8'),
+    );
+    expect((await tusche(['--version'])).stdout.trim()).toBe(version);
     const unknown = await tusche(['nope']);
     expect(unknown.code).toBe(2);
     expect(unknown.stderr).toContain('unknown command "nope"');
