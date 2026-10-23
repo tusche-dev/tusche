@@ -6,7 +6,8 @@
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./preview": "./src/preview/canvas.ts"
   },
   "files": [
     "src"

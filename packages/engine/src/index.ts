@@ -23,3 +23,11 @@ export {
   documentCharacters,
   imageUrls,
 } from './resources.ts';
+export { type FontData, loadedFontFiles, snapshotRoot } from './snapshot.ts';
+export {
+  decodeMessage,
+  encodeMessage,
+  type FontFile,
+  type PreviewMessage,
+  type RootSnapshot,
+} from './snapshot-codec.ts';
