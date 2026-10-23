@@ -29,4 +29,5 @@ export {
   UNDO_DEPTH,
 } from './session.ts';
 export type { MutationCounts } from './transaction.ts';
+export { rootsBetween } from './tree.ts';
 export type { ExecWarning } from './warnings.ts';

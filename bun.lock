@@ -100,6 +100,15 @@
         "valibot": "1.5.0",
       },
     },
+    "packages/preview": {
+      "name": "@tusche/preview",
+      "version": "0.0.0",
+      "dependencies": {
+        "@tusche/engine": "workspace:*",
+        "@tusche/exec": "workspace:*",
+        "@tusche/pen-format": "workspace:*",
+      },
+    },
     "packages/skill": {
       "name": "@tusche/skill",
       "version": "0.0.0",
@@ -227,6 +236,8 @@
     "@tusche/pen-bridge": ["@tusche/pen-bridge@workspace:packages/pen-bridge"],
 
     "@tusche/pen-format": ["@tusche/pen-format@workspace:packages/pen-format"],
+
+    "@tusche/preview": ["@tusche/preview@workspace:packages/preview"],
 
     "@tusche/skill": ["@tusche/skill@workspace:packages/skill"],
 

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{file}} · Tusche preview</title>
+    <style>
+      :root {
+        --bg: #f5f5f5;
+        --panel: rgba(255, 255, 255, 0.94);
+        --text: #1d1d1f;
+        --muted: #6e6e73;
+        --line: rgba(0, 0, 0, 0.1);
+        --accent: #0d99ff;
+        --live: #1fa95a;
+        --warn: #d93025;
+        font: 13px/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: var(--text);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); }
+      #canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+      #canvas.grabbing { cursor: grabbing; }
+      .bar {
+        position: fixed; top: 12px; left: 12px; right: 12px; display: flex; gap: 8px;
+        align-items: center; pointer-events: none;
+      }
+      .bar > * { pointer-events: auto; }
+      .chip {
+        display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px;
+        background: var(--panel); border: 1px solid var(--line); box-shadow: 0 1px 3px rgba(0,0,0,.06);
+        white-space: nowrap;
+      }
+      .spacer { flex: 1; }
+      .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+      .dot.live { background: var(--live); }
+      .dot.error { background: var(--warn); }
+      .file { font-weight: 600; }
+      .muted { color: var(--muted); }
+      button {
+        font: inherit; color: inherit; background: transparent; border: 0; padding: 0 2px;
+        cursor: pointer; border-radius: 4px;
+      }
+      button:hover { color: var(--accent); }
+      #error {
+        position: fixed; top: 56px; left: 12px; max-width: min(640px, calc(100% - 24px));
+        padding: 8px 12px; border-radius: 8px; background: #fdecea; color: #8a1c13;
+        border: 1px solid #f5c2bd; white-space: pre-wrap; font-family: ui-monospace, monospace;
+        font-size: 12px;
+      }
+      #info {
+        position: fixed; right: 12px; bottom: 12px; width: 300px; max-width: calc(100% - 24px);
+        padding: 10px 12px; border-radius: 8px; background: var(--panel);
+        border: 1px solid var(--line); box-shadow: 0 1px 3px rgba(0,0,0,.06);
+      }
+      #info .id { font-family: ui-monospace, monospace; font-size: 12px; word-break: break-all; }
+      #info .row { display: flex; justify-content: space-between; gap: 8px; margin-top: 4px; }
+      #info .path { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 2px 4px; }
+      #info .path button { color: var(--accent); }
+      #empty {
+        position: fixed; inset: 0; display: grid; place-items: center; color: var(--muted);
+        pointer-events: none;
+      }
+      [hidden],
+      #empty[hidden] { display: none; }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <div id="empty">Loading…</div>
+    <div class="bar">
+      <div class="chip">
+        <span id="dot" class="dot"></span>
+        <span class="file">{{file}}</span>
+        <span id="status" class="muted">connecting</span>
+      </div>
+      <div class="spacer"></div>
+      <div class="chip">
+        <button type="button" id="zoom" title="Zoom to 100%">100%</button>
+        <button type="button" id="fit" title="Fit everything (Shift+1)">Fit</button>
+      </div>
+    </div>
+    <div id="error" hidden></div>
+    <div id="info" hidden>
+      <div class="row">
+        <span class="id" id="info-id"></span>
+        <button type="button" id="copy" title="Copy the id">Copy</button>
+      </div>
+      <div class="row muted"><span id="info-name"></span><span id="info-size"></span></div>
+      <div class="path muted" id="info-path"></div>
+    </div>
+    <script type="module" src="/client.js"></script>
+  </body>
+</html>

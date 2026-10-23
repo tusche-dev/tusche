@@ -1,0 +1,24 @@
+{
+  "name": "@tusche/preview",
+  "version": "0.0.0",
+  "description": "Live preview of a .pen file in the browser: the engine lays it out, the page draws it with WebGL.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tusche-dev/tusche.git",
+    "directory": "packages/preview"
+  },
+  "dependencies": {
+    "@tusche/engine": "workspace:*",
+    "@tusche/exec": "workspace:*",
+    "@tusche/pen-format": "workspace:*"
+  }
+}

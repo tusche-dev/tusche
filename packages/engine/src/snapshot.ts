@@ -38,7 +38,7 @@ export async function snapshotRoot(
 
 /** A font file with its bytes. */
 export interface FontData extends FontFile {
-  data: Uint8Array;
+  data: Uint8Array<ArrayBuffer>;
 }
 
 /**

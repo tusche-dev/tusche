@@ -16,6 +16,7 @@ export {
 } from './engine.ts';
 export type { MissingGlyphs } from './glyphs.ts';
 export type { LintOptions, LintPreset, SceneLintMessage } from './lint.ts';
+export { previewFile } from './preview-files.ts';
 export {
   type AssetLoader,
   createAssetLoader,
