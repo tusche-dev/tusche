@@ -1,6 +1,5 @@
 #!/usr/bin/env bun
 import { readFileSync } from 'node:fs';
-import { text } from 'node:stream/consumers';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { serveStdio } from '@tusche/mcp';
@@ -99,14 +98,12 @@ export async function run(): Promise<void> {
     throw error;
   });
   const code = await main(process.argv.slice(2), {
-    out: (line) =>
-      process.stdout.write(`${line}
-`),
-    err: (line) =>
-      process.stderr.write(`${line}
-`),
+    out: (line) => process.stdout.write(`${line}\n`),
+    err: (line) => process.stderr.write(`${line}\n`),
     cwd: process.cwd(),
-    stdin: () => text(process.stdin),
+    // Straight from fd 0: under Bun on Linux, `process.stdin` loses what arrived before the
+    // engine finished loading.
+    stdin: async () => readFileSync(0, 'utf8'),
   });
   // `mcp` keeps running until the client disconnects.
   if (code >= 0) process.exit(code);
