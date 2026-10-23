@@ -13,7 +13,7 @@
 
 ## Status
 
-🚧 **Not released yet.** The project is in phase 1: building the first usable version (MCP server + CLI + live preview). The `.pen` format package and the headless renderer are done; the `execute` sandbox is next. See the [roadmap](docs/dev/08-roadmap.md) (in Russian).
+🚧 **Not released yet.** The project is in phase 1: building the first usable version (MCP server + CLI + live preview). The `.pen` format, the headless renderer, the `execute` sandbox, the MCP server, the CLI, the agent skill and the live preview work; upstream patches and the first npm release are next. See the [roadmap](docs/dev/08-roadmap.md) (in Russian).
 
 ## Quick start (phase 1 preview)
 

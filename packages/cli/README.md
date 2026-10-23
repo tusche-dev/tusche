@@ -13,5 +13,6 @@ Part of [Tusche](../../README.md), an open design canvas for AI agents. Not publ
 | `tusche lint <file.pen>` | Validator, the checks of `execute` and OpenPencil design rules; `--node`, `--info`, `--format text\|json` | 1 on errors |
 | `tusche validate <file.pen>` | The `.pen` schema; `--info` | 1 on errors |
 | `tusche migrate <file.pen>` | Writes the file in the current format version, keeping its style; `--dry-run` | — |
+| `tusche preview <file.pen>` | Live preview in the browser ([@tusche/preview](../preview/README.md)); `--port <n>` (default 4848 or the next free one, `0` for any), `--open`; runs until Ctrl+C | — |
 
 Exit code 2 means a wrong invocation. Environment: `TUSCHE_FONTS_OFFLINE=1`, `TUSCHE_ALLOW_REMOTE_ASSETS=1`, `TUSCHE_ROOT`, `TUSCHE_CACHE_DIR`.

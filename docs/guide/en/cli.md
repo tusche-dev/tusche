@@ -9,7 +9,7 @@ Install globally with `npm i -g @tusche/cli` (or `bun add -g @tusche/cli`), or r
 | Command | What it does |
 |---|---|
 | `tusche mcp` | Start the MCP server on stdio. This is what your agent runs. |
-| `tusche preview <file.pen>` | Open a live preview in the browser that updates on every change. *(Coming next.)* |
+| `tusche preview <file.pen> [--port n] [--open]` | Serve a live preview at `http://127.0.0.1:4848/` (or the next free port). The page redraws whenever the file is saved, by the agent or anyone else. Drag or scroll to pan, Ctrl/⌘ + scroll to zoom, click a layer to see its id. `--open` opens the browser. Runs until Ctrl+C. |
 | `tusche render <file.pen> [--node <id>…] [--scale 2] [--max-side px] [--out dir/]` | Render top-level frames (or the given nodes) to PNG, one file per node, `<id>.png`. The default folder is `<name>.renders`. |
 | `tusche export <file.pen> --format png\|jpeg\|webp\|svg\|html-tailwind [--node <id>…] --out <path>` | Export nodes to files. With `--node`, one file with those nodes; without it, one file per top-level frame in the `--out` folder. PDF is not available yet. |
 | `tusche exec <file.pen> <script.js \| -> [--create] [--out dir/]` | Run an `execute` snippet against a file, without an agent (`-` reads it from stdin). The file is saved right away; screenshots go to `--out`. Exit code 1 if the snippet fails. |

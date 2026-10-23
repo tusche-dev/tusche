@@ -6,7 +6,7 @@
 
 Tusche — открытый дизайн-холст для ИИ-агентов. Формат `.pen` — родной, движок — OpenPencil, сверху — API `execute` в духе pen.dev. Начни с [docs/dev/README.md](docs/dev/README.md), затем прочитай [04-architecture](docs/dev/04-architecture.md) и [06-agent-api](docs/dev/06-agent-api.md).
 
-**Текущая фаза — 1 (MCP-компаньон).** Пакеты лежат в `packages/`. Готовы `@tusche/pen-format`, `@tusche/pen-bridge` (проекция в scene graph), `@tusche/engine` (раскладка, границы, PNG, экспорт) `@tusche/exec` (движок `execute`: песочница QuickJS, API, транзакции, edits, предупреждения, undo, отложенная запись, `lintDocument`; таблица покрытия — в `packages/exec/README.md`), `@tusche/mcp` (MCP-сервер на stdio, ADR-009), `@tusche/cli` (`bun packages/cli/src/index.ts mcp|exec|render|export|lint|validate|migrate`), `@tusche/skill` (скилл 0.1.1: `SKILL.md`, формат, `execute`, семь гайдов `guide/*.md`) и `@tusche/styles` (8 архетипов; покрытие кириллицы — `bun packages/styles/scripts/check-fonts.ts`). Эвалы скилла — `evals/` (ADR-010): `bun evals/src/run.ts` гоняет `claude -p` (тратит квоту), `bun evals/src/compare.ts evals/baseline/metrics.json <прогон>` — правило приёмки; любое изменение скилла или архетипов проверяется ими. Проверка — `bun run check` (типы, Biome, `bun test`). Эталонные рендеры — `bun packages/engine/scripts/render-baseline.ts <файлы>`, замеры `execute` — `bun packages/exec/scripts/bench-execute.ts <файлы>`. `@open-pencil/core` пропатчен (`patches/`, список — в [02-research](docs/dev/02-research.md)).
+**Текущая фаза — 1 (MCP-компаньон).** Пакеты лежат в `packages/`. Готовы `@tusche/pen-format`, `@tusche/pen-bridge` (проекция в scene graph), `@tusche/engine` (раскладка, границы, PNG, экспорт) `@tusche/exec` (движок `execute`: песочница QuickJS, API, транзакции, edits, предупреждения, undo, отложенная запись, `lintDocument`; таблица покрытия — в `packages/exec/README.md`), `@tusche/mcp` (MCP-сервер на stdio, ADR-009), `@tusche/preview` (живой предпросмотр: сервер следит за файлом, страница рисует разложенную движком сцену через WebGL из `@tusche/engine/preview`, ADR-011), `@tusche/cli` (`bun packages/cli/src/index.ts mcp|exec|render|export|lint|validate|migrate|preview`), `@tusche/skill` (скилл 0.1.1: `SKILL.md`, формат, `execute`, семь гайдов `guide/*.md`) и `@tusche/styles` (8 архетипов; покрытие кириллицы — `bun packages/styles/scripts/check-fonts.ts`). Эвалы скилла — `evals/` (ADR-010): `bun evals/src/run.ts` гоняет `claude -p` (тратит квоту), `bun evals/src/compare.ts evals/baseline/metrics.json <прогон>` — правило приёмки; любое изменение скилла или архетипов проверяется ими. Проверка — `bun run check` (типы, Biome, `bun test`). Эталонные рендеры — `bun packages/engine/scripts/render-baseline.ts <файлы>`, замеры `execute` — `bun packages/exec/scripts/bench-execute.ts <файлы>`. `@open-pencil/core` пропатчен (`patches/`, список — в [02-research](docs/dev/02-research.md)).
 
 ## Языки документации
 
@@ -29,7 +29,7 @@ Tusche — открытый дизайн-холст для ИИ-агентов. 
 ```
 docs/dev/            01-vision … 08-roadmap, adr/                    (RU)
 docs/guide/en|ru/    getting-started, cli, faq                       (EN + RU)
-packages/            pen-format, pen-bridge, engine, exec, mcp, skill, styles, cli
+packages/            pen-format, pen-bridge, engine, exec, mcp, skill, styles, preview, cli
 evals/               задачи, раннер claude -p, оценка, baseline (ADR-010)
-apps/                (фаза 1) preview, (фаза 2) desktop
+apps/                (фаза 2) desktop
 ```

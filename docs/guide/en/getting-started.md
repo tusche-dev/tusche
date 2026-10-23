@@ -61,7 +61,7 @@ The file is saved automatically. It is plain JSON, so you can commit it next to 
 npx @tusche/cli preview design/app.pen
 ```
 
-This opens a browser page that redraws the design every time the agent changes it.
+Open the address it prints (or add `--open`). The page redraws the design every time the file is saved, so you see each change the agent makes. Click a layer to see its id, handy when you ask the agent to change exactly that element.
 
 ## 4. Keep iterating
 
