@@ -57,12 +57,27 @@ export const quickjs = (): Promise<QuickJSAsyncWASMModule> => {
 };
 
 /**
- * Drops the module after the VM ran out of memory or broke: an allocation failure deep in
- * QuickJS can leave the WASM heap inconsistent, and a fresh module costs ~10 ms.
+ * Drops the module after the VM itself broke. A snippet over its memory limit does not count:
+ * the limit belongs to the QuickJS runtime of the call, the WASM heap stays sound, and every
+ * call gets a new runtime anyway. A fresh module is not free either: under Bun on Linux the
+ * next one takes ~30 s to instantiate after a heap of that size.
  */
 const resetModule = (): void => {
   modulePromise = undefined;
 };
+
+/**
+ * A context in the shared module. Once, after a run out of memory, `newContext` failed with
+ * `call_indirect to a signature that does not match` (ADR-008): then the module is replaced.
+ */
+async function newContext(): Promise<QuickJSAsyncContext> {
+  try {
+    return (await quickjs()).newContext();
+  } catch {
+    resetModule();
+    return (await quickjs()).newContext();
+  }
+}
 
 let queue: Promise<unknown> = Promise.resolve();
 
@@ -89,8 +104,7 @@ export function runSnippet(options: RunOptions): Promise<RunResult> {
     const deadline = started + limits.timeMs;
     const timedOut = () => performance.now() > deadline;
     const ms = () => performance.now() - started;
-    const module = await quickjs();
-    const ctx = module.newContext();
+    const ctx = await newContext();
     try {
       ctx.runtime.setMemoryLimit(limits.memoryBytes);
       ctx.runtime.setMaxStackSize(limits.stackBytes);
@@ -110,7 +124,6 @@ export function runSnippet(options: RunOptions): Promise<RunResult> {
         const lines = options.code.split('\n').length;
         const error = describeError(ctx, result.error, timedOut(), limits, lines);
         result.error.dispose();
-        if (error.name === 'MemoryError') resetModule();
         return { ok: false, error, ms: ms() };
       }
       result.value.dispose();
