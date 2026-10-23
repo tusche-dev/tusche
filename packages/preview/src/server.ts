@@ -1,7 +1,10 @@
 import { createHash } from 'node:crypto';
-import { type FSWatcher, watch } from 'node:fs';
+import { createReadStream, existsSync, type FSWatcher, watch } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
+import type { AddressInfo } from 'node:net';
 import { basename, dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   createEngine,
   type Engine,
@@ -15,7 +18,7 @@ import {
 } from '@tusche/engine';
 import { rootsBetween } from '@tusche/exec';
 import { migratePen, type PenDocument, parsePen } from '@tusche/pen-format';
-import type { Server, ServerWebSocket } from 'bun';
+import { WebSocketServer } from 'ws';
 import { shareUnchanged } from './diff.ts';
 
 export interface PreviewOptions {
@@ -45,15 +48,18 @@ export interface PreviewServer {
 
 const DEFAULT_PORT = 4848;
 const PORT_ATTEMPTS = 20;
-const TOPIC = 'preview';
-const CLIENT_ENTRY = join(import.meta.dir, 'client', 'main.ts');
-const INDEX_HTML = join(import.meta.dir, 'client', 'index.html');
+const HERE = dirname(fileURLToPath(import.meta.url));
+const CLIENT_ENTRY = join(HERE, 'client', 'main.ts');
+/** The page script built ahead of time (published package). */
+const CLIENT_BUILT = join(HERE, 'client', 'client.js');
+const INDEX_HTML = join(HERE, 'client', 'index.html');
 
 let client: Promise<string> | undefined;
 
-/** The page script, built once per process. */
+/** The page script: the built one, or built from source once per process under Bun. */
 function clientScript(): Promise<string> {
   client ??= (async () => {
+    if (existsSync(CLIENT_BUILT)) return readFile(CLIENT_BUILT, 'utf8');
     const result = await Bun.build({
       entrypoints: [CLIENT_ENTRY],
       target: 'browser',
@@ -176,53 +182,52 @@ export async function startPreview(options: PreviewOptions): Promise<PreviewServ
     timer = setTimeout(refresh, debounceMs);
   };
 
-  const fetch = (request: Request, srv: Server<undefined>): Response | undefined => {
-    const { pathname } = new URL(request.url);
-    if (pathname === '/ws') {
-      return srv.upgrade(request)
-        ? undefined
-        : new Response('expected a WebSocket', { status: 400 });
-    }
+  const send = (
+    res: ServerResponse,
+    status: number,
+    body: string | Uint8Array,
+    headers: Record<string, string> = {},
+  ) => {
+    res.writeHead(status, headers).end(body);
+  };
+
+  const handle = (req: IncomingMessage, res: ServerResponse) => {
+    const { pathname } = new URL(req.url ?? '/', 'http://localhost');
+    if (pathname === '/ws') return send(res, 400, 'expected a WebSocket');
     if (pathname === '/') {
-      return new Response(html.replaceAll('{{file}}', escapeHtml(name)), {
-        headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' },
+      return send(res, 200, html.replaceAll('{{file}}', escapeHtml(name)), {
+        'content-type': 'text/html; charset=utf-8',
+        'cache-control': 'no-store',
       });
     }
     if (pathname === '/client.js') {
-      return new Response(script, {
-        headers: { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'no-store' },
+      return send(res, 200, script, {
+        'content-type': 'text/javascript; charset=utf-8',
+        'cache-control': 'no-store',
       });
     }
     if (pathname === '/canvaskit.wasm' || pathname.startsWith('/assets/')) {
       const path = previewFile(basename(pathname));
-      if (!path) return notFound();
-      return new Response(Bun.file(path), { headers: { 'cache-control': 'max-age=86400' } });
+      if (!path) return send(res, 404, 'not found');
+      res.writeHead(200, {
+        'content-type': pathname.endsWith('.wasm')
+          ? 'application/wasm'
+          : 'application/octet-stream',
+        'cache-control': 'max-age=86400',
+      });
+      createReadStream(path).pipe(res);
+      return;
     }
     if (pathname.startsWith('/fonts/')) {
       const id = pathname.slice('/fonts/'.length);
       const font = loadedFontFiles().find((f) => f.id === id);
-      if (!font) return notFound();
-      return new Response(font.data, {
-        headers: {
-          'content-type': 'application/octet-stream',
-          'cache-control': 'max-age=31536000, immutable',
-        },
+      if (!font) return send(res, 404, 'not found');
+      return send(res, 200, font.data, {
+        'content-type': 'application/octet-stream',
+        'cache-control': 'max-age=31536000, immutable',
       });
     }
-    return notFound();
-  };
-
-  const websocket = {
-    perMessageDeflate: true,
-    open(ws: ServerWebSocket<undefined>) {
-      ws.subscribe(TOPIC);
-      // A new page gets the whole document (once the first load is done).
-      void queue.then(() => {
-        if (doc) ws.send(encodeMessage(update([...roots.values()])));
-        if (error !== undefined) ws.send(encodeMessage(failure(error)));
-      });
-    },
-    message() {},
+    send(res, 404, 'not found');
   };
 
   const host = options.host ?? '127.0.0.1';
@@ -230,10 +235,10 @@ export async function startPreview(options: PreviewOptions): Promise<PreviewServ
     options.port === undefined
       ? Array.from({ length: PORT_ATTEMPTS }, (_, i) => DEFAULT_PORT + i)
       : [options.port];
-  let server: Server<undefined> | undefined;
+  let server: Server | undefined;
   for (const port of ports) {
     try {
-      server = Bun.serve({ hostname: host, port, fetch, websocket });
+      server = await listen(createServer(handle), host, port);
       break;
     } catch (e) {
       if ((e as NodeJS.ErrnoException).code !== 'EADDRINUSE' || port === ports.at(-1)) throw e;
@@ -241,7 +246,19 @@ export async function startPreview(options: PreviewOptions): Promise<PreviewServ
   }
   if (!server) throw new Error('no free port');
   const srv = server;
-  publish = (message) => srv.publish(TOPIC, encodeMessage(message));
+  const sockets = new WebSocketServer({ server: srv, path: '/ws', perMessageDeflate: true });
+  sockets.on('connection', (ws) => {
+    // A new page gets the whole document (once the first load is done).
+    void queue.then(() => {
+      if (doc) ws.send(encodeMessage(update([...roots.values()])));
+      if (error !== undefined) ws.send(encodeMessage(failure(error)));
+    });
+  });
+  publish = (message) => {
+    const data = encodeMessage(message);
+    for (const ws of sockets.clients) if (ws.readyState === ws.OPEN) ws.send(data);
+  };
+  const port = (srv.address() as AddressInfo).port;
 
   await refresh();
   let watcher: FSWatcher | undefined = watch(dirname(file), (_event, changed) => {
@@ -249,20 +266,32 @@ export async function startPreview(options: PreviewOptions): Promise<PreviewServ
   });
 
   return {
-    url: `http://${host === '0.0.0.0' ? 'localhost' : host}:${srv.port}/`,
-    port: srv.port as number,
+    url: `http://${host === '0.0.0.0' ? 'localhost' : host}:${port}/`,
+    port,
     file,
     async close() {
       clearTimeout(timer);
       watcher?.close();
       watcher = undefined;
       await queue;
-      await srv.stop(true);
+      for (const ws of sockets.clients) ws.terminate();
+      await new Promise<void>((done) => sockets.close(() => done()));
+      srv.closeAllConnections();
+      await new Promise<void>((done) => srv.close(() => done()));
     },
   };
 }
 
-const notFound = () => new Response('not found', { status: 404 });
+/** Starts listening; rejects on `EADDRINUSE` and other errors. */
+function listen(server: Server, host: string, port: number): Promise<Server> {
+  return new Promise((done, fail) => {
+    server.once('error', fail);
+    server.listen(port, host, () => {
+      server.off('error', fail);
+      done(server);
+    });
+  });
+}
 
 const escapeHtml = (text: string) =>
   text.replace(

@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { readFileSync } from 'node:fs';
+import { text } from 'node:stream/consumers';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { serveStdio } from '@tusche/mcp';
@@ -90,18 +91,26 @@ export async function main(argv: string[], io: Io): Promise<number> {
   }
 }
 
-if (import.meta.main) {
+/** Runs the CLI as a process: arguments, stdio and the exit code. */
+export async function run(): Promise<void> {
   // `tusche lint … | head`: a closed pipe is not an error.
   process.stdout.on('error', (error: NodeJS.ErrnoException) => {
     if (error.code === 'EPIPE') process.exit(0);
     throw error;
   });
   const code = await main(process.argv.slice(2), {
-    out: (line) => process.stdout.write(`${line}\n`),
-    err: (line) => process.stderr.write(`${line}\n`),
+    out: (line) =>
+      process.stdout.write(`${line}
+`),
+    err: (line) =>
+      process.stderr.write(`${line}
+`),
     cwd: process.cwd(),
-    stdin: () => new Response(Bun.stdin.stream()).text(),
+    stdin: () => text(process.stdin),
   });
   // `mcp` keeps running until the client disconnects.
   if (code >= 0) process.exit(code);
 }
+
+// `bun packages/cli/src/index.ts`; the published package starts from `bin.ts`.
+if (import.meta.main) await run();
