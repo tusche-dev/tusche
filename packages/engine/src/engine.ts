@@ -95,6 +95,12 @@ export interface Clipping {
   state: 'partially clipped' | 'fully clipped';
   /** Pen path of the clipping ancestor. */
   by: string;
+  /**
+   * The cut looks deliberate, so it is not a problem: `below-fold` — content past the end of a
+   * scroll area (a clipping flow that is not a top-level node and spans at least half of its
+   * top-level node); `bleed` — a free-placed shape running over the edge. Only for a partial cut.
+   */
+  intended?: 'below-fold' | 'bleed';
 }
 
 export interface Comparison {
@@ -342,11 +348,47 @@ export class Scene {
           return { state: 'fully clipped', by: id };
         }
         const cut = overlap.width < box.width - EPSILON || overlap.height < box.height - EPSILON;
-        if (cut && !partial) partial = { state: 'partially clipped', by: id };
+        if (cut && (!partial || partial.intended)) {
+          const intended = this.intendedCut(path, node, box, id);
+          if (!partial || !intended) {
+            partial = { state: 'partially clipped', by: id };
+            if (intended) partial.intended = intended;
+          }
+        }
       }
       id = ancestor.parentId;
     }
     return partial;
+  }
+
+  /** Why the partial cut of a node by a clipping ancestor looks deliberate, if it does. */
+  private intendedCut(
+    path: string,
+    node: GraphNode,
+    box: Rect,
+    clipperId: string,
+  ): Clipping['intended'] {
+    const graph = this.projection.graph;
+    const parent = node.parentId ? graph.getNode(node.parentId) : undefined;
+    const free = parent?.layoutMode === 'NONE' || node.layoutPositioning === 'ABSOLUTE';
+    if (free && SHAPES.has(node.type) && node.childIds.length === 0) return 'bleed';
+    const clipper = graph.getNode(clipperId);
+    const root = this.projection.rootOf(path);
+    if (!clipper || root === undefined || root === clipperId) return undefined;
+    const row = clipper.layoutMode === 'HORIZONTAL';
+    if (!row && clipper.layoutMode !== 'VERTICAL') return undefined;
+    const area = graph.getAbsoluteBounds(clipperId);
+    const page = graph.getAbsoluteBounds(root);
+    if ((row ? area.width / page.width : area.height / page.height) < 0.5) return undefined;
+    // Cut only past the end of the flow: inside on the other three sides.
+    const inside = row
+      ? box.y >= area.y - EPSILON &&
+        box.y + box.height <= area.y + area.height + EPSILON &&
+        box.x >= area.x - EPSILON
+      : box.x >= area.x - EPSILON &&
+        box.x + box.width <= area.x + area.width + EPSILON &&
+        box.y >= area.y - EPSILON;
+    return inside ? 'below-fold' : undefined;
   }
 
   /**
@@ -466,6 +508,11 @@ const RASTER = { png: 'PNG', jpeg: 'JPG', webp: 'WEBP' } as const;
 
 /** Bounds closer than this are treated as touching (layout works in floats). */
 const EPSILON = 0.5;
+
+type GraphNode = NonNullable<ReturnType<SceneGraph['getNode']>>;
+
+/** Scene graph types of plain shapes: decoration when placed freely. */
+const SHAPES = new Set(['RECTANGLE', 'ELLIPSE', 'VECTOR', 'STAR', 'POLYGON', 'LINE']);
 
 function intersect(a: Rect, b: Rect): Rect {
   const x = Math.max(a.x, b.x);

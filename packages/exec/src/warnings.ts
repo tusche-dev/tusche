@@ -83,7 +83,8 @@ export function afterCommit(
     const root = scene.projection.rootOf(path);
     if (root === undefined || !scene.isLaidOut(root)) continue;
     const clipping = scene.clippingSync(path);
-    if (clipping) {
+    // Content below the fold of a scroll area and decoration bleeding over an edge are meant.
+    if (clipping && !clipping.intended) {
       warnings.push({
         code: 'clipped',
         message: `${label(source, path)} is ${clipping.state} by ${label(source, clipping.by)}`,

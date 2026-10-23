@@ -74,7 +74,9 @@ const isGroup = (node: GraphNode): boolean =>
  * - `touch-target-size` on a row of controls (`Footer links` holding the links) — each control
  *   is a target, not the row;
  * - `color-contrast` against a semi-transparent fill — the rule takes it as opaque, so a tint
- *   over a dark card reads as 1:1. The ratio is computed again over the composited background.
+ *   over a dark card reads as 1:1. The ratio is computed again over the composited background;
+ *   with no opaque fill under the tint (a component alone on the canvas) the background is
+ *   unknown and the finding is dropped: its instances are checked where they stand.
  */
 function refine(graph: SceneGraph, m: RawMessage): RawMessage | undefined {
   const node = graph.getNode(m.nodeId.split('#')[0] as string);
@@ -84,7 +86,7 @@ function refine(graph: SceneGraph, m: RawMessage): RawMessage | undefined {
     const ratio = compositedContrast(graph, node);
     const min = (m.data as { minRatio?: number } | undefined)?.minRatio;
     if (ratio === undefined || min === undefined) return m;
-    if (ratio >= min) return undefined;
+    if (ratio === null || ratio >= min) return undefined;
     return { ...m, message: m.message.replace(/[\d.]+:1/, `${ratio.toFixed(2)}:1`) };
   }
   return m;
@@ -96,10 +98,11 @@ const WHITE = { r: 1, g: 1, b: 1, a: 1 };
 
 /**
  * Contrast of a text against what is under it: semi-transparent fills of the ancestors are
- * stacked over the first opaque one (white when there is none). `undefined` when nothing in
- * the stack is translucent — then the rule's own ratio stands.
+ * stacked over the first opaque one. `undefined` when nothing in the stack is translucent —
+ * then the rule's own ratio stands; `null` when translucent fills have no opaque one under
+ * them — the background is unknown.
  */
-function compositedContrast(graph: SceneGraph, text: GraphNode): number | undefined {
+function compositedContrast(graph: SceneGraph, text: GraphNode): number | null | undefined {
   const fg = solid(text);
   if (!fg) return undefined;
   const layers: NonNullable<ReturnType<typeof solid>>[] = [];
@@ -114,6 +117,7 @@ function compositedContrast(graph: SceneGraph, text: GraphNode): number | undefi
     id = parent.parentId;
   }
   if (alphaOf(fg) >= 1 && layers.every((f) => alphaOf(f) >= 1)) return undefined;
+  if (layers.length > 0 && !layers.some((f) => alphaOf(f) >= 1)) return null;
   let bg: Color = WHITE;
   for (const fill of layers.reverse()) bg = compositeOver(fill.color, bg, alphaOf(fill));
   return contrastRatio(compositeOver(fg.color, bg, alphaOf(fg)), bg);

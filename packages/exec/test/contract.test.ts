@@ -410,7 +410,7 @@ describe('warnings', () => {
     ['ignored-xy', 'Insert("box", {type: "rectangle", x: 5, width: 1, height: 1})'],
     [
       'clipped',
-      'const f = Insert("box", {type: "frame", width: 10, height: 10, clip: true, layout: "none"}); Insert(f, {type: "rectangle", width: 50, height: 50})',
+      'const f = Insert("box", {type: "frame", width: 10, height: 10, clip: true, layout: "none"}); Insert(f, {type: "frame", width: 50, height: 50})',
     ],
     ['zero-size', 'Insert("box", {type: "frame", layout: "vertical"})'],
     [

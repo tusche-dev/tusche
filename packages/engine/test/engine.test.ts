@@ -3,7 +3,7 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { PenDocument } from '@tusche/pen-format';
-import { createEngine, type Engine } from '../src/index.ts';
+import { type Clipping, createEngine, type Engine } from '../src/index.ts';
 
 let engine: Engine;
 
@@ -308,7 +308,11 @@ describe('clipping', () => {
       box([rect('inside', 10, 10), rect('edge', 80, 10), rect('out', 200, 10)]),
     );
     expect(await scene.clipping('inside')).toBeUndefined();
-    expect(await scene.clipping('edge')).toEqual({ state: 'partially clipped', by: 'box' });
+    expect(await scene.clipping('edge')).toEqual({
+      state: 'partially clipped',
+      by: 'box',
+      intended: 'bleed',
+    });
     expect(await scene.clipping('out')).toEqual({ state: 'fully clipped', by: 'box' });
   });
 
@@ -334,10 +338,67 @@ describe('clipping', () => {
       ]),
     );
     expect(scene.isLaidOut('box')).toBe(false);
-    expect(await scene.clipping('deep')).toEqual({ state: 'partially clipped', by: 'box' });
+    const deep: Clipping = { state: 'partially clipped', by: 'box', intended: 'bleed' };
+    expect(await scene.clipping('deep')).toEqual(deep);
     expect(scene.isLaidOut('box')).toBe(true);
-    expect(scene.clippingSync('deep')).toEqual({ state: 'partially clipped', by: 'box' });
+    expect(scene.clippingSync('deep')).toEqual(deep);
     expect(scene.boundsSync('deep')).toMatchObject({ x: 0, absolute: { x: 70 } });
+  });
+
+  test('a free shape over the edge is a bleed; text and frames are not', async () => {
+    const scene = await engine.open(
+      box([
+        rect('decor', 80, 10),
+        { type: 'text', id: 'words', x: 80, y: 50, content: 'Overflowing text', fontSize: 14 },
+      ]),
+    );
+    expect(await scene.clipping('decor')).toEqual({
+      state: 'partially clipped',
+      by: 'box',
+      intended: 'bleed',
+    });
+    expect(await scene.clipping('words')).toEqual({ state: 'partially clipped', by: 'box' });
+  });
+
+  test('past the end of a scroll area is below the fold; a small clipping card is not', async () => {
+    const tall = (id: string) => ({ type: 'frame', id, width: 300, height: 200, fill: '#EEEEEE' });
+    const scene = await engine.open(
+      doc([
+        {
+          type: 'frame',
+          id: 'screen',
+          width: 300,
+          height: 800,
+          layout: 'vertical',
+          children: [
+            {
+              type: 'frame',
+              id: 'content',
+              width: 300,
+              height: 700,
+              layout: 'vertical',
+              clip: true,
+              children: [tall('a'), tall('b'), tall('c'), tall('fold')],
+            },
+            {
+              type: 'frame',
+              id: 'card',
+              width: 300,
+              height: 100,
+              layout: 'vertical',
+              clip: true,
+              children: [tall('spill')],
+            },
+          ],
+        },
+      ]),
+    );
+    expect(await scene.clipping('fold')).toEqual({
+      state: 'partially clipped',
+      by: 'content',
+      intended: 'below-fold',
+    });
+    expect(await scene.clipping('spill')).toEqual({ state: 'partially clipped', by: 'card' });
   });
 });
 
@@ -471,6 +532,22 @@ describe('lint', () => {
     // A lime tint over a near-black card: the rule alone reads lime on lime, 1:1.
     expect(found.map((m) => m.path)).toEqual(['low']);
     expect(found[0]?.message).not.toContain('1.00:1');
+  });
+
+  test('contrast over a tint with nothing opaque under it is not judged', async () => {
+    const scene = await engine.open(
+      doc([
+        {
+          type: 'frame',
+          id: 'badge',
+          reusable: true,
+          fill: '#5FDC8F1F',
+          children: [{ type: 'text', id: 'label', content: 'Done', fill: '#5FDC8F', fontSize: 14 }],
+        },
+      ]),
+    );
+    const found = (await scene.lint()).filter((m) => m.ruleId === 'color-contrast');
+    expect(found).toEqual([]);
   });
 
   test('only the given nodes; unknown paths are skipped', async () => {
