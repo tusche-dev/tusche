@@ -1,6 +1,6 @@
 {
   "name": "@tusche/cli",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "The tusche command line: mcp, exec, render, export, lint, validate, migrate, preview.",
   "license": "MIT",
   "type": "module",

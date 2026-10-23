@@ -1,6 +1,6 @@
 {
   "name": "@tusche/engine",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Headless OpenPencil for Tusche: layout, bounds by pen path, PNG rendering.",
   "license": "MIT",
   "type": "module",

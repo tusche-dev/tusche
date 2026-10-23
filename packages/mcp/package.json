@@ -1,6 +1,6 @@
 {
   "name": "@tusche/mcp",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "MCP server for Tusche: execute, render, lint, undo and the skill over stdio.",
   "license": "MIT",
   "type": "module",

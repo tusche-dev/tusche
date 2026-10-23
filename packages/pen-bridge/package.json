@@ -1,6 +1,6 @@
 {
   "name": "@tusche/pen-bridge",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Projects a .pen document into the OpenPencil scene graph.",
   "license": "MIT",
   "type": "module",

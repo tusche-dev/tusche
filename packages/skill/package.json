@@ -1,6 +1,6 @@
 {
   "name": "@tusche/skill",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Agent skill: SKILL.md and the guides it links to, served by read_skill.",
   "license": "MIT",
   "type": "module",

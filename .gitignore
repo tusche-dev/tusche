@@ -17,3 +17,4 @@ packages/*/scratch/
 
 # Eval runs (the baseline lives in evals/baseline)
 evals/runs/
+.release/
