@@ -1,0 +1,1334 @@
+{
+  "version": "2.21",
+  "children": [
+    {
+      "type": "frame",
+      "id": "t21f0",
+      "name": "01 Title",
+      "width": 1920,
+      "height": 1080,
+      "placeholder": false,
+      "clip": true,
+      "layout": "vertical",
+      "padding": 120,
+      "justifyContent": "space_between",
+      "fill": "$color-bg",
+      "children": [
+        {
+          "type": "frame",
+          "id": "l0qOe",
+          "name": "Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "7w9tS",
+              "name": "Brand",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "nKhTY",
+                  "name": "Brand Icon",
+                  "width": 40,
+                  "height": 40,
+                  "fill": "$color-accent",
+                  "library": "lucide",
+                  "icon": "waves"
+                },
+                {
+                  "type": "text",
+                  "id": "2C4Je",
+                  "name": "Wordmark",
+                  "fill": "$color-text",
+                  "content": "Tidewater",
+                  "fontFamily": "$font-display",
+                  "fontSize": 32,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "ciHy8",
+              "name": "Round",
+              "fill": "$color-muted",
+              "content": "SEED ROUND · OCT 2026",
+              "fontFamily": "$font-mono",
+              "fontSize": 24,
+              "letterSpacing": 1
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "3WkBC",
+          "name": "Body",
+          "width": "fill_container",
+          "gap": 120,
+          "justifyContent": "space_between",
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "RiC2g",
+              "name": "Text",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 40,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "DldT8",
+                  "name": "Title",
+                  "width": "fill_container",
+                  "fill": "$color-text",
+                  "content": "Know where the water goes before it gets there.",
+                  "textGrowth": "fixed-width",
+                  "fontFamily": "$font-display",
+                  "fontSize": 120,
+                  "fontWeight": "600",
+                  "letterSpacing": -3,
+                  "lineHeight": 1.02
+                },
+                {
+                  "type": "text",
+                  "id": "4ELTD",
+                  "name": "Tagline",
+                  "width": 820,
+                  "fill": "$color-muted",
+                  "content": "Street-level flood forecasts for city water and stormwater utilities.",
+                  "textGrowth": "fixed-width",
+                  "fontFamily": "$font-body",
+                  "fontSize": 40,
+                  "lineHeight": 1.3
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "AsM5h",
+              "name": "Tide Chart",
+              "width": 640,
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "lF2vU",
+                  "name": "Chart Label",
+                  "fill": "$color-muted",
+                  "content": "HARBOR ST GAUGE · NEXT 72 H",
+                  "fontFamily": "$font-mono",
+                  "fontSize": 24,
+                  "letterSpacing": 1
+                },
+                {
+                  "type": "frame",
+                  "id": "TCDx3",
+                  "name": "Plot",
+                  "width": 640,
+                  "height": 400,
+                  "gap": 8,
+                  "alignItems": "end",
+                  "stroke": "$color-line",
+                  "strokeWidth": {
+                    "bottom": 2
+                  },
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "M12DI",
+                      "name": "Bar 1",
+                      "width": "fill_container",
+                      "height": 90,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "Vtb6m",
+                      "name": "Bar 2",
+                      "width": "fill_container",
+                      "height": 110,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "ORcmh",
+                      "name": "Bar 3",
+                      "width": "fill_container",
+                      "height": 130,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "WG5Gy",
+                      "name": "Bar 4",
+                      "width": "fill_container",
+                      "height": 120,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "PBfLR",
+                      "name": "Bar 5",
+                      "width": "fill_container",
+                      "height": 105,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "f0qAU",
+                      "name": "Bar 6",
+                      "width": "fill_container",
+                      "height": 115,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "h6x3D",
+                      "name": "Bar 7",
+                      "width": "fill_container",
+                      "height": 140,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "dYMXA",
+                      "name": "Bar 8",
+                      "width": "fill_container",
+                      "height": 170,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "0EfB3",
+                      "name": "Bar 9",
+                      "width": "fill_container",
+                      "height": 160,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "19y8d",
+                      "name": "Bar 10",
+                      "width": "fill_container",
+                      "height": 150,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "gYAIK",
+                      "name": "Bar 11",
+                      "width": "fill_container",
+                      "height": 175,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "lgcDe",
+                      "name": "Bar 12",
+                      "width": "fill_container",
+                      "height": 210,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "ROksT",
+                      "name": "Bar 13",
+                      "width": "fill_container",
+                      "height": 250,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "BNeVH",
+                      "name": "Bar 14",
+                      "width": "fill_container",
+                      "height": 290,
+                      "fill": "$color-accent"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "igZwz",
+                      "name": "Bar 15",
+                      "width": "fill_container",
+                      "height": 320,
+                      "fill": "$color-accent"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "dLuDL",
+                      "name": "Bar 16",
+                      "width": "fill_container",
+                      "height": 345,
+                      "fill": "$color-accent"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "kCNo4",
+                      "name": "Bar 17",
+                      "width": "fill_container",
+                      "height": 330,
+                      "fill": "$color-accent"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "iPqnR",
+                      "name": "Bar 18",
+                      "width": "fill_container",
+                      "height": 300,
+                      "fill": "$color-accent"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "yBNdk",
+                      "name": "Bar 19",
+                      "width": "fill_container",
+                      "height": 280,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "R0ayh",
+                      "name": "Bar 20",
+                      "width": "fill_container",
+                      "height": 240,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "daoWZ",
+                      "name": "Bar 21",
+                      "width": "fill_container",
+                      "height": 200,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "jw4Wg",
+                      "name": "Bar 22",
+                      "width": "fill_container",
+                      "height": 170,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "oqBaG",
+                      "name": "Bar 23",
+                      "width": "fill_container",
+                      "height": 150,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "7e4xG",
+                      "name": "Bar 24",
+                      "width": "fill_container",
+                      "height": 130,
+                      "fill": "$color-line"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "twtTW",
+                      "name": "Flood Threshold",
+                      "x": 0,
+                      "y": 120,
+                      "width": 640,
+                      "height": 2,
+                      "layoutPosition": "absolute",
+                      "fill": "$color-text"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Fc9GL",
+                      "name": "Threshold Label",
+                      "x": 0,
+                      "y": 78,
+                      "layoutPosition": "absolute",
+                      "fill": "$color-text",
+                      "content": "FLOOD STAGE",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 24,
+                      "letterSpacing": 1
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "DnxO9",
+          "name": "Footer",
+          "width": "fill_container",
+          "padding": [
+            32,
+            0,
+            0,
+            0
+          ],
+          "justifyContent": "space_between",
+          "stroke": "$color-line",
+          "strokeWidth": {
+            "top": 2
+          },
+          "children": [
+            {
+              "type": "text",
+              "id": "pqrjB",
+              "name": "Confidential",
+              "fill": "$color-muted",
+              "content": "CONFIDENTIAL",
+              "fontFamily": "$font-mono",
+              "fontSize": 24,
+              "letterSpacing": 1
+            },
+            {
+              "type": "text",
+              "id": "0HdOI",
+              "name": "Contact",
+              "fill": "$color-muted",
+              "content": "founders@tidewater.ai",
+              "fontFamily": "$font-mono",
+              "fontSize": 24,
+              "letterSpacing": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "abOyO",
+      "name": "02 Problem",
+      "x": 2040,
+      "y": 0,
+      "width": 1920,
+      "height": 1080,
+      "placeholder": false,
+      "clip": true,
+      "layout": "vertical",
+      "gap": 80,
+      "padding": 120,
+      "justifyContent": "start",
+      "fill": "$color-bg",
+      "children": [
+        {
+          "type": "frame",
+          "id": "U8Hz3",
+          "name": "Header",
+          "width": "fill_container",
+          "height": 48,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "FWkjR",
+              "name": "Section",
+              "fill": "$color-accent",
+              "content": "02 — PROBLEM",
+              "fontFamily": "$font-mono",
+              "fontSize": 24,
+              "letterSpacing": 1
+            },
+            {
+              "type": "text",
+              "id": "yTS4D",
+              "name": "Brand",
+              "fill": "$color-muted",
+              "content": "TIDEWATER",
+              "fontFamily": "$font-mono",
+              "fontSize": 24,
+              "letterSpacing": 1
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "QXmTs",
+          "name": "Main",
+          "width": "fill_container",
+          "height": "fill_container",
+          "gap": 120,
+          "alignItems": "start",
+          "children": [
+            {
+              "type": "frame",
+              "id": "VG9GB",
+              "name": "Statement",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 40,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "wqNBB",
+                  "name": "Title",
+                  "width": "fill_container",
+                  "fill": "$color-text",
+                  "content": "Cities find out about floods from 311 calls.",
+                  "textGrowth": "fixed-width",
+                  "fontFamily": "$font-display",
+                  "fontSize": 72,
+                  "fontWeight": "600",
+                  "letterSpacing": -1.5,
+                  "lineHeight": 1.1
+                },
+                {
+                  "type": "text",
+                  "id": "Uj9B5",
+                  "name": "Body",
+                  "width": "fill_container",
+                  "fill": "$color-muted",
+                  "content": "Utilities still rely on rain gauges and citywide weather alerts. By the time a street floods, crews are already too late.",
+                  "textGrowth": "fixed-width",
+                  "fontFamily": "$font-body",
+                  "fontSize": 36,
+                  "lineHeight": 1.4
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "t1N6o",
+              "name": "Key Figure",
+              "width": 720,
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Udokg",
+                  "name": "Figure",
+                  "fill": "$color-text",
+                  "content": "40 min",
+                  "fontFamily": "$font-display",
+                  "fontSize": 220,
+                  "fontWeight": "600",
+                  "letterSpacing": -6,
+                  "lineHeight": 1
+                },
+                {
+                  "type": "text",
+                  "id": "xSiPO",
+                  "name": "Figure Caption",
+                  "width": "fill_container",
+                  "fill": "$color-text",
+                  "content": "Typical warning a stormwater crew gets before a street floods.",
+                  "textGrowth": "fixed-width",
+                  "fontFamily": "$font-body",
+                  "fontSize": 36,
+                  "lineHeight": 1.4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "y9DAy",
+          "name": "Stats",
+          "width": "fill_container",
+          "gap": 48,
+          "padding": [
+            40,
+            0,
+            0,
+            0
+          ],
+          "stroke": "$color-line",
+          "strokeWidth": {
+            "top": 2
+          },
+          "children": [
+            {
+              "type": "frame",
+              "id": "eKhEe",
+              "name": "Stat 1",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "UFlBT",
+                  "name": "Value",
+                  "fill": "$color-text",
+                  "content": "$17B",
+                  "fontFamily": "$font-mono",
+                  "fontSize": 40,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "9Blhq",
+                  "name": "Label",
+                  "width": "fill_container",
+                  "fill": "$color-muted",
+                  "content": "US flood damage per year in urban areas",
+                  "textGrowth": "fixed-width",
+                  "fontFamily": "$font-body",
+                  "fontSize": 24,
+                  "lineHeight": 1.35
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "UZfkW",
+              "name": "Stat 2",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "fI0sI",
+                  "name": "Value",
+                  "fill": "$color-text",
+                  "content": "1 in 3",
+                  "fontFamily": "$font-mono",
+                  "fontSize": 40,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "HoUyw",
+                  "name": "Label",
+                  "width": "fill_container",
+                  "fill": "$color-muted",
+                  "content": "utilities with no real-time sewer telemetry",
+                  "textGrowth": "fixed-width",
+                  "fontFamily": "$font-body",
+                  "fontSize": 24,
+                  "lineHeight": 1.35
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "OJiBN",
+              "name": "Stat 3",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "kKRfH",
+                  "name": "Value",
+                  "fill": "$color-text",
+                  "content": "6 h",
+                  "fontFamily": "$font-mono",
+                  "fontSize": 40,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "TV3gc",
+                  "name": "Label",
+                  "width": "fill_container",
+                  "fill": "$color-muted",
+                  "content": "NWS flash flood lead time — citywide, never street-level",
+                  "textGrowth": "fixed-width",
+                  "fontFamily": "$font-body",
+                  "fontSize": 24,
+                  "lineHeight": 1.35
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "5kVyn",
+      "name": "03 Solution",
+      "x": 4080,
+      "y": 0,
+      "width": 1920,
+      "height": 1080,
+      "placeholder": false,
+      "clip": true,
+      "layout": "vertical",
+      "gap": 80,
+      "padding": 120,
+      "fill": "$color-bg",
+      "children": [
+        {
+          "type": "frame",
+          "id": "FM57o",
+          "name": "Header",
+          "width": "fill_container",
+          "height": 48,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "00l6r",
+              "name": "Section",
+              "fill": "$color-accent",
+              "content": "03 — SOLUTION",
+              "fontFamily": "$font-mono",
+              "fontSize": 24,
+              "letterSpacing": 1
+            },
+            {
+              "type": "text",
+              "id": "DCgxM",
+              "name": "Brand",
+              "fill": "$color-muted",
+              "content": "TIDEWATER",
+              "fontFamily": "$font-mono",
+              "fontSize": 24,
+              "letterSpacing": 1
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "OxhX7",
+          "name": "Main",
+          "width": "fill_container",
+          "height": "fill_container",
+          "gap": 120,
+          "children": [
+            {
+              "type": "frame",
+              "id": "WGYzj",
+              "name": "Pitch",
+              "width": 720,
+              "layout": "vertical",
+              "gap": 64,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "2dXDN",
+                  "name": "Title",
+                  "width": "fill_container",
+                  "fill": "$color-text",
+                  "content": "Block-by-block flood forecasts, 72 hours ahead.",
+                  "textGrowth": "fixed-width",
+                  "fontFamily": "$font-display",
+                  "fontSize": 72,
+                  "fontWeight": "600",
+                  "letterSpacing": -1.5,
+                  "lineHeight": 1.1
+                },
+                {
+                  "type": "frame",
+                  "id": "9gFkG",
+                  "name": "Steps",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "jAOkb",
+                      "name": "Step 01",
+                      "width": "fill_container",
+                      "gap": 32,
+                      "padding": [
+                        28,
+                        0
+                      ],
+                      "stroke": "$color-line",
+                      "strokeWidth": {
+                        "top": 2
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "nmnMt",
+                          "name": "Number",
+                          "fill": "$color-muted",
+                          "content": "01",
+                          "fontFamily": "$font-mono",
+                          "fontSize": 32
+                        },
+                        {
+                          "type": "text",
+                          "id": "9DtyV",
+                          "name": "Step Text",
+                          "width": "fill_container",
+                          "fill": "$color-text",
+                          "content": "Ingest sewer telemetry, radar and tide data",
+                          "textGrowth": "fixed-width",
+                          "fontFamily": "$font-body",
+                          "fontSize": 32,
+                          "lineHeight": 1.35
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "aVTZ6",
+                      "name": "Step 02",
+                      "width": "fill_container",
+                      "gap": 32,
+                      "padding": [
+                        28,
+                        0
+                      ],
+                      "stroke": "$color-line",
+                      "strokeWidth": {
+                        "top": 2
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "LzUex",
+                          "name": "Number",
+                          "fill": "$color-muted",
+                          "content": "02",
+                          "fontFamily": "$font-mono",
+                          "fontSize": 32
+                        },
+                        {
+                          "type": "text",
+                          "id": "k8zHO",
+                          "name": "Step Text",
+                          "width": "fill_container",
+                          "fill": "$color-text",
+                          "content": "Simulate water through the city's own pipe network",
+                          "textGrowth": "fixed-width",
+                          "fontFamily": "$font-body",
+                          "fontSize": 32,
+                          "lineHeight": 1.35
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "HfSWe",
+                      "name": "Step 03",
+                      "width": "fill_container",
+                      "gap": 32,
+                      "padding": [
+                        28,
+                        0
+                      ],
+                      "stroke": "$color-line",
+                      "strokeWidth": {
+                        "top": 2
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "v27Q6",
+                          "name": "Number",
+                          "fill": "$color-muted",
+                          "content": "03",
+                          "fontFamily": "$font-mono",
+                          "fontSize": 32
+                        },
+                        {
+                          "type": "text",
+                          "id": "6YOoS",
+                          "name": "Step Text",
+                          "width": "fill_container",
+                          "fill": "$color-text",
+                          "content": "Alert crews to the exact blocks at risk",
+                          "textGrowth": "fixed-width",
+                          "fontFamily": "$font-body",
+                          "fontSize": 32,
+                          "lineHeight": 1.35
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "N0Upp",
+              "name": "Forecast Panel",
+              "width": "fill_container",
+              "height": "fill_container",
+              "clip": true,
+              "layout": "vertical",
+              "cornerRadius": 4,
+              "fill": "$color-surface",
+              "stroke": "$color-line",
+              "strokeWidth": 2,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "THGoc",
+                  "name": "Panel Header",
+                  "width": "fill_container",
+                  "padding": [
+                    28,
+                    40
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "stroke": "$color-line",
+                  "strokeWidth": {
+                    "bottom": 2
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "osff7",
+                      "name": "Panel Title",
+                      "fill": "$color-text",
+                      "content": "Harbor District",
+                      "fontFamily": "$font-display",
+                      "fontSize": 32,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "wQWJo",
+                      "name": "Updated",
+                      "fill": "$color-muted",
+                      "content": "RUN 06:00 · +72 H",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 24,
+                      "letterSpacing": 1
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "yEYEq",
+                  "name": "Table Head",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "padding": [
+                    20,
+                    40
+                  ],
+                  "stroke": "$color-line",
+                  "strokeWidth": {
+                    "bottom": 2
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "pIar6",
+                      "name": "Col Location",
+                      "width": "fill_container",
+                      "fill": "$color-muted",
+                      "content": "LOCATION",
+                      "textGrowth": "fixed-width",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 24,
+                      "letterSpacing": 1
+                    },
+                    {
+                      "type": "text",
+                      "id": "My3OZ",
+                      "name": "Col Peak",
+                      "width": 140,
+                      "fill": "$color-muted",
+                      "content": "PEAK",
+                      "textGrowth": "fixed-width",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 24,
+                      "letterSpacing": 1
+                    },
+                    {
+                      "type": "text",
+                      "id": "l1wHC",
+                      "name": "Col Onset",
+                      "width": 140,
+                      "fill": "$color-muted",
+                      "content": "ONSET",
+                      "textGrowth": "fixed-width",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 24,
+                      "letterSpacing": 1
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "HqeNH",
+                  "name": "Row 1",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "padding": [
+                    24,
+                    40
+                  ],
+                  "alignItems": "center",
+                  "stroke": "$color-line",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Ukd3n",
+                      "name": "Location",
+                      "width": "fill_container",
+                      "gap": 16,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "4kuPP",
+                          "name": "Risk Dot",
+                          "width": 16,
+                          "height": 16,
+                          "fill": "$color-accent"
+                        },
+                        {
+                          "type": "text",
+                          "id": "wBhmL",
+                          "name": "Location Name",
+                          "fill": "$color-text",
+                          "content": "Harbor St & 4th Ave",
+                          "fontFamily": "$font-body",
+                          "fontSize": 28
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "FhW4V",
+                      "name": "Peak",
+                      "width": 140,
+                      "fill": "$color-text",
+                      "content": "+38 cm",
+                      "textGrowth": "fixed-width",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 28
+                    },
+                    {
+                      "type": "text",
+                      "id": "pDPev",
+                      "name": "Onset",
+                      "width": 140,
+                      "fill": "$color-text",
+                      "content": "in 31 h",
+                      "textGrowth": "fixed-width",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 28
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "lpr3z",
+                  "name": "Row 2",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "padding": [
+                    24,
+                    40
+                  ],
+                  "alignItems": "center",
+                  "stroke": "$color-line",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ZzyQb",
+                      "name": "Location",
+                      "width": "fill_container",
+                      "gap": 16,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "MsSOU",
+                          "name": "Risk Dot",
+                          "width": 16,
+                          "height": 16,
+                          "fill": "$color-muted"
+                        },
+                        {
+                          "type": "text",
+                          "id": "to9BE",
+                          "name": "Location Name",
+                          "fill": "$color-text",
+                          "content": "Canal Ave underpass",
+                          "fontFamily": "$font-body",
+                          "fontSize": 28
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "yehFf",
+                      "name": "Peak",
+                      "width": 140,
+                      "fill": "$color-text",
+                      "content": "+22 cm",
+                      "textGrowth": "fixed-width",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 28
+                    },
+                    {
+                      "type": "text",
+                      "id": "gysez",
+                      "name": "Onset",
+                      "width": 140,
+                      "fill": "$color-text",
+                      "content": "in 34 h",
+                      "textGrowth": "fixed-width",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 28
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "oUFDT",
+                  "name": "Row 3",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "padding": [
+                    24,
+                    40
+                  ],
+                  "alignItems": "center",
+                  "stroke": "$color-line",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "l6zp9",
+                      "name": "Location",
+                      "width": "fill_container",
+                      "gap": 16,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "B6YAo",
+                          "name": "Risk Dot",
+                          "width": 16,
+                          "height": 16,
+                          "fill": "$color-muted"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Hi85L",
+                          "name": "Location Name",
+                          "fill": "$color-text",
+                          "content": "Pump Station 14",
+                          "fontFamily": "$font-body",
+                          "fontSize": 28
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "XCHnd",
+                      "name": "Peak",
+                      "width": 140,
+                      "fill": "$color-text",
+                      "content": "+9 cm",
+                      "textGrowth": "fixed-width",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 28
+                    },
+                    {
+                      "type": "text",
+                      "id": "Ajyzb",
+                      "name": "Onset",
+                      "width": 140,
+                      "fill": "$color-text",
+                      "content": "in 40 h",
+                      "textGrowth": "fixed-width",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 28
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "yByRQ",
+                  "name": "Row 4",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "padding": [
+                    24,
+                    40
+                  ],
+                  "alignItems": "center",
+                  "stroke": "$color-line",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "RhKCH",
+                      "name": "Location",
+                      "width": "fill_container",
+                      "gap": 16,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "wOdc7",
+                          "name": "Risk Dot",
+                          "width": 16,
+                          "height": 16,
+                          "fill": "$color-line"
+                        },
+                        {
+                          "type": "text",
+                          "id": "3BCDW",
+                          "name": "Location Name",
+                          "fill": "$color-text",
+                          "content": "Mill Creek outfall",
+                          "fontFamily": "$font-body",
+                          "fontSize": 28
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "B05pO",
+                      "name": "Peak",
+                      "width": 140,
+                      "fill": "$color-text",
+                      "content": "−4 cm",
+                      "textGrowth": "fixed-width",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 28
+                    },
+                    {
+                      "type": "text",
+                      "id": "XJQvo",
+                      "name": "Onset",
+                      "width": 140,
+                      "fill": "$color-text",
+                      "content": "—",
+                      "textGrowth": "fixed-width",
+                      "fontFamily": "$font-mono",
+                      "fontSize": 28
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ZdBJF",
+                  "name": "Spacer",
+                  "width": "fill_container",
+                  "height": "fill_container"
+                },
+                {
+                  "type": "frame",
+                  "id": "R48Gb",
+                  "name": "Alert",
+                  "width": "fill_container",
+                  "gap": 20,
+                  "padding": [
+                    28,
+                    40
+                  ],
+                  "alignItems": "center",
+                  "fill": "$color-accent",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "NnyqU",
+                      "name": "Alert Icon",
+                      "width": 32,
+                      "height": 32,
+                      "fill": "$color-on-accent",
+                      "library": "lucide",
+                      "icon": "siren"
+                    },
+                    {
+                      "type": "text",
+                      "id": "g7jN6",
+                      "name": "Alert Text",
+                      "fill": "$color-on-accent",
+                      "content": "Crew 3 dispatched to clear inlets on Harbor St",
+                      "fontFamily": "$font-body",
+                      "fontSize": 28,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "color-bg": {
+      "type": "color",
+      "value": "#F4F6F8"
+    },
+    "color-surface": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "color-text": {
+      "type": "color",
+      "value": "#121820"
+    },
+    "color-muted": {
+      "type": "color",
+      "value": "#56606C"
+    },
+    "color-line": {
+      "type": "color",
+      "value": "#D5DBE2"
+    },
+    "color-accent": {
+      "type": "color",
+      "value": "#0B6E69"
+    },
+    "color-on-accent": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "font-display": {
+      "type": "string",
+      "value": "IBM Plex Sans"
+    },
+    "font-body": {
+      "type": "string",
+      "value": "IBM Plex Sans"
+    },
+    "font-mono": {
+      "type": "string",
+      "value": "IBM Plex Mono"
+    },
+    "space-5": {
+      "type": "number",
+      "value": 24
+    },
+    "space-6": {
+      "type": "number",
+      "value": 32
+    },
+    "space-7": {
+      "type": "number",
+      "value": 48
+    },
+    "space-8": {
+      "type": "number",
+      "value": 64
+    },
+    "radius-3": {
+      "type": "number",
+      "value": 4
+    }
+  }
+}

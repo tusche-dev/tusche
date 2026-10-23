@@ -1,0 +1,1250 @@
+{
+  "version": "2.21",
+  "children": [
+    {
+      "type": "frame",
+      "id": "W7lQj",
+      "name": "Habit row",
+      "reusable": true,
+      "x": 480,
+      "y": 0,
+      "width": 350,
+      "height": 76,
+      "gap": "$space-3",
+      "padding": [
+        0,
+        12,
+        0,
+        12
+      ],
+      "alignItems": "center",
+      "cornerRadius": "$radius-2",
+      "fill": "$color-surface",
+      "children": [
+        {
+          "type": "frame",
+          "id": "BZWzG",
+          "name": "Icon tile",
+          "width": 48,
+          "height": 48,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "cornerRadius": 16,
+          "fill": "$color-pop-mint",
+          "children": [
+            {
+              "type": "icon",
+              "id": "ytIAa",
+              "name": "Habit icon",
+              "width": 24,
+              "height": 24,
+              "fill": "$color-text",
+              "library": "lucide",
+              "icon": "glass-water"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c6Ubr",
+          "name": "Text",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 6,
+          "children": [
+            {
+              "type": "text",
+              "id": "52G2o",
+              "name": "Title",
+              "fill": "$color-text",
+              "content": "Drink water",
+              "fontFamily": "$font-body",
+              "fontSize": "$text-2",
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "mBPzK",
+              "name": "Meta",
+              "width": "fill_container",
+              "gap": "$space-2",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "bGev7",
+                  "name": "Track",
+                  "width": 96,
+                  "height": 8,
+                  "layout": "horizontal",
+                  "cornerRadius": 999,
+                  "fill": "$color-line",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "TB934",
+                      "name": "Bar",
+                      "width": 60,
+                      "height": 8,
+                      "cornerRadius": 999,
+                      "fill": "$color-accent"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "Lyytg",
+                  "name": "Count",
+                  "fill": "$color-muted",
+                  "content": "5 / 8 glasses",
+                  "fontFamily": "$font-body",
+                  "fontSize": 13
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "aFalQ",
+          "name": "Check button",
+          "width": 44,
+          "height": 44,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "cornerRadius": 999,
+          "stroke": "$color-line",
+          "strokeWidth": 2,
+          "strokeAlignment": "inner",
+          "children": [
+            {
+              "type": "icon",
+              "id": "XU9Ks",
+              "name": "Check icon",
+              "width": 22,
+              "height": 22,
+              "fill": "$color-text",
+              "library": "lucide",
+              "icon": "plus"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "mR2if",
+      "name": "Home",
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 844,
+      "placeholder": false,
+      "clip": true,
+      "layout": "vertical",
+      "fill": "$color-bg",
+      "children": [
+        {
+          "type": "frame",
+          "id": "FRbaw",
+          "name": "Status bar",
+          "width": "fill_container",
+          "height": 54,
+          "padding": [
+            18,
+            32,
+            0,
+            40
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "a69Lz",
+              "name": "Time",
+              "fill": "$color-text",
+              "content": "9:41",
+              "fontFamily": "$font-body",
+              "fontSize": 16,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "0W79r",
+              "name": "System icons",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "34Tqq",
+                  "name": "signal",
+                  "width": 18,
+                  "height": 18,
+                  "fill": "$color-text",
+                  "library": "lucide",
+                  "icon": "signal"
+                },
+                {
+                  "type": "icon",
+                  "id": "7sbKA",
+                  "name": "wifi",
+                  "width": 18,
+                  "height": 18,
+                  "fill": "$color-text",
+                  "library": "lucide",
+                  "icon": "wifi"
+                },
+                {
+                  "type": "icon",
+                  "id": "URl3m",
+                  "name": "battery-full",
+                  "width": 18,
+                  "height": 18,
+                  "fill": "$color-text",
+                  "library": "lucide",
+                  "icon": "battery-full"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "12NoC",
+          "name": "Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "clip": true,
+          "layout": "vertical",
+          "gap": "$space-5",
+          "padding": [
+            8,
+            20,
+            16,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "ldCl7",
+              "name": "Header",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "IUGvK",
+                  "name": "Greeting",
+                  "layout": "vertical",
+                  "gap": "$space-1",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "TUJRt",
+                      "name": "Date",
+                      "fill": "$color-muted",
+                      "content": "Thursday, Oct 23",
+                      "fontFamily": "$font-body",
+                      "fontSize": "$text-1",
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "DkYdu",
+                      "name": "Title",
+                      "fill": "$color-text",
+                      "content": "Hey Maya!",
+                      "fontFamily": "$font-display",
+                      "fontSize": "$text-4",
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "vVtCB",
+                  "name": "Avatar button",
+                  "width": 48,
+                  "height": 48,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "cornerRadius": 999,
+                  "fill": "$color-pop-pink",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "YhDZC",
+                      "name": "Initial",
+                      "fill": "$color-text",
+                      "content": "M",
+                      "fontFamily": "$font-display",
+                      "fontSize": "$text-3",
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "F1MOW",
+              "name": "Streak card",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-4",
+              "padding": [
+                20,
+                20,
+                20,
+                20
+              ],
+              "cornerRadius": "$radius-3",
+              "fill": "$color-pop-yellow",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "V36sG",
+                  "name": "Streak top",
+                  "width": "fill_container",
+                  "gap": "$space-3",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "aN3qx",
+                      "name": "Flame badge",
+                      "width": 64,
+                      "height": 64,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "cornerRadius": 999,
+                      "fill": "$color-text",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "EM3dT",
+                          "name": "Flame",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "$color-pop-yellow",
+                          "library": "lucide",
+                          "icon": "flame"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "pBKBH",
+                      "name": "Streak number",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "I9aJI",
+                          "name": "Days",
+                          "fill": "$color-text",
+                          "content": "12 days",
+                          "fontFamily": "$font-display",
+                          "fontSize": "$text-4",
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "XWoTF",
+                          "name": "Streak caption",
+                          "fill": "$color-text",
+                          "content": "on fire — best is 21!",
+                          "fontFamily": "$font-body",
+                          "fontSize": "$text-1",
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "4BKOc",
+                  "name": "Week",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "wZkeS",
+                      "name": "Day 1",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "bBhXV",
+                          "name": "Day dot",
+                          "width": 36,
+                          "height": 36,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "cornerRadius": 999,
+                          "fill": "$color-text",
+                          "strokeAlignment": "inner",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "NnVk4",
+                              "name": "Done",
+                              "width": 18,
+                              "height": 18,
+                              "fill": "$color-pop-yellow",
+                              "library": "lucide",
+                              "icon": "check"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "Gpnvt",
+                          "name": "Day label",
+                          "fill": "$color-text",
+                          "content": "M",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "lBne0",
+                      "name": "Day 2",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "qWgKF",
+                          "name": "Day dot",
+                          "width": 36,
+                          "height": 36,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "cornerRadius": 999,
+                          "fill": "$color-text",
+                          "strokeAlignment": "inner",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "eWnCj",
+                              "name": "Done",
+                              "width": 18,
+                              "height": 18,
+                              "fill": "$color-pop-yellow",
+                              "library": "lucide",
+                              "icon": "check"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "hySzf",
+                          "name": "Day label",
+                          "fill": "$color-text",
+                          "content": "T",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "kKjyC",
+                      "name": "Day 3",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "E1e7w",
+                          "name": "Day dot",
+                          "width": 36,
+                          "height": 36,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "cornerRadius": 999,
+                          "fill": "$color-text",
+                          "strokeAlignment": "inner",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "UxGLR",
+                              "name": "Done",
+                              "width": 18,
+                              "height": 18,
+                              "fill": "$color-pop-yellow",
+                              "library": "lucide",
+                              "icon": "check"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "IAD2Z",
+                          "name": "Day label",
+                          "fill": "$color-text",
+                          "content": "W",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ecNlG",
+                      "name": "Day 4",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "OXJSi",
+                          "name": "Day dot",
+                          "width": 36,
+                          "height": 36,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "cornerRadius": 999,
+                          "fill": "$color-surface",
+                          "stroke": "$color-text",
+                          "strokeWidth": 2,
+                          "strokeAlignment": "inner",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "kfrHk",
+                              "name": "Today flame",
+                              "width": 18,
+                              "height": 18,
+                              "fill": "$color-accent",
+                              "library": "lucide",
+                              "icon": "flame"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "0vqZX",
+                          "name": "Day label",
+                          "fill": "$color-text",
+                          "content": "T",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "PnsSh",
+                      "name": "Day 5",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Gxn5f",
+                          "name": "Day dot",
+                          "width": 36,
+                          "height": 36,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "cornerRadius": 999,
+                          "fill": "#FFFFFF66",
+                          "strokeAlignment": "inner"
+                        },
+                        {
+                          "type": "text",
+                          "id": "w4q5P",
+                          "name": "Day label",
+                          "fill": "$color-text",
+                          "content": "F",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wK9Xi",
+                      "name": "Day 6",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "qmHWG",
+                          "name": "Day dot",
+                          "width": 36,
+                          "height": 36,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "cornerRadius": 999,
+                          "fill": "#FFFFFF66",
+                          "strokeAlignment": "inner"
+                        },
+                        {
+                          "type": "text",
+                          "id": "SwvCh",
+                          "name": "Day label",
+                          "fill": "$color-text",
+                          "content": "S",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "U5ohh",
+                      "name": "Day 7",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "CFfCH",
+                          "name": "Day dot",
+                          "width": 36,
+                          "height": 36,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "cornerRadius": 999,
+                          "fill": "#FFFFFF66",
+                          "strokeAlignment": "inner"
+                        },
+                        {
+                          "type": "text",
+                          "id": "JHIcC",
+                          "name": "Day label",
+                          "fill": "$color-text",
+                          "content": "S",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "8dtdd",
+                  "name": "Sticker",
+                  "x": 252,
+                  "y": -10,
+                  "rotation": -8,
+                  "layoutPosition": "absolute",
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "cornerRadius": 999,
+                  "fill": "$color-accent",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ba3Yd",
+                      "name": "Sticker label",
+                      "fill": "$color-on-accent",
+                      "content": "+1 today?",
+                      "fontFamily": "$font-display",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "hX7hN",
+              "name": "Today",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": "$space-3",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "OrsDJ",
+                  "name": "Today header",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "dEYVh",
+                      "name": "Section title",
+                      "fill": "$color-text",
+                      "content": "Today",
+                      "fontFamily": "$font-display",
+                      "fontSize": "$text-3",
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "3G5ZH",
+                      "name": "Progress badge",
+                      "gap": "$space-2",
+                      "padding": [
+                        6,
+                        12,
+                        6,
+                        6
+                      ],
+                      "alignItems": "center",
+                      "cornerRadius": 999,
+                      "fill": "$color-surface",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ezazk",
+                          "name": "Ring",
+                          "width": 28,
+                          "height": 28,
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "h6vdw",
+                              "name": "Ring track",
+                              "x": 0,
+                              "y": 0,
+                              "width": 28,
+                              "height": 28,
+                              "fill": "$color-line",
+                              "innerRadius": 0.65
+                            },
+                            {
+                              "type": "path",
+                              "id": "PS9UB",
+                              "name": "Ring value",
+                              "x": 0,
+                              "y": 0,
+                              "width": 28,
+                              "height": 28,
+                              "stroke": "$color-accent",
+                              "strokeWidth": 5,
+                              "geometry": "M14 2.5 A11.5 11.5 0 0 1 20.76 23.3",
+                              "viewBox": [
+                                0,
+                                0,
+                                28,
+                                28
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "lbpYC",
+                          "name": "Progress label",
+                          "fill": "$color-text",
+                          "content": "2 of 5 done",
+                          "fontFamily": "$font-body",
+                          "fontSize": "$text-1",
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "bllbJ",
+                  "name": "Habit list",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": "$space-2",
+                  "children": [
+                    {
+                      "type": "ref",
+                      "id": "2DwzO",
+                      "name": "Habit Morning stretch",
+                      "ref": "W7lQj",
+                      "width": "fill_container",
+                      "descendants": {
+                        "BZWzG": {
+                          "fill": "$color-pop-pink"
+                        },
+                        "ytIAa": {
+                          "icon": "person-standing"
+                        },
+                        "52G2o": {
+                          "content": "Morning stretch",
+                          "strikethrough": false
+                        },
+                        "TB934": {
+                          "width": 96,
+                          "enabled": true,
+                          "fill": "$color-text"
+                        },
+                        "Lyytg": {
+                          "content": "Done · 10 min"
+                        },
+                        "aFalQ": {
+                          "fill": "$color-accent",
+                          "strokeWidth": 0
+                        },
+                        "XU9Ks": {
+                          "icon": "check",
+                          "fill": "$color-on-accent"
+                        }
+                      }
+                    },
+                    {
+                      "type": "ref",
+                      "id": "08BBG",
+                      "name": "Habit Read 20 pages",
+                      "ref": "W7lQj",
+                      "width": "fill_container",
+                      "descendants": {
+                        "BZWzG": {
+                          "fill": "$color-pop-yellow"
+                        },
+                        "ytIAa": {
+                          "icon": "book-open"
+                        },
+                        "52G2o": {
+                          "content": "Read 20 pages",
+                          "strikethrough": false
+                        },
+                        "TB934": {
+                          "width": 96,
+                          "enabled": true,
+                          "fill": "$color-text"
+                        },
+                        "Lyytg": {
+                          "content": "Done · 20 / 20"
+                        },
+                        "aFalQ": {
+                          "fill": "$color-accent",
+                          "strokeWidth": 0
+                        },
+                        "XU9Ks": {
+                          "icon": "check",
+                          "fill": "$color-on-accent"
+                        }
+                      }
+                    },
+                    {
+                      "type": "ref",
+                      "id": "adNJG",
+                      "name": "Habit Drink water",
+                      "ref": "W7lQj",
+                      "width": "fill_container",
+                      "descendants": {
+                        "BZWzG": {
+                          "fill": "$color-pop-mint"
+                        },
+                        "ytIAa": {
+                          "icon": "glass-water"
+                        },
+                        "52G2o": {
+                          "content": "Drink water",
+                          "strikethrough": false
+                        },
+                        "TB934": {
+                          "width": 60,
+                          "enabled": true,
+                          "fill": "$color-accent"
+                        },
+                        "Lyytg": {
+                          "content": "5 / 8 glasses"
+                        },
+                        "aFalQ": {},
+                        "XU9Ks": {}
+                      }
+                    },
+                    {
+                      "type": "ref",
+                      "id": "h7ynG",
+                      "name": "Habit Walk 8k steps",
+                      "ref": "W7lQj",
+                      "width": "fill_container",
+                      "descendants": {
+                        "BZWzG": {
+                          "fill": "$color-pop-pink"
+                        },
+                        "ytIAa": {
+                          "icon": "footprints"
+                        },
+                        "52G2o": {
+                          "content": "Walk 8k steps",
+                          "strikethrough": false
+                        },
+                        "TB934": {
+                          "width": 38,
+                          "enabled": true,
+                          "fill": "$color-accent"
+                        },
+                        "Lyytg": {
+                          "content": "3.2k / 8k"
+                        },
+                        "aFalQ": {},
+                        "XU9Ks": {}
+                      }
+                    },
+                    {
+                      "type": "ref",
+                      "id": "0Ukxu",
+                      "name": "Habit Meditate",
+                      "ref": "W7lQj",
+                      "width": "fill_container",
+                      "descendants": {
+                        "BZWzG": {
+                          "fill": "$color-pop-mint"
+                        },
+                        "ytIAa": {
+                          "icon": "leaf"
+                        },
+                        "52G2o": {
+                          "content": "Meditate",
+                          "strikethrough": false
+                        },
+                        "TB934": {
+                          "width": 0,
+                          "enabled": false,
+                          "fill": "$color-accent"
+                        },
+                        "Lyytg": {
+                          "content": "0 / 10 min"
+                        },
+                        "aFalQ": {},
+                        "XU9Ks": {}
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Elzta",
+          "name": "Tab bar",
+          "width": "fill_container",
+          "layout": "vertical",
+          "cornerRadius": [
+            28,
+            28,
+            0,
+            0
+          ],
+          "fill": "$color-surface",
+          "children": [
+            {
+              "type": "frame",
+              "id": "9AugW",
+              "name": "Tabs",
+              "width": "fill_container",
+              "height": 60,
+              "padding": [
+                8,
+                16,
+                0,
+                16
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "reR7I",
+                  "name": "Tab Today",
+                  "width": "fit_content",
+                  "height": 48,
+                  "gap": 6,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "cornerRadius": 999,
+                  "fill": "$color-accent",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "0HNcH",
+                      "name": "Today icon",
+                      "width": 22,
+                      "height": 22,
+                      "fill": "$color-on-accent",
+                      "library": "lucide",
+                      "icon": "house"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Stchm",
+                      "name": "Today label",
+                      "fill": "$color-on-accent",
+                      "content": "Today",
+                      "fontFamily": "$font-body",
+                      "fontSize": "$text-1",
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "iO3cz",
+                  "name": "Tab Habits",
+                  "width": 56,
+                  "height": 48,
+                  "gap": 6,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "cornerRadius": 999,
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "0AF7H",
+                      "name": "Habits icon",
+                      "width": 22,
+                      "height": 22,
+                      "fill": "$color-muted",
+                      "library": "lucide",
+                      "icon": "list-checks"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "nt1b7",
+                  "name": "Tab Stats",
+                  "width": 56,
+                  "height": 48,
+                  "gap": 6,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "cornerRadius": 999,
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "5buFg",
+                      "name": "Stats icon",
+                      "width": 22,
+                      "height": 22,
+                      "fill": "$color-muted",
+                      "library": "lucide",
+                      "icon": "chart-column"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "oBeat",
+                  "name": "Tab Profile",
+                  "width": 56,
+                  "height": 48,
+                  "gap": 6,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "cornerRadius": 999,
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "zjWsv",
+                      "name": "Profile icon",
+                      "width": 22,
+                      "height": 22,
+                      "fill": "$color-muted",
+                      "library": "lucide",
+                      "icon": "user"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "T3nNB",
+              "name": "Home indicator",
+              "width": "fill_container",
+              "height": 34,
+              "padding": [
+                0,
+                0,
+                8,
+                0
+              ],
+              "justifyContent": "center",
+              "alignItems": "end",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "2yAl3",
+                  "name": "Indicator",
+                  "width": 134,
+                  "height": 5,
+                  "cornerRadius": 999,
+                  "fill": "$color-text"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "color-bg": {
+      "type": "color",
+      "value": "#FFF8EC"
+    },
+    "color-surface": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "color-text": {
+      "type": "color",
+      "value": "#231A3A"
+    },
+    "color-muted": {
+      "type": "color",
+      "value": "#625A74"
+    },
+    "color-line": {
+      "type": "color",
+      "value": "#EADFCB"
+    },
+    "color-accent": {
+      "type": "color",
+      "value": "#6A3FD6"
+    },
+    "color-on-accent": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "color-pop-yellow": {
+      "type": "color",
+      "value": "#FFD24A"
+    },
+    "color-pop-pink": {
+      "type": "color",
+      "value": "#FF9EC4"
+    },
+    "color-pop-mint": {
+      "type": "color",
+      "value": "#8EE3C0"
+    },
+    "font-display": {
+      "type": "string",
+      "value": "Unbounded"
+    },
+    "font-body": {
+      "type": "string",
+      "value": "Rubik"
+    },
+    "text-1": {
+      "type": "number",
+      "value": 14
+    },
+    "text-2": {
+      "type": "number",
+      "value": 16
+    },
+    "text-3": {
+      "type": "number",
+      "value": 20
+    },
+    "text-4": {
+      "type": "number",
+      "value": 28
+    },
+    "text-5": {
+      "type": "number",
+      "value": 40
+    },
+    "text-6": {
+      "type": "number",
+      "value": 56
+    },
+    "space-1": {
+      "type": "number",
+      "value": 4
+    },
+    "space-2": {
+      "type": "number",
+      "value": 8
+    },
+    "space-3": {
+      "type": "number",
+      "value": 12
+    },
+    "space-4": {
+      "type": "number",
+      "value": 16
+    },
+    "space-5": {
+      "type": "number",
+      "value": 24
+    },
+    "space-6": {
+      "type": "number",
+      "value": 32
+    },
+    "space-7": {
+      "type": "number",
+      "value": 48
+    },
+    "space-8": {
+      "type": "number",
+      "value": 72
+    },
+    "radius-1": {
+      "type": "number",
+      "value": 12
+    },
+    "radius-2": {
+      "type": "number",
+      "value": 20
+    },
+    "radius-3": {
+      "type": "number",
+      "value": 32
+    },
+    "radius-4": {
+      "type": "number",
+      "value": 999
+    }
+  }
+}

@@ -18,3 +18,7 @@ packages/*/scratch/
 # Eval runs (the baseline lives in evals/baseline)
 evals/runs/
 .release/
+
+# Demo video: generated frames and renders
+demo/public/frames/
+demo/out/
