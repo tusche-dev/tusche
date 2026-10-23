@@ -1,3 +1,4 @@
+<!-- AI agents: to install or set up Tusche for a person, follow docs/agent-setup.md (https://raw.githubusercontent.com/tusche-dev/tusche/main/docs/agent-setup.md). -->
 # Tusche
 
 **English** · [Русский](README.ru.md)
@@ -20,6 +21,18 @@
 - **Git-friendly:** canonical JSON, small diffs, lint and render in CI.
 
 https://github.com/user-attachments/assets/190ed5a0-f968-4a17-9dce-901345ca1db1
+
+## Let your agent set it up
+
+Paste this into your AI agent (Claude Code, Codex, Gemini CLI, Cursor…):
+
+```text
+Set up Tusche, a design canvas for AI agents, for me: https://github.com/tusche-dev/tusche
+Follow its instructions for agents: https://github.com/tusche-dev/tusche/blob/main/docs/agent-setup.md
+When you are done, tell me what I need to do (for example, restart you) and offer to design a first screen.
+```
+
+> **AI agents:** to set Tusche up for a person, follow [docs/agent-setup.md](docs/agent-setup.md).
 
 ## Quick start
 

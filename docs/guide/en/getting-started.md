@@ -2,6 +2,8 @@
 
 **English** · [Русский](../ru/getting-started.md)
 
+> **Fastest way:** paste the prompt from [Let your agent set it up](../../../README.md#let-your-agent-set-it-up) into your agent. It follows [the instructions for agents](../../agent-setup.md) and connects Tusche for you. The steps below do the same by hand.
+
 ## What you need
 
 - **An AI agent that supports MCP:** Claude Code, Codex CLI, Gemini CLI, OpenCode, or any other MCP client. Tusche uses *your* agent and *your* subscription; it has no account and no limits of its own.

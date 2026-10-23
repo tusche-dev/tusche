@@ -1,3 +1,4 @@
+<!-- AI agents: to install or set up Tusche for a person, follow docs/agent-setup.md (https://raw.githubusercontent.com/tusche-dev/tusche/main/docs/agent-setup.md). -->
 # Tusche
 
 [English](README.md) · **Русский**
@@ -20,6 +21,18 @@
 - **Удобно для git:** канонический JSON, маленькие диффы, линтер и рендер в CI.
 
 https://github.com/user-attachments/assets/190ed5a0-f968-4a17-9dce-901345ca1db1
+
+## Пусть агент всё настроит
+
+Вставьте это в своего ИИ-агента (Claude Code, Codex, Gemini CLI, Cursor…):
+
+```text
+Установи и подключи мне Tusche — дизайн-холст для ИИ-агентов: https://github.com/tusche-dev/tusche
+Следуй его инструкции для агентов: https://github.com/tusche-dev/tusche/blob/main/docs/agent-setup.md
+Когда закончишь, скажи, что мне сделать (например, перезапустить тебя), и предложи нарисовать первый экран.
+```
+
+> **AI agents:** to set Tusche up for a person, follow [docs/agent-setup.md](docs/agent-setup.md).
 
 ## Быстрый старт
 
