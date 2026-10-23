@@ -197,6 +197,13 @@ while (pending.size > 0) {
   }
 }
 writeFileSync(join(OUT, 'publish-order.txt'), `${order.join('\n')}\n`);
+
+/** Release notes: the section of CHANGELOG.md for this version. */
+const changelog = readFileSync(join(ROOT, 'CHANGELOG.md'), 'utf8');
+const section = changelog.split(/^## /m).find((part) => part.startsWith(`[${VERSION}]`));
+if (!section) throw new Error(`CHANGELOG.md has no section ## [${VERSION}]`);
+writeFileSync(join(RELEASE, 'notes.md'), `${section.slice(section.indexOf('\n') + 1).trim()}\n`);
+
 console.log(
   `built ${order.length} packages at ${VERSION} into .release/packages:\n  ${order.join('\n  ')}`,
 );

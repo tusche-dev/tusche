@@ -1,0 +1,98 @@
+name: release
+
+# Publishes @tusche/* to npm on a version tag (ADR-012).
+#   v0.1.0       — publish
+#   v0.1.0-rc.1  — everything up to `npm publish --dry-run`
+# Auth: npm trusted publishing (OIDC). For the very first publish, when the packages do not
+# exist on npm yet, set the repository secret NPM_TOKEN; remove it once trusted publishers
+# are configured.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    name: smoke (${{ matrix.os }})
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: bun install --frozen-lockfile
+      - run: bun run release:build
+      - run: bun run release:smoke
+
+  publish:
+    needs: smoke
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # GitHub Release
+      id-token: write # npm provenance and trusted publishing
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      # Trusted publishing needs npm ≥ 11.5.1.
+      - run: npm install -g npm@11
+      - run: bun install --frozen-lockfile
+      - run: bun run check
+      - run: bun run release:build
+
+      - name: Check the tag matches the version
+        shell: bash
+        run: |
+          version=$(node -p "require('./packages/cli/package.json').version")
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "${tag%%-*}" != "$version" ]; then
+            echo "tag $GITHUB_REF_NAME does not match version $version" >&2
+            exit 1
+          fi
+
+      - name: Publish to npm
+        shell: bash
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -n "$NPM_TOKEN" ]; then
+            echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > "$HOME/.npmrc"
+          fi
+          dry=""
+          case "$GITHUB_REF_NAME" in *-*) dry="--dry-run" ;; esac
+          while read -r dir; do
+            pkg=".release/packages/$dir"
+            name=$(node -p "require('./$pkg/package.json').name")
+            version=$(node -p "require('./$pkg/package.json').version")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "skip $name@$version: already published"
+              continue
+            fi
+            # Fork versions look like prereleases (0.16.0-tusche.1); npm wants an explicit tag.
+            npm publish "$pkg" --provenance --access public --tag latest $dry
+          done < .release/packages/publish-order.txt
+
+      - name: GitHub Release
+        if: ${{ !contains(github.ref_name, '-') }}
+        uses: softprops/action-gh-release@v3
+        with:
+          name: Tusche ${{ github.ref_name }}
+          body_path: .release/notes.md
