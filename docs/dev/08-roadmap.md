@@ -18,7 +18,7 @@ Preview (2026-10-23, [ADR-011](adr/011-preview.md)): пакет `@tusche/preview
 
 Upstream (2026-10-23): в OpenPencil открыты PR #1398 (`space_between` в импортёре `.pen`), #1399 (обводки 2.x, issue #1324), #1400 (`color-contrast` с полупрозрачными заливками), #1401 (экспорт `io/formats/html`) и issues #1397 (`dom-css` и `design-jsx` не грузятся под Bun), #1402 (`gap` при `space_between`), #1403 (доли `fill` при padding), #1404 (`touch-target-size` на строке контролов). Путь к CanvasKit на Windows upstream уже исправил сам (#1251). Перенос строк по целой ширине остаётся нашим патчем: это подгонка под pen.dev. Статус каждого патча — в [02-research](02-research.md).
 
-Релиз (2026-10-23, [ADR-012](adr/012-npm-release.md)): пакеты собираются для npm в `.release/` (`bun run release:build`), работают под Node ≥ 22 и Bun, а патчи OpenPencil уходят пользователям форками `@tusche/open-pencil-core` и `@tusche/open-pencil-dom-css`. Установленные тарболы проверяет `bun run release:smoke`; публикацию по тегу `v*` делает `.github/workflows/release.yml`.
+Релиз (2026-10-23, [ADR-012](adr/012-npm-release.md)): пакеты собираются для npm в `.release/` (`bun run release:build`), работают под Node ≥ 22 и Bun, а патчи OpenPencil уходят пользователям форками `@tusche/open-pencil-core` и `@tusche/open-pencil-dom-css`. Установленные тарболы проверяет `bun run release:smoke`; публикацию по тегу `v*` делает `.github/workflows/release.yml`. 0.1.0 опубликован 2026-10-23: 9 пакетов `@tusche/*` и два форка, с provenance; видео — в [GitHub Release](https://github.com/tusche-dev/tusche/releases/tag/v0.1.0) и `demo/`. Перед релизом починили CI, красный с 2026-10-20: под Bun на Linux preview не видел атомарную запись, `tusche exec -` терял stdin, а песочница после нехватки памяти висла на ~30 с.
 
 Цель: Claude Code рисует в `.pen` через Tusche и получает скриншоты, а файлы остаются совместимыми с pen.dev.
 
@@ -32,7 +32,7 @@ Upstream (2026-10-23): в OpenPencil открыты PR #1398 (`space_between` в
 | 1.6 Скилл и стили ✅ | Скилл v0.1 на основе черновика, 8 архетипов, обвязка для эвалов | Записан baseline эвалов |
 | 1.7 Preview ✅ | Веб-страница `tusche preview` с живой перезагрузкой | Работу агента видно в браузере в реальном времени |
 | 1.8 Upstream ✅ | PR в OpenPencil: путь к CanvasKit на Windows, обводки 2.x в `@open-pencil/pen`, патчи раскладки из 1.3 (gap при space-between, равные доли fill, перенос по целой ширине); lint: контраст с полупрозрачными заливками и строки контролов в `touch-target-size` (пока это поправки в `@tusche/engine`) | PR открыты |
-| 1.9 Релиз | npm `@tusche/*` 0.1.0, quick start в README, демо-видео | Публичный анонс |
+| 1.9 Релиз ✅ | npm `@tusche/*` 0.1.0, quick start в README, демо-видео | Публичный анонс |
 
 **Критерии выхода:** сценарии 1, 2 и 6 из PRD проходят; открываются 100% `.pen`-файлов мейнтейнеров; файлы, отредактированные в Tusche, открываются в pen.dev.
 
