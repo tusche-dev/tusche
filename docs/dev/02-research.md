@@ -190,14 +190,22 @@
 - Сглаживание текста отличается на 0,1–1,4 % пикселей: другой растеризатор.
 - Поля экспорта под размытие теней у pen.dev шире.
 
-**Патчи `@open-pencil/core@0.16.0`** (`patches/`, `bun patch`). Каждый стоит отправить upstream в 1.8, пока они живут у нас:
-1. путь к `canvaskit.wasm` на Windows (`fileURLToPath`), open-pencil#1168;
-2. `gap` при `SPACE_BETWEEN` для фреймов с меткой `tusche/cssGap`;
-3. равные доли `fill` для фреймов с меткой `tusche/equalFill`;
-4. ширина переноса абзаца округляется вверх до пикселя;
-5. `package.json` экспортирует `io/formats/html` — для экспорта `html-tailwind` (этап 1.4).
+**Патчи `@open-pencil/core@0.16.0`** (`patches/`, `bun patch`) и что с ними в upstream (этап 1.8, 2026-10-23):
+1. путь к `canvaskit.wasm` на Windows (`fileURLToPath`) — исправлен upstream в open-pencil#1251 (issue #1168), в релиз пока не попал. Снять при обновлении на версию новее 0.16.0;
+2. `gap` при `SPACE_BETWEEN` для фреймов с меткой `tusche/cssGap` — issue open-pencil#1402: предложена опция раскладки, которую выставляет импортёр `.pen`;
+3. равные доли `fill` для фреймов с меткой `tusche/equalFill` — issue open-pencil#1403. Расхождение есть только у детей с автораскладкой: простые фреймы делят место поровну, со своей раскладкой — нет (200/200 против 160/240);
+4. ширина переноса абзаца округляется вверх до пикселя — upstream не отправляем: это подгонка под растеризатор pen.dev, а не ошибка OpenPencil;
+5. `package.json` экспортирует `io/formats/html` — PR open-pencil#1401. Обойтись публичным `htmlFormat` из `@open-pencil/core/io` нельзя: этот вход тянет `@open-pencil/design-jsx`, а он под Bun не грузится (см. ниже).
 
-И один патч `@open-pencil/dom-css@0.16.0`: под Bun пакет брал `src` по условию `bun`, а там subpath-импорты без расширений не разрешаются. Патч убирает условие, и Bun берёт `dist`.
+И один патч `@open-pencil/dom-css@0.16.0`: опубликованный пакет отдаёт Bun исходники по условию `bun` в `exports`, а в `imports` такого условия нет, поэтому `#dom-css/*` из `src` уходит в `dist` без расширения. Патч убирает условие, и Bun берёт `dist`. Та же поломка у `@open-pencil/design-jsx` — issue open-pencil#1397.
+
+Ещё отправлено в 1.8:
+- PR open-pencil#1399 — импорт обводок 2.x в `@open-pencil/pen` (issue #1324). Сами мы обводки конвертируем в `pen-bridge` и от `@open-pencil/pen` не зависим;
+- PR open-pencil#1398 — импортёр `.pen` не понимал `justifyContent: "space_between"` и ставил `start`;
+- PR open-pencil#1400 — `color-contrast` с полупрозрачными заливками (сейчас это поправка в `packages/engine/src/lint.ts`);
+- issue open-pencil#1404 — `touch-target-size` на строке контролов (`Footer links`, тоже поправка в `lint.ts`).
+
+Поправки в `lint.ts` и патчи снимаем по мере слияния и выхода релиза.
 
 ### `@tusche/exec` на реальных файлах (2026-10-20, этап 1.4)
 
