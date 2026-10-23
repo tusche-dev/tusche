@@ -36,6 +36,17 @@ const env: Record<string, string> = {
   TUSCHE_CACHE_DIR: join(work, 'cache'),
 };
 
+/**
+ * Full path of a program. With an `env` of its own, Bun looks programs up in `env.PATH`,
+ * and on Windows the copy of the environment has `Path` instead: `npm` would not be found.
+ */
+function which(name: string): string {
+  const path = Bun.which(name);
+  if (!path) throw new Error(`${name} not found`);
+  return path;
+}
+const NPM = which('npm');
+
 function run(cmd: string[], cwd = work): string {
   const proc = Bun.spawnSync(cmd, { cwd, env, stdout: 'pipe', stderr: 'pipe' });
   const output = proc.stdout.toString() + proc.stderr.toString();
@@ -65,7 +76,7 @@ for (const dir of order) {
     JSON.parse(readFileSync(join(PACKAGES, dir, 'package.json'), 'utf8')) as { name: string }
   ).name;
   const before = new Set(readdirSync(tarballs));
-  run(['npm', 'pack', join(PACKAGES, dir), '--pack-destination', tarballs, '--silent']);
+  run([NPM, 'pack', join(PACKAGES, dir), '--pack-destination', tarballs, '--silent']);
   const file = readdirSync(tarballs).find((f) => !before.has(f));
   if (!file) throw new Error(`npm pack ${dir} gave no tarball`);
   tarballOf.set(name, `file:${join(tarballs, file).replaceAll('\\', '/')}`);
@@ -88,13 +99,13 @@ writeFileSync(
   ),
 );
 await check('npm install', () => {
-  run(['npm', 'install', '--no-audit', '--no-fund', '--loglevel=error'], project);
+  run([NPM, 'install', '--no-audit', '--no-fund', '--loglevel=error'], project);
 });
 
 const BIN = join(project, 'node_modules', '@tusche', 'cli', 'dist', 'bin.js');
 const runtimes = [
-  { name: 'node', cmd: ['node', BIN] },
-  { name: 'bun', cmd: ['bun', BIN] },
+  { name: 'node', cmd: [which('node'), BIN] },
+  { name: 'bun', cmd: [which('bun'), BIN] },
 ];
 const expected = JSON.parse(readFileSync(join(ROOT, 'packages', 'cli', 'package.json'), 'utf8'))
   .version as string;
@@ -103,7 +114,7 @@ const expected = JSON.parse(readFileSync(join(ROOT, 'packages', 'cli', 'package.
 const reference = join(work, 'render-src');
 await check('render from sources (reference)', () => {
   run([
-    'bun',
+    which('bun'),
     join(ROOT, 'packages', 'cli', 'src', 'index.ts'),
     'render',
     FIXTURE,
