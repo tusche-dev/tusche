@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { createReadStream, existsSync, type FSWatcher, watch } from 'node:fs';
+import { existsSync, type FSWatcher, readFileSync, watch } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
@@ -53,6 +53,9 @@ const CLIENT_ENTRY = join(HERE, 'client', 'main.ts');
 /** The page script built ahead of time (published package). */
 const CLIENT_BUILT = join(HERE, 'client', 'client.js');
 const INDEX_HTML = join(HERE, 'client', 'index.html');
+
+/** Files of OpenPencil the page loads (`canvaskit.wasm`, bundled fonts), read once. */
+const assets = new Map<string, Buffer>();
 
 let client: Promise<string> | undefined;
 
@@ -209,14 +212,18 @@ export async function startPreview(options: PreviewOptions): Promise<PreviewServ
     if (pathname === '/canvaskit.wasm' || pathname.startsWith('/assets/')) {
       const path = previewFile(basename(pathname));
       if (!path) return send(res, 404, 'not found');
-      res.writeHead(200, {
+      // From memory, not a piped stream: a few files, and piping is fragile under Bun.
+      let data = assets.get(path);
+      if (!data) {
+        data = readFileSync(path);
+        assets.set(path, data);
+      }
+      return send(res, 200, data, {
         'content-type': pathname.endsWith('.wasm')
           ? 'application/wasm'
           : 'application/octet-stream',
         'cache-control': 'max-age=86400',
       });
-      createReadStream(path).pipe(res);
-      return;
     }
     if (pathname.startsWith('/fonts/')) {
       const id = pathname.slice('/fonts/'.length);
@@ -261,9 +268,9 @@ export async function startPreview(options: PreviewOptions): Promise<PreviewServ
   const port = (srv.address() as AddressInfo).port;
 
   await refresh();
-  let watcher: FSWatcher | undefined = watch(dirname(file), (_event, changed) => {
-    if (!changed || changed === name) schedule();
-  });
+  // Any change in the folder: on Linux, Bun reports an atomic write (temp file, then rename)
+  // only by the temp file's name. Unchanged content is dropped by its hash.
+  let watcher: FSWatcher | undefined = watch(dirname(file), schedule);
 
   return {
     url: `http://${host === '0.0.0.0' ? 'localhost' : host}:${port}/`,
