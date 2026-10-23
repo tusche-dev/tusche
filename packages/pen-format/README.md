@@ -2,7 +2,7 @@
 
 Read, validate, migrate and write `.pen` design files (schema 2.21, reads 2.x).
 
-Part of [Tusche](../../README.md), an open design canvas for AI agents. Not published yet.
+Part of [Tusche](https://github.com/tusche-dev/tusche), an open design canvas for AI agents.
 
 ```ts
 import { migratePen, parsePen, serializePen, validatePen } from '@tusche/pen-format';

@@ -8,6 +8,10 @@ dependencies and their licenses:
 - OpenPencil packages (@open-pencil/core, @open-pencil/scene-graph,
   @open-pencil/pen, @open-pencil/fig, @open-pencil/kiwi, @open-pencil/vue)
   https://github.com/open-pencil/open-pencil — MIT License
+  Until our fixes are released upstream, @open-pencil/core and
+  @open-pencil/dom-css are redistributed with the patches from patches/ as
+  @tusche/open-pencil-core and @tusche/open-pencil-dom-css (MIT License,
+  original copyright notices kept).
 - CanvasKit / Skia (canvaskit-wasm) — BSD-3-Clause
 - Yoga layout (via @open-pencil/yoga-layout fork) — MIT License
 - QuickJS (via a WebAssembly build such as quickjs-emscripten) — MIT License

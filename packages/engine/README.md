@@ -18,4 +18,4 @@ Reference renders: `bun packages/engine/scripts/render-baseline.ts <file.pen>...
 
 `@open-pencil/core@0.16.0` is patched locally (`patches/`). One patch fixes the CanvasKit path on Windows. The others cover layout details where pen.dev and OpenPencil differ. See `docs/dev/02-research.md`.
 
-Part of [Tusche](../../README.md), an open design canvas for AI agents. Not published yet.
+Part of [Tusche](https://github.com/tusche-dev/tusche), an open design canvas for AI agents.

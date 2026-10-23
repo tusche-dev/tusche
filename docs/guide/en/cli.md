@@ -2,8 +2,6 @@
 
 **English** · [Русский](../ru/cli.md)
 
-> **Status: preview of phase 1.** Commands may still change before the first release.
-
 Install globally with `npm i -g @tusche/cli` (or `bun add -g @tusche/cli`), or run any command with `npx @tusche/cli <command>`.
 
 | Command | What it does |
@@ -19,9 +17,9 @@ Install globally with `npm i -g @tusche/cli` (or `bun add -g @tusche/cli`), or r
 
 Exit code 2 means a wrong command or option. `tusche --help` lists everything.
 
-## Before the first release
+## Running from source
 
-Tusche is not on npm yet. Clone the repository, run `bun install`, and use `bun <repo>/packages/cli/src/index.ts <command>` wherever this page says `tusche`.
+To try unreleased changes, clone the repository, run `bun install`, and use `bun <repo>/packages/cli/src/index.ts <command>` wherever this page says `tusche`.
 
 ## Environment variables
 

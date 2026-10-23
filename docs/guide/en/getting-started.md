@@ -2,8 +2,6 @@
 
 **English** · [Русский](../ru/getting-started.md)
 
-> **Status: preview of phase 1.** Tusche is not released yet. This guide describes how it will work, so that the first release ships with ready docs. Commands may still change.
-
 ## What you need
 
 - **An AI agent that supports MCP:** Claude Code, Codex CLI, Gemini CLI, OpenCode, or any other MCP client. Tusche uses *your* agent and *your* subscription; it has no account and no limits of its own.
@@ -32,7 +30,7 @@ Check with `/mcp` inside Claude Code; you should see `tusche` with its tools.
 
 On Windows, if `npx` is not found by the client, use `"command": "cmd", "args": ["/c", "npx", "-y", "@tusche/cli", "mcp"]`.
 
-**Before the first release** Tusche is not on npm. Clone the repository, run `bun install` in it, and connect the server from the clone:
+**To try unreleased changes,** clone the repository, run `bun install` in it, and connect the server from the clone:
 
 ```bash
 claude mcp add tusche -- bun /path/to/tusche/packages/cli/src/index.ts mcp

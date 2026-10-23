@@ -16,4 +16,4 @@ projection.warnings; // placeholders, approximations, unknown refs and icons
 - Shader fills, `script`, `browser`, `note`, `prompt` and `context` are drawn as placeholders.
 - No file system or network access: images and icons come in through `loadAsset` and `IconProvider`.
 
-Part of [Tusche](../../README.md), an open design canvas for AI agents. Not published yet.
+Part of [Tusche](https://github.com/tusche-dev/tusche), an open design canvas for AI agents.

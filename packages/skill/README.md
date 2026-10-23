@@ -2,7 +2,7 @@
 
 The agent skill: `SKILL.md` and the guides it links to, served by the MCP tool `read_skill`.
 
-Part of [Tusche](../../README.md), an open design canvas for AI agents. Not published yet.
+Part of [Tusche](https://github.com/tusche-dev/tusche), an open design canvas for AI agents.
 
 ```ts
 import { listSkillFiles, readSkill } from '@tusche/skill';

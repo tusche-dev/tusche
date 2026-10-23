@@ -2,7 +2,7 @@
 
 The `tusche` command line.
 
-Part of [Tusche](../../README.md), an open design canvas for AI agents. Not published yet: until then, run it from the repository with `bun packages/cli/src/index.ts <command>`.
+Part of [Tusche](https://github.com/tusche-dev/tusche), an open design canvas for AI agents. Install with `npm i -g @tusche/cli` or run `npx @tusche/cli <command>`.
 
 | Command | What it does | Exit code |
 |---|---|---|

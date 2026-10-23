@@ -2,7 +2,7 @@
 
 Style archetypes as data — fonts, palette, scales, imagery and rules — served by the MCP tool `get_style`.
 
-Part of [Tusche](../../README.md), an open design canvas for AI agents. Not published yet.
+Part of [Tusche](https://github.com/tusche-dev/tusche), an open design canvas for AI agents.
 
 ```ts
 import { getStyle, listStyles } from '@tusche/styles';

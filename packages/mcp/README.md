@@ -2,7 +2,7 @@
 
 The Tusche MCP server: stdio transport, server name `tusche`.
 
-Part of [Tusche](../../README.md), an open design canvas for AI agents. Not published yet.
+Part of [Tusche](https://github.com/tusche-dev/tusche), an open design canvas for AI agents.
 
 ```ts
 import { serveStdio } from '@tusche/mcp';

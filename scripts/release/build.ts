@@ -95,7 +95,13 @@ function buildPackage(dir: string): void {
   const extra = ((pkg.files as string[]) ?? []).filter((f) => f !== 'src');
   for (const folder of extra)
     cpSync(join(source, folder), join(target, folder), { recursive: true });
-  for (const file of ['README.md']) cpSync(join(source, file), join(target, file));
+  // npm shows the README outside the repository: relative links point at GitHub.
+  const base = `https://github.com/tusche-dev/tusche/blob/main/packages/${dir}/`;
+  const readme = readFileSync(join(source, 'README.md'), 'utf8').replace(
+    /\]\((?!https?:|#|mailto:)([^)]+)\)/g,
+    (_, link: string) => `](${new URL(link, base).href})`,
+  );
+  writeFileSync(join(target, 'README.md'), readme);
   for (const file of ['LICENSE', 'NOTICE']) cpSync(join(ROOT, file), join(target, file));
 
   const exports = Object.fromEntries(
