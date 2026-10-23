@@ -1,3 +1,5 @@
+import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { basename, extname, join, relative, resolve } from 'node:path';
 import type { ExportFormat } from '@tusche/engine';
@@ -19,6 +21,7 @@ import {
   serializePen,
   validatePen,
 } from '@tusche/pen-format';
+import { startPreview } from '@tusche/preview';
 
 /** A wrong invocation: printed with the usage hint, exit code 2. */
 export class UsageError extends Error {}
@@ -245,6 +248,46 @@ export async function migrateCommand(io: Io, args: string[], flags: Flags): Prom
   return 0;
 }
 
+/**
+ * `tusche preview <file.pen> [--port <n>] [--open]`: a page that shows the file and follows
+ * its changes. Keeps running until stopped (returns -1).
+ */
+export async function previewCommand(io: Io, args: string[], flags: Flags): Promise<number> {
+  const [file] = args;
+  if (file === undefined) throw new UsageError('preview needs a .pen file');
+  const path = resolve(io.cwd, file);
+  if (!existsSync(path)) throw new UsageError(`no file at ${file}`);
+  let port: number | undefined;
+  if (flags.port !== undefined) {
+    port = Number(flags.port);
+    if (typeof flags.port !== 'string' || !Number.isInteger(port) || port < 0 || port > 65535) {
+      throw new UsageError('--port must be a port number (0 for any free port)');
+    }
+  }
+  const preview = await startPreview({
+    file: path,
+    ...(port === undefined ? {} : { port }),
+    log: (line) => io.err(`[preview] ${line}`),
+  });
+  io.out(`previewing ${shown(io, path)} at ${preview.url}`);
+  io.out('the page follows changes of the file; Ctrl+C stops');
+  if (flags.open === true) openBrowser(preview.url);
+  const stop = () => void preview.close().then(() => process.exit(0));
+  process.on('SIGINT', stop);
+  process.on('SIGTERM', stop);
+  return -1;
+}
+
+function openBrowser(url: string): void {
+  const [command, ...args] =
+    process.platform === 'win32'
+      ? ['cmd', '/c', 'start', '""', url]
+      : [process.platform === 'darwin' ? 'open' : 'xdg-open', url];
+  spawn(command as string, args, { stdio: 'ignore', detached: true })
+    .on('error', () => {})
+    .unref();
+}
+
 export const COMMANDS = {
   exec: execCommand,
   render: renderCommand,
@@ -252,4 +295,5 @@ export const COMMANDS = {
   lint: lintCommand,
   validate: validateCommand,
   migrate: migrateCommand,
+  preview: previewCommand,
 } as const;

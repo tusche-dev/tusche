@@ -1,7 +1,7 @@
 {
   "name": "@tusche/cli",
   "version": "0.0.0",
-  "description": "The tusche command line: mcp, exec, render, export, lint, validate, migrate.",
+  "description": "The tusche command line: mcp, exec, render, export, lint, validate, migrate, preview.",
   "license": "MIT",
   "type": "module",
   "private": true,
@@ -23,7 +23,8 @@
     "@tusche/engine": "workspace:*",
     "@tusche/exec": "workspace:*",
     "@tusche/mcp": "workspace:*",
-    "@tusche/pen-format": "workspace:*"
+    "@tusche/pen-format": "workspace:*",
+    "@tusche/preview": "workspace:*"
   },
   "devDependencies": {
     "@modelcontextprotocol/client": "2.3.1"

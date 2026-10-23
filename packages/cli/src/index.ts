@@ -29,6 +29,8 @@ usage: tusche <command> [options]
                                           --format text|json; exit 1 on errors
   validate <file.pen>                     check against the .pen schema; --info; exit 1 on errors
   migrate <file.pen>                      upgrade to the current format version; --dry-run
+  preview <file.pen>                      live view in the browser, follows changes of the file;
+                                          --port <n> (default 4848 or the next free), --open
 
 environment: TUSCHE_FONTS_OFFLINE=1, TUSCHE_ALLOW_REMOTE_ASSETS=1, TUSCHE_ROOT=<dir>,
              TUSCHE_CALL_LOG=<file> (mcp: one JSON line per tool call)`;
@@ -42,6 +44,8 @@ const OPTIONS = {
   info: { type: 'boolean' },
   create: { type: 'boolean' },
   'dry-run': { type: 'boolean' },
+  port: { type: 'string' },
+  open: { type: 'boolean' },
   help: { type: 'boolean', short: 'h' },
   version: { type: 'boolean', short: 'v' },
 } as const;

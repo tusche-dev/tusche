@@ -158,3 +158,40 @@ describe('tusche CLI', () => {
     expect(readFileSync(join(dir, 'mcp.pen'), 'utf8')).toContain('ViaMcp');
   }, 30_000);
 });
+
+describe('tusche preview', () => {
+  test('without a file or with a missing one: usage error', async () => {
+    const none = await tusche(['preview']);
+    expect(none.code).toBe(2);
+    expect(none.stderr).toContain('preview needs a .pen file');
+    expect((await tusche(['preview', 'missing.pen'])).code).toBe(2);
+    expect((await tusche(['preview', write('p.pen', CARD), '--port', 'x'])).code).toBe(2);
+  });
+
+  test('serves the page until stopped', async () => {
+    const file = write('preview.pen', CARD);
+    const proc = Bun.spawn(['bun', entry, 'preview', file, '--port', '0'], {
+      cwd: dir,
+      env,
+      stdout: 'pipe',
+      stderr: 'pipe',
+    });
+    try {
+      const reader = proc.stdout.getReader();
+      let out = '';
+      while (!out.includes('\n')) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        out += new TextDecoder().decode(value);
+      }
+      const url = out.match(/at (http:\/\/\S+)/)?.[1];
+      expect(url).toBeDefined();
+      const page = await fetch(url as string);
+      expect(page.status).toBe(200);
+      expect(await page.text()).toContain('preview.pen · Tusche preview');
+    } finally {
+      proc.kill();
+      await proc.exited;
+    }
+  });
+});
