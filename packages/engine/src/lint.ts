@@ -104,8 +104,8 @@ const alphaOf = (fill: SolidFill) => fill.color.a * fill.opacity;
  * down, stacked over the first opaque one (which may lie under a tint on the same ancestor),
  * and every text fill stacked over that in paint order. `undefined` when no ancestor has a
  * fill — then the rule's own ratio stands; `null` when the finding should go: the text is fully
- * transparent or painted with a gradient or an image, or translucent fills have no opaque one
- * under them and the background is unknown.
+ * transparent or painted with a gradient or an image, or the background is unknown: translucent
+ * fills have no opaque one under them, or a gradient or an image shows above it.
  */
 function compositedContrast(graph: SceneGraph, text: GraphNode): number | null | undefined {
   // Paints under the topmost opaque solid fill are covered by it.
@@ -124,8 +124,12 @@ function compositedContrast(graph: SceneGraph, text: GraphNode): number | null |
   for (let id = text.parentId; id && !opaque; ) {
     const parent = graph.getNode(id);
     if (!parent) break;
-    for (const fill of solids(parent).reverse()) {
-      layers.push(fill);
+    for (const fill of (parent.fills ?? []).toReversed()) {
+      if (!fill.visible || fill.opacity <= 0) continue;
+      // A gradient or an image above the opaque fill covers it and is not composited.
+      if (fill.type !== 'SOLID') return null;
+      if (!fill.color) continue;
+      layers.push(fill as SolidFill);
       if (alphaOf(fill) >= 1) {
         opaque = true;
         break;

@@ -609,6 +609,26 @@ describe('lint', () => {
             },
           ],
         },
+        {
+          type: 'frame',
+          id: 'glow',
+          width: 300,
+          height: 40,
+          // A light gradient over the dark fill: the text does not sit on the dark fill.
+          fill: [
+            '#111111',
+            {
+              type: 'gradient',
+              colors: [
+                { color: '#FFFFFF', position: 0 },
+                { color: '#EEEEEE', position: 1 },
+              ],
+            },
+          ],
+          children: [
+            { type: 'text', id: 'onGlow', content: 'Glow', fill: '#262626', fontSize: 14 },
+          ],
+        },
       ]),
     );
     const found = (await scene.lint()).filter((m) => m.ruleId === 'color-contrast');
