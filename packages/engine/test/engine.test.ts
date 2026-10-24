@@ -583,10 +583,36 @@ describe('lint', () => {
             },
           ],
         },
+        {
+          type: 'frame',
+          id: 'night',
+          width: 300,
+          height: 40,
+          fill: '#111111',
+          children: [
+            {
+              type: 'text',
+              id: 'covered',
+              content: 'Covered',
+              // An opaque fill over the gradient hides it: dark gray on near-black does not read.
+              fill: [
+                {
+                  type: 'gradient',
+                  colors: [
+                    { color: '#FFFFFF', position: 0 },
+                    { color: '#EEEEEE', position: 1 },
+                  ],
+                },
+                '#222222',
+              ],
+              fontSize: 14,
+            },
+          ],
+        },
       ]),
     );
     const found = (await scene.lint()).filter((m) => m.ruleId === 'color-contrast');
-    expect(found.map((m) => m.path)).toEqual(['dim']);
+    expect(found.map((m) => m.path)).toEqual(['dim', 'covered']);
   });
 
   test('only the given nodes; unknown paths are skipped', async () => {

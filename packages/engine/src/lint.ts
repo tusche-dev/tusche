@@ -108,9 +108,15 @@ const alphaOf = (fill: SolidFill) => fill.color.a * fill.opacity;
  * under them and the background is unknown.
  */
 function compositedContrast(graph: SceneGraph, text: GraphNode): number | null | undefined {
-  // Gradients and images are not composited, so a text painted with one has no single color.
-  if (text.fills.some((f) => f.visible && f.type !== 'SOLID' && f.opacity > 0)) return null;
-  const fg = solids(text);
+  // Paints under the topmost opaque solid fill are covered by it.
+  const fills = text.fills ?? [];
+  const base = fills.findLastIndex(
+    (f) => f.type === 'SOLID' && f.visible && !!f.color && f.color.a * f.opacity >= 1,
+  );
+  const shown = fills.slice(Math.max(base, 0));
+  // Gradients and images are not composited, so a text showing one has no single color.
+  if (shown.some((f) => f.visible && f.type !== 'SOLID' && f.opacity > 0)) return null;
+  const fg = solids({ ...text, fills: shown });
   if (fg.length === 0) return undefined;
   if (fg.every((f) => alphaOf(f) <= 0)) return null;
   const layers: SolidFill[] = [];
