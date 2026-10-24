@@ -92,33 +92,50 @@ function refine(graph: SceneGraph, m: RawMessage): RawMessage | undefined {
   return m;
 }
 
-const solid = (n: GraphNode) => n.fills?.find((f) => f.type === 'SOLID' && f.visible && f.color);
-const alphaOf = (fill: NonNullable<ReturnType<typeof solid>>) => fill.color.a * fill.opacity;
-const WHITE = { r: 1, g: 1, b: 1, a: 1 };
+type SolidFill = GraphNode['fills'][number] & { color: Color };
+
+/** Visible solid fills in paint order: bottom to top, the last one on top. */
+const solids = (n: GraphNode): SolidFill[] =>
+  (n.fills ?? []).filter((f): f is SolidFill => f.type === 'SOLID' && f.visible && !!f.color);
+const alphaOf = (fill: SolidFill) => fill.color.a * fill.opacity;
 
 /**
- * Contrast of a text against what is under it: semi-transparent fills of the ancestors are
- * stacked over the first opaque one. `undefined` when nothing in the stack is translucent —
- * then the rule's own ratio stands; `null` when translucent fills have no opaque one under
- * them — the background is unknown.
+ * Contrast of a text against what is under it: every visible solid fill of the ancestors, top
+ * down, stacked over the first opaque one (which may lie under a tint on the same ancestor),
+ * and every text fill stacked over that in paint order. `undefined` when no ancestor has a
+ * fill — then the rule's own ratio stands; `null` when the finding should go: the text is fully
+ * transparent or painted with a gradient or an image, or translucent fills have no opaque one
+ * under them and the background is unknown.
  */
 function compositedContrast(graph: SceneGraph, text: GraphNode): number | null | undefined {
-  const fg = solid(text);
-  if (!fg) return undefined;
-  const layers: NonNullable<ReturnType<typeof solid>>[] = [];
-  for (let id = text.parentId; id; ) {
+  // Gradients and images are not composited, so a text painted with one has no single color.
+  if (text.fills.some((f) => f.visible && f.type !== 'SOLID' && f.opacity > 0)) return null;
+  const fg = solids(text);
+  if (fg.length === 0) return undefined;
+  if (fg.every((f) => alphaOf(f) <= 0)) return null;
+  const layers: SolidFill[] = [];
+  let opaque = false;
+  for (let id = text.parentId; id && !opaque; ) {
     const parent = graph.getNode(id);
     if (!parent) break;
-    const fill = solid(parent);
-    if (fill) {
+    for (const fill of solids(parent).reverse()) {
       layers.push(fill);
-      if (alphaOf(fill) >= 1) break;
+      if (alphaOf(fill) >= 1) {
+        opaque = true;
+        break;
+      }
     }
     id = parent.parentId;
   }
-  if (alphaOf(fg) >= 1 && layers.every((f) => alphaOf(f) >= 1)) return undefined;
-  if (layers.length > 0 && !layers.some((f) => alphaOf(f) >= 1)) return null;
-  let bg: Color = WHITE;
-  for (const fill of layers.reverse()) bg = compositeOver(fill.color, bg, alphaOf(fill));
-  return contrastRatio(compositeOver(fg.color, bg, alphaOf(fg)), bg);
+  if (layers.length === 0) return undefined;
+  if (!opaque) return null;
+  const bg = layers.reduceRight<Color>(
+    (under, fill) => compositeOver(fill.color, under, alphaOf(fill)),
+    { r: 1, g: 1, b: 1, a: 1 },
+  );
+  const color = fg.reduce<Color>(
+    (under, fill) => compositeOver(fill.color, under, alphaOf(fill)),
+    bg,
+  );
+  return contrastRatio(color, bg);
 }

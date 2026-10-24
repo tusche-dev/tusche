@@ -195,14 +195,14 @@
 2. `gap` при `SPACE_BETWEEN` для фреймов с меткой `tusche/cssGap` — issue open-pencil#1402: предложена опция раскладки, которую выставляет импортёр `.pen`;
 3. равные доли `fill` для фреймов с меткой `tusche/equalFill` — issue open-pencil#1403. Расхождение есть только у детей с автораскладкой: простые фреймы делят место поровну, со своей раскладкой — нет (200/200 против 160/240);
 4. ширина переноса абзаца округляется вверх до пикселя — upstream не отправляем: это подгонка под растеризатор pen.dev, а не ошибка OpenPencil;
-5. `package.json` экспортирует `io/formats/html` — PR open-pencil#1401. Обойтись публичным `htmlFormat` из `@open-pencil/core/io` нельзя: этот вход тянет `@open-pencil/design-jsx`, а он под Bun не грузится (см. ниже).
+5. `package.json` экспортирует `io/formats/html` — PR open-pencil#1401, слит 2026-10-23, в релиз пока не попал. Снять при обновлении на версию новее 0.16.0. Обойтись публичным `htmlFormat` из `@open-pencil/core/io` нельзя: этот вход тянет `@open-pencil/design-jsx`, а он под Bun не грузится (см. ниже).
 
 И один патч `@open-pencil/dom-css@0.16.0`: опубликованный пакет отдаёт Bun исходники по условию `bun` в `exports`, а в `imports` такого условия нет, поэтому `#dom-css/*` из `src` уходит в `dist` без расширения. Патч убирает условие, и Bun берёт `dist`. Та же поломка у `@open-pencil/design-jsx` — issue open-pencil#1397.
 
-Ещё отправлено в 1.8:
-- PR open-pencil#1399 — импорт обводок 2.x в `@open-pencil/pen` (issue #1324). Сами мы обводки конвертируем в `pen-bridge` и от `@open-pencil/pen` не зависим;
-- PR open-pencil#1398 — импортёр `.pen` не понимал `justifyContent: "space_between"` и ставил `start`;
-- PR open-pencil#1400 — `color-contrast` с полупрозрачными заливками (сейчас это поправка в `packages/engine/src/lint.ts`);
+Ещё отправлено в 1.8 (статус на 2026-10-24):
+- PR open-pencil#1399 — импорт обводок 2.x в `@open-pencil/pen` (issue #1324). Закрыт в пользу open-pencil#1410: тот переписал `.pen`-ридер, issue #1324 закрыт. Сами мы обводки конвертируем в `pen-bridge` и от `@open-pencil/pen` не зависим;
+- PR open-pencil#1398 — импортёр `.pen` не понимал `justifyContent: "space_between"` и ставил `start`. Закрыт: после open-pencil#1410 `space_between` читается в `packages/pen/src/layout.ts`;
+- PR open-pencil#1400 — `color-contrast` с полупрозрачными заливками, на ревью. По замечаниям ревью правило складывает все видимые сплошные заливки слоя по порядку отрисовки (и у фона, и у текста) и пропускает невидимый текст и текст с градиентом или картинкой. Та же логика — в поправке `packages/engine/src/lint.ts`;
 - issue open-pencil#1404 — `touch-target-size` на строке контролов (`Footer links`, тоже поправка в `lint.ts`).
 
 Поправки в `lint.ts` и патчи снимаем по мере слияния и выхода релиза.

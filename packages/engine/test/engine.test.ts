@@ -550,6 +550,45 @@ describe('lint', () => {
     expect(found).toEqual([]);
   });
 
+  test('contrast stacks every fill of a layer and skips invisible text', async () => {
+    const scene = await engine.open(
+      doc([
+        {
+          type: 'frame',
+          id: 'card',
+          width: 300,
+          height: 100,
+          // Near-black over white: the rule alone reads the white under it.
+          fill: ['#FFFFFF', '#111111'],
+          children: [
+            { type: 'text', id: 'light', content: 'Light', fill: '#F0F0F0', fontSize: 14 },
+            // Dark gray paints over the light one: dark on near-black does not read.
+            { type: 'text', id: 'dim', content: 'Dim', fill: ['#F0F0F0', '#222222'], fontSize: 14 },
+            { type: 'text', id: 'ghost', content: 'Ghost', fill: '#FFFFFF00', fontSize: 14 },
+            {
+              type: 'text',
+              id: 'shade',
+              content: 'Shade',
+              fill: [
+                {
+                  type: 'gradient',
+                  colors: [
+                    { color: '#FFFFFF', position: 0 },
+                    { color: '#EEEEEE', position: 1 },
+                  ],
+                },
+                '#FFFFFF80',
+              ],
+              fontSize: 14,
+            },
+          ],
+        },
+      ]),
+    );
+    const found = (await scene.lint()).filter((m) => m.ruleId === 'color-contrast');
+    expect(found.map((m) => m.path)).toEqual(['dim']);
+  });
+
   test('only the given nodes; unknown paths are skipped', async () => {
     const scene = await engine.open(page());
     const messages = await scene.lint(['tiny', 'nope']);
